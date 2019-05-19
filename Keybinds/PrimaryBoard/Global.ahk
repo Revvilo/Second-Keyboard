@@ -58,15 +58,12 @@ Class Global {
     F4() {
         SendInput, {U+2771} ; ❱
     }
-    F5(modifiers) {
-        Stopwatch()
-        If (modifiers == "Control")
-            ToggleTimer("FortniteTrackingTrainer")
+    F5() {
     }
     F6() {
-        Minecraft.SendMCCommand("/{#}fill air reccomplex:generic_space --shape sphere")
+        Minecraft.SendCommand("/{#}fill air reccomplex:generic_space --shape sphere")
         Sleep, 200
-        Minecraft.SendMCCommand("/{#}selection set ~ ~1 ~")
+        Minecraft.SendCommand("/{#}selection set ~ ~1 ~")
     }
     ; F7() {
     ; }

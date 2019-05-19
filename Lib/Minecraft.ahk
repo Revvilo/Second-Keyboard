@@ -1,6 +1,6 @@
 Class Minecraft {
     ; -- Required funcs
-    SendMCCommand(param)
+    SendCommand(param)
     {
         SetKeyDelay,, 2
         Sendinput, t
@@ -9,7 +9,6 @@ Class Minecraft {
         Sendinput, {Enter}
         SetKeyDelay,,
     }
-
 
     ; -- Niche funcs
     FoolCraft_PatternTransfer() {
@@ -20,6 +19,34 @@ Class Minecraft {
         MouseClick, Left
     }
 
+    Vanilla_Autocraft() {
+        SendInput, {Shift down}
+        ; Sleep, 10
+        MouseClick, Left, 549, 417
+        ; Sleep, 75
+        MouseClick, Left, 1321, 420
+        ; Sleep, 10
+        ; SendInput, {Shift up}
+    }
+
+    Vanilla_Plankcraft() {
+        SendInput, {Shift down}
+        MouseClick, Left, 549, 417
+        MouseClick, Left, 1321, 420
+        ; Sleep, 1000
+        PosX := 1137
+        PosY := 741
+        Sleep, 300
+        Loop 4 {
+            MouseMove, %PosX%, %PosY%
+            SendInput, {Control down}
+            SendInput, q
+            Sleep 50
+            PosX += 54
+            ; Sleep, 1000
+        }
+        ; Sleep, 1000
+    }
 
     FoolCraft_PrismCraft() {
         SetBatchLines, 1

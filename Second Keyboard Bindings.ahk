@@ -85,7 +85,7 @@ Global keyAliases := {   "/": "ForwardSlash"
                 , "[": "LeftBracket"
                 , "\": "Backslash" }
 
-; If shift is held, turn on debug mode.
+; If shift is held while booting up, turn on debug mode.
 If (GetKeyState("Shift")){
     ToggleDebug()
 }
@@ -140,6 +140,7 @@ Return
 ; ====================;
 
 #IfWinActive, Minecraft
+; Hotstrings
 ::#sel::{#}selection
 ::#set::{#}selection set
 ::#killitems::kill @e[type=item]
@@ -169,7 +170,6 @@ Return
 ::#dn1::{#}selection set ~ ~-1 ~
 :O:#p1::{#}selection set ~ ~ ~ --first{left 10}
 :O:#p2::{#}selection set ~ ~ ~ --second{left 11}
-
 Return
 
 #IfWinActive, Voltz
@@ -184,7 +184,7 @@ Return
 Return
 
 #If
->!o::
+*>!o:: ; Right Alt + O
     OBS.SendToOBS("{F22}")    ; Toggle Recording
 Return
 ^!F4::
@@ -551,21 +551,22 @@ ResetVolumeMixer(vol := "") {
     }
     DetectHiddenWindows, %oldDHW%
 
-    WinGet, outHandle, ID, Volume Mixer
-    WinGet, outControlList, ControlList, ahk_id %outHandle%
-    controlsArray := StrSplit(outControlList, "`n")
+    WinGet, mixerHandle, ID, Volume Mixer
+    WinGet, mixerControlList, ControlList, ahk_id %mixerHandle%
+    controlsArray := StrSplit(mixerControlList, "`n")
 
     If (vol == "") {
         ; Sets every entry in the Audio Mixer to the current system volume
         SoundGet, systemVolume
-        TrayTip, Resetting all sliders in the Mixer, No volume specified.`nSetting to system volume: %systemVolume%
+        MsgBox, 1, Reset Volume Mixer?, This will reset all sliders in the volume mixer to the system volume: %systemVolume%
+        TrayTip, Resetting all sliders in the Mixer, No target volume specified.`nDefaulting to system volume: %systemVolume%
         vol := 100 - systemVolume
     } Else {
         TrayTip, Setting all sliders in the Mixer, Volume was specified.`nSetting to volume: %vol%
         vol := 100 - vol
     }
 
-    If (outControlList != "") {
+    If (mixerControlList != "") {
         For i, e in controlsArray {
 
             ; If the line is a static text control
@@ -657,32 +658,6 @@ AutoFishing() {
     }
 }
 
-FortniteTrackingTrainer() {
-    If (!(WinActive("Fortnite")))
-        Return
-
-    Global Alternate
-    If (InStr(Alternate, "a")) {
-        Alternate := "d"
-    } Else {
-        Alternate := "a"
-    }
-
-    SendInput, {%Alternate% down}
-    
-    Random, RandomTime, 500, 2500
-    RandomTime := RandomTime / 1000 ; Translate milliseconds to floating point seconds
-    Input, PressedKey, I T%RandomTime% V,, a,d
-    If (ErrorLevel == "Timeout") {
-        SendInput, {%Alternate% up}
-    } Else {
-        SendInput, {%Alternate% up}
-        SendInput, {%PressedKey% down}
-        KeyWait, %PressedKey%
-    }
-    ; Sleep, % RandomTime
-}
-
 Stopwatch() {
     If (!StopwatchRunning) {
         StopwatchRunning := True
@@ -694,33 +669,4 @@ Stopwatch() {
         FormatTime, OutputTime, HHMMSS, Format
         Msgbox, %ElapsedMS%
     }
-}
-
-Vanilla_Autocraft() {
-    SendInput, {Shift down}
-    ; Sleep, 10
-    MouseClick, Left, 549, 417
-    ; Sleep, 75
-    MouseClick, Left, 1321, 420
-    ; Sleep, 10
-    ; SendInput, {Shift up}
-}
-
-Vanilla_Plankcraft() {
-    SendInput, {Shift down}
-    MouseClick, Left, 549, 417
-    MouseClick, Left, 1321, 420
-    ; Sleep, 1000
-    PosX := 1137
-    PosY := 741
-    Sleep, 300
-    Loop 4 {
-        MouseMove, %PosX%, %PosY%
-        SendInput, {Control down}
-        SendInput, q
-        Sleep 50
-        PosX += 54
-        ; Sleep, 1000
-    }
-    ; Sleep, 1000
 }
