@@ -1,28 +1,32 @@
 Class Global {
 
-    ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when retreiving modifiers. Eg { "RAlt": "Alt" } - 'RAlt' is known as 'Alt'
-    Static modifierKeys := { "LControl": "Control"
-                    , "RControl": "Control"
-                    , "LShift": "Shift"
-                    , "RShift": "Shift"
-                    , "LAlt": "Alt"
-                    , "RAlt": "Alt"
-                    , "NumpadSub": "NumpadSub"
-                    , "LWin": "WinKey"
-                    , "RWin": "WinKey" }
+    ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when checking for said modifiers.
+    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (modifiers == "ALt")
+    ; Of course anything can be put in the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
+    Static modifierKeys := {  "LControl":   "Control"
+                            , "RControl":   "Control"
+                            , "LShift":     "Shift"
+                            , "RShift":     "Shift"
+                            , "LAlt":       "Alt"
+                            , "RAlt":       "Alt"
+                            , "NumpadSub":  "NumpadSub"
+                            , "LWin":       "WinKey"
+                            , "RWin":       "WinKey" }
 
     ; == GLOBAL BINDS ==
 
-    ; ANY BINDS (AKA CALLBACKS) THAT ARE ADDED IN HERE WILL OVERRIDE ANY CALLBACKS IN OTHER MODES FOR THIS SPECIFIC DEVICE!
+    ; FOR THIS SPECIFIC DEVICE, ANY BINDS (Which are callback functions) THAT ARE ADDED IN HERE WILL ALWAYS BE EXECUTED INSTEAD OF THEIR MODE-DEPENDANT COUNTERPARTS.
+    ; This means if you bind 'enter' in here, it doesn't matter what mode you're using, or which modes contain a callback for 'enter' - the one in here will always be used.
     ; You will see that currently unused callbacks are commented out to leave them open for mode-dependant hotkeys -
-    ; since it doesn't matter if the callback is empty, it'll still be used independant of mode.
+    ; because it doesn't matter if the callback is empty, it will still override any mode hotkeys.
 
     ; ==================
 
 
-    ;v ======================== v;
-    ;v == STRUCTURAL HOTKEYS == v;
-    ;v ======================== v;
+    ;v ============================================== v;
+    ;v == CRITICAL HOTKEYS ========================== v;
+    ;v == These only need to exist once, in global == v;
+    ;v ============================================== v;
 
     Escape() {
         ExitApp
@@ -101,7 +105,9 @@ Class Global {
 
 
     Space() { ; -- Play/pause
-        SendInput, {Media_Play_Pause}
+        ; ControlSend,, {Media_Play_Pause}, Spotify
+        ; SendInput, {Media_Play_Pause}
+        Spotify.PlayPause()
     }
     ; Enter() {
     ; }

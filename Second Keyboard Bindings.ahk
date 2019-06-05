@@ -60,12 +60,8 @@ Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
                         , "NumpadBoard": "HID\VID_03F0&PID_0024&REV_0300"}
 
 ; General globals
-Global luaMacrosPath := "F:\Programming\luamacros"
-Global soundsPath := A_WorkingDir . "\Sounds\"
 Global mainKeyboardHotkeys := False
-Global toggle_mcMacros
 Global debug := False
-Global reloadingScript := False
 Global timerVars := {}
 Global StopwatchRunning := False
 Global BeginTickCount := ""
@@ -187,6 +183,20 @@ Return
 *>!o:: ; Right Alt + O
     OBS.SendToOBS("{F22}")    ; Toggle Recording
 Return
+!i::
+    ; PostMessage, 0x319,, 0x90000,, ahk_exe Spotify.exe
+Return
+!p::
+    ; DetectHiddenWindows, On
+    WinGet, OutputVar, List, ahk_exe Spotify.exe
+    Loop %OutputVar% {
+        temp := OutputVar%A_Index%
+        WinGetTitle, temp1, ahk_id %temp%
+        Msgbox, % temp1 . "`nID: " . temp
+        ControlSend,, {space}, ahk_id %temp%
+    }
+    DetectHiddenWindows, Off
+Return
 ^!F4::
     WinKill, A
 Return
@@ -289,12 +299,10 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     }
 
 
-
-
     ; Determines what callback to choose based on the current mode using the following rules in order;
-    ; -If there is a callback for said key in the .Hotkeys/Global class, it completely ignores the current mode and selects it.
+    ; -If there is a callback for said key in the .Hotkeys/Global class, it completely ignores the current mode and runs that.
     ; -If one doesn't exist in the global hotkeys, it selects the callback from the respective mode's class instead.
-    ; -If the callback that was chosen doesn't actually exist, it simply returns, and if debug mode is on, alerts the user.
+    ; -If the callback that was chosen doesn't actually exist, it simply returns and alerts the user.
     If (DeviceGlobalClass.HasKey(name)) {
         callback := ObjBindMethod(DeviceGlobalClass, name)
     } Else If (DeviceModeClass.HasKey(name)) {
@@ -311,91 +319,6 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     } Catch e {
         Msgbox, % "An error occured within the callback.`n`nYou can double click the icon in the system tray while this msgbox is open to see the line where it errored."
     }
-
-
-    ; All this crap is from when I was using Luamacros
-    ; Still needs to be transferred to callbacks
-
-    /*
-    ; Mode specific hotkeys
-    If (Mode == "General") { ; === --===== ----======= ------========= --------=========== ----------=============
-        If (WinActive("IntelliJ")) {
-            If (input == "num1") {
-                SendInput, !f
-                SendInput, {down}
-                SendInput, {right}
-                SendInput, {down 9}
-            } Else If (input == "c") {
-                SendInput, ^+u
-            }
-        } Else If (input == "h") {
-            OBS.CheckOBSRecordingStatus()
-        } Else If (input == "alt+l") { ; Face scene change screenshotter
-            OBS.SceneControlSend("j")
-            ControlFocus, Qt5QWindowIcon5, obs64.exe
-            SendInput, +{F10}
-            Sleep, 50
-            SendInput, {Up 5}
-            SendInput, {Right}
-            SendInput, {Enter}
-            Sleep, 50
-            SendInput, !{PrintScreen}
-        } Else If (input == "control+shift+space") {
-            activeWindow := WinExist("a")
-            WinMove, ahk_id %activeWindow%,, 0, 0, 1920, 1055
-        } Else If (input == "shift+t") {
-            SendInput, ✔
-        } Else If (input == "control+up") { ; --
-        } Else If (input == "apostrophe") {
-            SendInput, 2147483647
-        } Else If (input == "shift+y") {
-            ResetVolumeMixer(35) ; Sets all sliders in the volume mixer to the same as the master volume
-        } Else If (input == "num1") {
-        } Else If (input == "num2") {
-        } Else If (input == "num3") {
-        } Else If (input == "num4") {
-        } Else If (input == "num5") {
-        } Else If (input == "up") {            ; OBS Scene up
-        } Else If (input == "down") {          ; OBS Scene down
-        } Else If (input == "numDiv") {        ; OBS Transition
-        } Else If (input == "numMult") {       ; OBS Alt Transition
-        } Else If (input == "num0") {          ; OBS Toggle Webcam
-        } Else If (input == "numDelete") {     ; OBS Toggle Mic
-        } Else If (input == "i") {             ; Size windows according to current layout - logic in ".\Initialization\Spotify.ahk\OBS.SizeComponents()"
-        } Else If (input == "leftbracket") {
-        } Else If (input == "rightbracket") {
-        } Else If (input == "backslash") {
-        } Else If (input == "p")
-        Else If (input == "pageup") {
-        } Else If (input == "pagedown") {
-        } Else If (input == "end") {
-        }
-    } Else If (Mode == "Minecraft") { ; === --===== ----======= --MINECRAFT --========= --------=========== ----------=============
-        #Include, Keybinds/Minecraft.ahk
-    } Else If (Mode == "Editing") { ; === --===== ----======= --EDITING --========= --------=========== ----------=============
-        If (WinActive("VEGAS")) {
-            If (input == "enter") {
-                SendInput, s{Numpad7 2}{Delete}^+f ; Split, select clip preceeding cursor, delete it, then ripple all
-            }
-        }
-    } Else If (Mode == "Animating") { ; === --===== ----======= --ANIMATING --========= --------=========== ----------=============
-        If (input = "t") {
-            AddTextEvent(, "Base")
-        } Else If (input = "shift+t") {
-            ShowSubtitleGui()
-        } Else If (input = "p") {
-            If (running) {
-                SetTimer, KeyframeLoop, Delete
-                running = 0
-            } Else {
-                SetTimer, KeyframeLoop, 25
-                running = 1
-            }
-        } Else If (input == "a") {
-            Vegas_ToggleShake()
-        }
-    }
-    */
 }
 
 nothing() {
