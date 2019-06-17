@@ -1,8 +1,9 @@
 Class Spotify {
 
-    Static minVol := 0.05
-    Static vol_loud := 0.6
-    Static vol_low := Spotify.minVol
+    ; These two multipliers determine the volume - relative to the current system vol - that will be known as the loud and quiet settings.
+    Static volLoudMultiplier := 0.6
+    Static volQuietMultiplier := 0.05
+
     Static currentVolume := ""
     Static oldVolume := ""
     Static hiddenState := ""
@@ -10,20 +11,21 @@ Class Spotify {
     Static volSliderClassNN := ""
     Static spotifyNameClassNN := ""
     Static sliderPos := ""
+
     systemVol {
         get {
-            SoundGet, systemVolume ; Gets the current system volume to use as the maximum value to go to
+            SoundGet, systemVolume ; Gets the current system volume to use as the max limit for setting volume
             Return systemVolume
         }
     }
     volLoud {
         get {
-            Return this.systemVol * this.vol_loud
+            Return this.systemVol * this.volLoudMultiplier
         }
     }
     volQuiet {
         get {
-            Return this.systemVol * this.vol_low
+            Return this.systemVol * this.volQuietMultiplier
         }
     }
 
@@ -34,7 +36,8 @@ Class Spotify {
 
     PlayPause() {
         DetectHiddenWindows On
-        PostMessage, 0x319,, 0xE0000,, ahk_exe Spotify.exe ; msg: WM_APPCOMMAND - lParam: APPCOMMAND_MEDIA_PLAY_PAUSE
+        If (WinExist("ahk_exe Spotify.exe"))
+            PostMessage, 0x319,, 0xE0000,, ahk_exe Spotify.exe ; msg: WM_APPCOMMAND - lParam: APPCOMMAND_MEDIA_PLAY_PAUSE
         DetectHiddenWindows Off
         ; ControlSend,, {Media_Play_Pause}, Spotify Free
     }
@@ -58,6 +61,14 @@ Class Spotify {
         DetectHiddenWindows, %oldDHW%
     }
 
+    VolSetPercent(percent := "") {
+        
+    }
+
+    ; TODO: Change the system so that it takes one of either a percentage value, a positive number, or a negative number to avoid this silly 'vol mode' thing
+    ; The percentage would be from volQuiet to volLoud, meaning 50% would be the centerpoint between those two values
+    ; Negative values would decrease the volume relatively, and positive would increase
+
     ; Changes the volume relatively, or sets an absolute volume
     VolChange(volChange := "", volMode := "") {
         If (WinExist("ahk_exe Spotify.exe")) {
@@ -69,11 +80,11 @@ Class Spotify {
                     MsgBox,, % Spotify.Alert.ErrorTitle, % "Ran out of time while waiting for Volume Mixer to open."
                     Return
                 }
-                Sleep, 1000
+                Sleep, 1000 ; Give the mixer time to be fully open
             }
 
-        WinGet, mixerHandle, ID, Volume Mixer
-        WinGet, outControlList, ControlList, ahk_id %mixerHandle%
+            WinGet, mixerHandle, ID, Volume Mixer
+            WinGet, outControlList, ControlList, ahk_id %mixerHandle%
 
             WinGet, spotifyProcesses, List, ahk_exe Spotify.exe
 
@@ -91,7 +102,7 @@ Class Spotify {
                 Return
             }
 
-            ControlGetText, wasSpotifysTitle, % This.spotifyNameClassNN, ahk_id %mixerHandle% ; Gets the current text of the control that WAS Spotify's old title
+            ControlGetText, wasSpotifysTitle, % This.spotifyNameClassNN, ahk_id %mixerHandle% ; Gets the current text of the control that was originally Spotify's title
 
             ; DEBUGGING
             If (debug) {
@@ -130,7 +141,7 @@ Class Spotify {
                         }
                     }
                 }
-                ; -- This is buggered. Fix it dumbass.
+                ; -- This is buggered. Fix it.
                 If (!FoundSpotify) {
                     Soundplay, % Sounds.asterisk, Wait
                     ; SendInput, {Media_Play_Pause}

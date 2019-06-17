@@ -43,6 +43,7 @@ AHI.SubscribeKey(secondKeyboardID, GetKeySC("\"), true, Func("Backslash")) ; \
 SubscribeAllKeys() {
     ListLines, Off
     ; outputArray := []
+    ; For each keyboard that is wanted to be a macro board
     For deviceName, deviceHandle in MacroKeyboards {
         deviceID := AHI.GetKeyboardIdFromHandle(deviceHandle)
         Loop 512 {

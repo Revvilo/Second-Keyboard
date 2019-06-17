@@ -3,7 +3,7 @@
 #HotkeyInterval 99000000
 #KeyHistory 0
 ; #Warn
-; ListLines Off
+ListLines Off
 ; SetCapsLockState, AlwaysOff
 Process, Priority, , A
 SetBatchLines, -1
