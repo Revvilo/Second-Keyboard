@@ -1,10 +1,35 @@
-; THIS FILE IS NOT COMPLETE AND SHOULD NOT BE IN USE UNTIL ABLE TO BE USED AS A LIBRARY
+; THIS FILE IS NOT COMPLETE AND SHOULD NOT BE IN USE UNTIL THE OLD SPOTIFY CODE IS ADAPTED
 ; IT IS CURRENTLY A STRAIGHT COPY PASTE OF THE CODE USED IN SPOTIFY.AHK
 
 Class MixerControl {
+    ; These two multipliers determine the volume - relative to the current system vol - and will be known as the loud and quiet settings.
+    Static volLoudMultiplier := 0.6
+    Static volQuietMultiplier := 0.05
+
+    Static volSliderClassNN := ""
+    Static programNameControlClassNN := ""
+    Static sliderPos := ""
+
+    systemVol {
+        get {
+            SoundGet, systemVolume ; Gets the current system volume to use as the max limit for setting volume
+            Return systemVolume
+        }
+    }
+    volLoud {
+        get {
+            Return this.systemVol * this.volLoudMultiplier
+        }
+    }
+    volQuiet {
+        get {
+            Return this.systemVol * this.volQuietMultiplier
+        }
+    }
+
     ; Changes the volume relatively, or sets an absolute volume
-    VolChange(TargetProgramName, volChange := "", volMode := "") {
-        If (WinExist("ahk_exe Spotify.exe")) {
+    ChangeVolume(TargetProgramName, volChange := "", volMode := "") {
+        If (WinExist(TargetProgramName)) {
             If (!WinExist("ahk_exe SndVol.exe")) {
                 Run, SndVol.exe,, Min
                 WinWait, Volume Mixer,, 10
@@ -37,7 +62,6 @@ Class MixerControl {
             ;     Return
             ; }
 
-            ; ControlGetText, wasSpotifysTitle, % This.spotifyNameClassNN, ahk_id %mixerHandle% ; Gets the current text of the control that was originally Spotify's title
 
             ; DEBUGGING
             ; If (debug) {
@@ -47,14 +71,17 @@ Class MixerControl {
             ;         WinGetTitle, tempTitle, ahk_id %tempID%
             ;         processList := processList . A_Index . "`t" . tempTitle . "`n"
             ;     }
-            ;     MsgBox, % "wasSpotifysTitle:`t`t" . wasSpotifysTitle . "`ncurrentSpotifyTitle:`t" . currentSpotifyTitle . ((wasSpotifysTitle == currentSpotifyTitle) ? ("`n`nTitles Matched: YES") : ("`n`nTitles Matched: NO")) . "`n`nspotifyNameClassNN:`t" . This.spotifyNameClassNN . "`nvolSliderClassNN:`t`t" . This.volSliderClassNN . "`n`nSpotify's processes with titles:`n" . processList
+            ;     MsgBox, % "wasSpotifysTitle:`t`t" . wasSpotifysTitle . "`ncurrentSpotifyTitle:`t" . currentSpotifyTitle . ((wasSpotifysTitle == currentSpotifyTitle) ? ("`n`nTitles Matched: YES") : ("`n`nTitles Matched: NO")) . "`n`nprogramNameControlClassNN:`t" . This.programNameControlClassNN . "`nvolSliderClassNN:`t`t" . This.volSliderClassNN . "`n`nSpotify's processes with titles:`n" . processList
             ; }
             ; ---------
 
 
             ; CODE THAT LOCKS ON TO THE PROGRAM'S SLIDER
-            ; Only executes if the control that was last confirmed to contain Spotify's name doesn't contain it anymore.
-            If (This.volSliderClassNN == "" || TargetProgramName) {
+            ; Only executes if the control that was last confirmed to contain the programs's name doesn't contain it anymore.
+
+            ControlGetText, wasProgramsTitle, % This.programNameControlClassNN, ahk_id %mixerHandle% ; Gets the current text of the control that was originally the programs's title
+
+            If (This.volSliderClassNN == "" || TargetProgramName != wasProgramsTitle) {
                 controlsArray := StrSplit(outControlList, "`n")
                 FoundProgram := 0
                 For i, e in controlsArray {
@@ -64,12 +91,12 @@ Class MixerControl {
                         ControlGetText, controlText, %e%, ahk_id %mixerHandle%
 
                         ; If the control's text is the same as the title found earlier
-                        If ((controlText == currentSpotifyTitle)) {
-                            ; Record the index of the volume slider for Spotify - Two is added because the program's name control preceeds the slider by two controls
-                            This.spotifyNameClassNN := controlsArray[A_Index]
+                        If (controlText == TargetProgramName) {
+                            ; Record the index of the volume slider for the program - Two is added because the program's name control preceeds the slider by two controls
+                            This.programNameControlClassNN := controlsArray[A_Index]
                             This.volSliderClassNN := controlsArray[A_Index + 2]
 
-                            ; Spotify was found in the mixer
+                            ; The program was found in the mixer
                             Soundplay, % Sounds.connected
                             FoundProgram := 1
                             Break
@@ -90,7 +117,7 @@ Class MixerControl {
             }
             ; ========================================================
 
-
+            ; Msgbox, % This.volSliderClassNN
             SendMessage TBM_GETPOS:=0x400,,, % This.volSliderClassNN, Volume Mixer
             currentVol := 100 - ErrorLevel
             sliderPos := ErrorLevel
