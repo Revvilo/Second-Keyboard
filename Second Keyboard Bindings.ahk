@@ -20,14 +20,16 @@ CoordMode, Pixel, Screen
 Process, Exist
 Process, Priority, %ErrorLevel%, High
 
-; This is a flipping mess
-#Include, F:\Programming\AHK Scripts\Fullscreen Windowed.ahk
+; These are super outdated
+#Include F:\Programming\AHK Scripts\Fullscreen Windowed.ahk
 #Include Initialization\Vegas.ahk
 
 ; AHI Key subscription
 #Include Keybinds\SubscribeKeys.ahk
 
 #Include Lib\BrowserControl.ahk
+#Include Lib\Misc.ahk
+#Include Lib\MixerControl.ahk
 #Include Lib\Vegas.ahk
 #Include Lib\Minecraft.ahk
 #Include Lib\Spotify.ahk
@@ -183,10 +185,7 @@ Return
 *>!o:: ; Right Alt + O
     OBS.SendToOBS("{F22}")    ; Toggle Recording
 Return
-!i::
-    ; PostMessage, 0x319,, 0x90000,, ahk_exe Spotify.exe
-Return
-!p::
+!+p:: ; Alt Shift P
     ; DetectHiddenWindows, On
     WinGet, OutputVar, List, ahk_exe Spotify.exe
     Loop %OutputVar% {

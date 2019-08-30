@@ -107,7 +107,11 @@ Class Global {
     Space() { ; -- Play/pause
         ; ControlSend,, {Media_Play_Pause}, Spotify
         ; SendInput, {Media_Play_Pause}
-        Spotify.PlayPause()
+        If (WinExist("ahk_exe Spotify.exe")) {
+            Spotify.PlayPause()
+        } Else {
+            BrowserControl.YoutubeMusic.PlayPause()
+        }
     }
     ; Enter() {
     ; }
@@ -292,12 +296,24 @@ Class Global {
     ; -- LETTERS -- ;
 
     A(modifiers) {
-        If (modifiers == "") { ; -- Spotify vol decrease
-            Spotify.VolChange(-1, "change")
-        } Else If (modifiers == "Shift") { ; -- Spotify vol -5
-            Spotify.VolChange(-5, "change")
-        } Else If (modifiers == "Control") { ; -- Spotify quiet vol
-            Spotify.VolChange(Spotify.volQuiet, "set")
+        If (WinExist("ahk_exe Spotif.exe")) {
+            If (modifiers == "") { ; -- Spotify vol decrease
+                Spotify.VolChange(-1, "change")
+            } Else If (modifiers == "Shift") { ; -- Spotify vol -5
+                Spotify.VolChange(-5, "change")
+            } Else If (modifiers == "Control") { ; -- Spotify quiet vol
+                Spotify.VolChange(Spotify.volQuiet, "set")
+            }
+        } Else {
+            If (modifiers == "") { ; -- vol increase
+                MixerControl.ChangeVolume("Mozilla Firefox", -1, "change")
+            } Else If (modifiers == "Alt") {
+                BrowserControl.YoutubeMusic.VolDown()
+            } Else If (modifiers == "Shift") { ; -- vol +5
+                MixerControl.ChangeVolume("Mozilla Firefox", -5, "change")
+            } Else If (modifiers == "Control") { ; -- set to loud vol
+                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volQuiet, "set")
+            }
         }
     }
     B() {
@@ -344,34 +360,35 @@ Class Global {
         OBS.CloseComponents(True, True, True)
     }
     Q(modifiers) {
-        If (modifiers == "") { ; -- Spotify vol increase
-            Spotify.VolChange(1, "change") 
-        } Else If (modifiers == "Shift") { ; -- Spotify vol +5
-            Spotify.VolChange(5, "change")
-        } Else If (modifiers == "Control") { ; -- Spotify loud vol
-            Spotify.VolChange(Spotify.volLoud, "set")
-        } Else If (modifiers == "Control Shift") {
-            Spotify.VolChange(Spotify.systemVol, "set")
+        If (WinExist("ahk_exe Spotify.exe")) {
+            If (modifiers == "") { ; -- Spotify vol increase
+                Spotify.VolChange(1, "change") 
+            } Else If (modifiers == "Shift") { ; -- Spotify vol +5
+                Spotify.VolChange(5, "change")
+            } Else If (modifiers == "Control") { ; -- Spotify loud vol
+                Spotify.VolChange(Spotify.volLoud, "set")
+            } Else If (modifiers == "Control Shift") {
+                Spotify.VolChange(Spotify.systemVol, "set")
+            }
+        } Else {
+            If (modifiers == "") { ; -- vol increase
+                MixerControl.ChangeVolume("Mozilla Firefox", 1, "change")
+            } Else If (modifiers == "Alt") {
+                BrowserControl.YoutubeMusic.VolUp()
+            } Else If (modifiers == "Shift") { ; -- vol +5
+                MixerControl.ChangeVolume("Mozilla Firefox", 5, "change")
+            } Else If (modifiers == "Control") { ; -- set to loud vol
+                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volLoud, "set")
+            } Else If (modifiers == "Control Shift") {
+                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.systemVol, "set")
+            }
         }
     }
     R() {
     }
     S(modifiers) {
         If (modifiers == "Shift") {
-            SendInput, ^c
-            Sleep, 100
-            Chars := StrSplit(Clipboard)
-            Outstr := Chars[1]
-            For i, v in Chars
-            {
-                If (i != 1)
-                    If (v == " ")
-                        Outstr .= v
-                    Else
-                        Outstr := Outstr . "    " . v
-            }
-            Clipboard := Outstr
-            SendInput, ^v
+            Misc.SpaceOutLetters()
         }
     }
     T(modifiers) {
@@ -387,6 +404,11 @@ Class Global {
     }
     V(modifiers) {
         If (modifiers == "WinKey") { ; -- Open video folder
+            If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
+                SendInput, ^lF:\Video{enter}
+            Else
+                Run, F:\Video
+        } Else If (modifiers == "Shift WinKey") {
             Run, F:\Video
         }
     }
