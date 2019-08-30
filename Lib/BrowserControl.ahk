@@ -1,4 +1,5 @@
 Class BrowserControl {
+    Static PreferredBrowserExe := "Firefox.exe"
     PlayPause() {
         oldTMM := A_TitleMatchMode
         oldDHW := A_DetectHiddenWindows
@@ -12,13 +13,13 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, Firefox
+            ControlClick, X400 Y300, ahk_exe Firefox.exe
             Sleep, 50
-            ControlSend,, {space}, Firefox
+            ControlSend,, {space}, ahk_exe Firefox.exe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, k, Firefox
+            ControlSend,, k, ahk_exe Firefox.exe
         }
 
         SetTitleMatchMode, % oldTMM
@@ -36,16 +37,68 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, Firefox
+            ControlClick, X400 Y300, ahk_exe Firefox.exe
             Sleep, 50
-            ControlSend,, {Control Down}f{Control Up}, Firefox
+            ControlSend,, {Control Down}f{Control Up}, ahk_exe Firefox.exe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, f, Firefox
+            ControlSend,, f, ahk_exe Firefox.exe
         }
 
         SetTitleMatchMode, % oldTMM
         DetectHiddenWindows, % oldDHW
+    }
+
+
+    Class YoutubeMusic {
+        PlayPause() {
+            This.SendToBrowser(";")
+        }
+
+        Shuffle() {
+            This.SendToBrowser("s")
+        }
+
+        Next() {
+            This.SendToBrowser("k")
+        }
+
+        Prev() {
+            This.SendToBrowser("j")
+        }
+
+        SeekFwd() {
+            This.SendToBrowser("l")
+        }
+
+        SeekBwd() {
+            This.SendToBrowser("h")
+        }
+
+        VolUp() {
+            This.SendToBrowser("=")
+        }
+
+        VolDown() {
+            This.SendToBrowser("-")
+        }
+
+        SendToBrowser(input) {
+            oldDHW := A_DetectHiddenWindows
+            DetectHiddenWindows, On
+            If (BrowserControl.YoutubeMusic.IsRunning()) {
+                ControlSend,, % input, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            }
+            DetectHiddenWindows, % oldDHW
+        }
+
+        IsRunning() {
+            If (WinExist("YouTube Music ahk_exe " . BrowserControl.PreferredBrowserExe)) {
+                return True
+            } Else {
+                return False
+            }
+        }
     }
 }
