@@ -13,13 +13,13 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, ahk_exe Firefox.exe
+            ControlClick, X400 Y300, % "ahk_exe " . PreferredBrowserExe
             Sleep, 50
-            ControlSend,, {space}, ahk_exe Firefox.exe
+            ControlSend,, {space}, % "ahk_exe " . PreferredBrowserExe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, k, ahk_exe Firefox.exe
+            ControlSend,, k, % "ahk_exe " . PreferredBrowserExe
         }
 
         SetTitleMatchMode, % oldTMM
@@ -37,13 +37,13 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, ahk_exe Firefox.exe
+            ControlClick, X400 Y300, % "ahk_exe " . PreferredBrowserExe
             Sleep, 50
-            ControlSend,, {Control Down}f{Control Up}, ahk_exe Firefox.exe
+            ControlSend,, {Control Down}f{Control Up}, % "ahk_exe " . PreferredBrowserExe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, f, ahk_exe Firefox.exe
+            ControlSend,, f, % "ahk_exe " . PreferredBrowserExe
         }
 
         SetTitleMatchMode, % oldTMM
