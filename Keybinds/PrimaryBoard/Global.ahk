@@ -70,25 +70,18 @@ Class Global {
     ; --------------- ;
     ; -- MISC KEYS -- ;
 
-    F1() {
-        SendInput, {U+2770} ; ❰
-    }
-    F2() {
-        SendInput, {U+2550} ; ═
-    }
-    F3() {
-        SoundPlay, % Sounds.SFX.stopSounds
-    }
-    F4() {
-        SendInput, {U+2771} ; ❱
-    }
-    F5() {
-    }
-    F6() {
-        Minecraft.SendCommand("/{#}fill air reccomplex:generic_space --shape sphere")
-        Sleep, 200
-        Minecraft.SendCommand("/{#}selection set ~ ~1 ~")
-    }
+    ; F1() {
+    ; }
+    ; F2() {
+    ; }
+    ; F3() {
+    ; }
+    ; F4() {
+    ; }
+    ; F5() {
+    ; }
+    ; F6() {
+    ; }
     ; F7() {
     ; }
     ; F8() {
