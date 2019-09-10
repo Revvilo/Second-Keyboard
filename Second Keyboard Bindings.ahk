@@ -297,7 +297,6 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
         name := keyAliases[name]
     }
 
-
     ; Determines what callback to choose based on the current mode using the following rules in order;
     ; -If there is a callback for said key in the .Hotkeys/Global class, it completely ignores the current mode and runs that.
     ; -If one doesn't exist in the global hotkeys, it selects the callback from the respective mode's class instead.
