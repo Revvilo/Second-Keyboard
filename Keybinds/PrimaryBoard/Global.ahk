@@ -1,8 +1,8 @@
 Class Global {
 
     ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when checking for said modifiers.
-    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (modifiers == "ALt")
-    ; Of course anything can be put in the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
+    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (modifiers == "Alt")
+    ; Of course any name can be used as the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
     Static modifierKeys := {  "LControl":   "Control"
                             , "RControl":   "Control"
                             , "LShift":     "Shift"
@@ -16,17 +16,18 @@ Class Global {
     ; == GLOBAL BINDS ==
 
     ; FOR THIS SPECIFIC DEVICE, ANY BINDS (Which are callback functions) THAT ARE ADDED IN HERE WILL ALWAYS BE EXECUTED INSTEAD OF THEIR MODE-DEPENDANT COUNTERPARTS.
-    ; This means if you bind 'enter' in here, it doesn't matter what mode you're using, or which modes contain a callback for 'enter' - the one in here will always be used.
+    ; This means if you declare a callback for 'enter' in here, it doesn't matter which mode you're using, or which modes contain a callback declaration for 'enter', the one in here will always be used.
     ; You will see that currently unused callbacks are commented out to leave them open for mode-dependant hotkeys -
     ; because it doesn't matter if the callback is empty, it will still override any mode hotkeys.
 
     ; ==================
 
 
-    ;v ============================================== v;
-    ;v == CRITICAL HOTKEYS ========================== v;
-    ;v == These only need to exist once, in global == v;
-    ;v ============================================== v;
+    ;v ==================================================== v;
+    ;v == CRITICAL HOTKEYS ================================ v;
+    ;v == These only need to exist once, in global ======== v;
+    ;v == They allow you to have control over the script == v;
+    ;v ==================================================== v;
 
     Escape() {
         ExitApp
@@ -46,6 +47,22 @@ Class Global {
     ;v ================== v;
     ;v == USER HOTKEYS == v;
     ;v ================== v;
+
+    ; ------------------------ ;
+    ; -- MODIFIER CALLBACKS -- ;
+
+    WinKey(key) {
+        If (key == "p") {
+            Run, F:\Programming
+        } Else If (key == "v") {
+            If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
+                SendInput, ^lF:\Video{enter}
+            Else
+                Run, F:\Video
+        } Else If (key == "r") {
+            Run, F:\Source
+        }
+    }
 
     ; --------------- ;
     ; -- MISC KEYS -- ;

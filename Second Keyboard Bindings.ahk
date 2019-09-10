@@ -253,13 +253,13 @@ Return
 ; ============================ ;
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
-; - "Broker" is a possibly incorrect name, but it's the best I have.
+; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
     DeviceModeClass := KeybindSets[deviceName][mode]
 
-    ; I use an if debug in this case for performance, since the message is so large and inefficient.
+    ; I use an 'if debug' in this case for performance, since it would construct the entire message before checking 'debug' if passed as a param to debugmessage()
     If (debug)
     Msgbox, % (Format("A macro key was pressed and debug mode is on.`n`n"
     . "Device name: " . deviceName . "`n`n"
@@ -277,33 +277,59 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     , keyAliases.HasKey(input) ? ("`nOriginal Name:`t" . input) : ""
     , skipKeyUp ? "Yes" : "No"))
 
-    ; Handles modifier keys
-    If (DeviceGlobalClass.modifierKeys.HasKey(name)) {
+    ; Handles modifier keys [always before skipping the up event]
+    If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
+        ; This key was stated in the <devicename>/Hotkeys/Global.ahk class to be handled as a modifier
         Modifiers.HandleState(state, DeviceGlobalClass.modifierKeys[name])
         Return
-    } Else If (DeviceModeClass.modifierKeys.HasKey(name)) {
+    } Else If (DeviceModeClass.modifierKeys.HasKey(name)) { ; Is this key a modifier key specific to the current mode?
+        ; This key was stated in the <devicename>/Hotkeys/<modename>.ahk class to be handled as a modifier
         Modifiers.HandleState(state, DeviceModeClass.modifierKeys[name])
         Return
     }
+    ; After this the key isn't a modifier (yes I know these comments are insanely verbose. Quiet. It's private code.)
 
     ; If skipKeyUp is true, and it's the key up event, stop processing.
     If ((!state) && skipKeyUp)
         Return
 
-    ; Puts an alias, if applicable, into effect - overriding the key's name.
+    ; Puts an alias, if applicable, into effect - overriding the key's name with a callback-friendly string.
     If (keyAliases.HasKey(name)) {
         ; Stores the original input
         input := name
         name := keyAliases[name]
     }
 
-    ; Determines what callback to choose based on the current mode using the following rules in order;
-    ; -If there is a callback for said key in the .Hotkeys/Global class, it completely ignores the current mode and runs that.
-    ; -If one doesn't exist in the global hotkeys, it selects the callback from the respective mode's class instead.
-    ; -If the callback that was chosen doesn't actually exist, it simply returns and alerts the user.
-    If (DeviceGlobalClass.HasKey(name)) {
+    ; Below determines which callback to run respective of the current mode using the following rules in order;
+    ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
+    ; -Else it runs the callback from the current mode's class instead.
+    ; -Otherwise, if no callback is available, notify the user and return.
+    ; TODO: EXPLAIN NEW MECHANIC TO HAVE A MODIFIER CALLBACK
+
+    CurrentModifiers := Modifiers.Get(Modifiers.CallbackFriendlyDelimiter)
+    ; Msgbox %CurrentModifiers%
+
+    ; This code here is very copy-pasty - a function would be better suited for this but I can't be bothered atm
+    If (DeviceGlobalClass.HasKey(CurrentModifiers)) { ; Do the global binds have a callback for the pressed modifiers?
+        callback := ObjBindMethod(DeviceGlobalClass, CurrentModifiers)
+        Try {
+            callback.Call(name)
+        } Catch e {
+            SoundPlay, % Sounds.Error
+        }
+        return
+    } Else If (DeviceGlobalClass.HasKey(name)) { ; Do the global binds have a callback for this key?
         callback := ObjBindMethod(DeviceGlobalClass, name)
-    } Else If (DeviceModeClass.HasKey(name)) {
+    } Else If (DeviceModeClass.HasKey(CurrentModifiers)) { ; Does this mode have a callback for the pressed modifiers?
+        callback := ObjBindMethod(DeviceModeClass, CurrentModifiers)
+        callback.Call(Modifiers.Get())
+        Try {
+            callback.Call(name)
+        } Catch e {
+            SoundPlay, % Sounds.Error
+        }
+        return
+    } Else If (DeviceModeClass.HasKey(name)) { ; Does this mode have a callback for this key?
         callback := ObjBindMethod(DeviceModeClass, name)
     } Else {
         TrayTip,, % Format("Not modifier & no callback available`nKey: {}`t`tMode: {}`nDevice: {}", name, ModeHandler.Mode, deviceName)
@@ -319,6 +345,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     }
 }
 
+; Sneaky little function
 nothing() {
 }
 
@@ -351,16 +378,19 @@ Class Sounds {
 
 ; Modifier hotkey handling
 Class Modifiers {
+    Static CallbackFriendlyDelimiter := "_"
     Static ActiveModifiers := {}
 
-    Get() {
+    ; Gets a string of all the currently pressed modifiers separated by 'delimiter'
+    ; delimiter defaults to a space
+    Get(delimiter = " ") {
         output := ""
         For Key, Val in Modifiers.ActiveModifiers {
             If (Val) {
-                output := output . Key . " "
+                output := output . Key . delimiter
             }
         }
-        Return Trim(output)
+        Return Trim(output, delimiter)
     }
 
     HandleState(pressed, key) {
