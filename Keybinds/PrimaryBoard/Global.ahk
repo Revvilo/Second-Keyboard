@@ -51,16 +51,19 @@ Class Global {
     ; ------------------------ ;
     ; -- MODIFIER CALLBACKS -- ;
 
-    WinKey(key) {
-        If (key == "p") {
-            Run, F:\Programming
-        } Else If (key == "v") {
-            If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
-                SendInput, ^lF:\Video{enter}
-            Else
-                Run, F:\Video
-        } Else If (key == "r") {
-            Run, F:\Source
+    ; WinKey_Shift is to handle winkey+shift keypress while still using main WinKey func
+    WinKey_Shift(Key) {
+        This.WinKey(Key, ShiftHeld := true)
+    }
+    WinKey(Key, ShiftHeld := false) {
+        If (Key == "p") {
+            Misc.ExploreTo("F:\Programming", ShiftHeld)
+        } Else If (Key == "v") {
+            Misc.ExploreTo("F:\Video", ShiftHeld)
+        } Else If (Key == "r") {
+            Misc.ExploreTo("F:\Source", ShiftHeld)
+        } Else If (Key == "m") {
+            Misc.ExploreTo("F:\Games\Minecraft", ShiftHeld)
         }
     }
 

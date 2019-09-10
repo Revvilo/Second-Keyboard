@@ -304,7 +304,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
     ; -Else it runs the callback from the current mode's class instead.
     ; -Otherwise, if no callback is available, notify the user and return.
-    ; TODO: EXPLAIN NEW MECHANIC TO HAVE A MODIFIER CALLBACK
+    ; TODO: EXPLAIN NEW MECHANIC: MODIFIER CALLBACKS
 
     CurrentModifiers := Modifiers.Get(Modifiers.CallbackFriendlyDelimiter)
     ; Msgbox %CurrentModifiers%

@@ -15,4 +15,11 @@ Class Misc {
         Clipboard := Outstr
         SendInput, ^v
     }
+
+    ExploreTo(path, forceNewWindow) {
+        If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass") && !forceNewWindow)
+            SendInput, ^l%path%{enter}
+        Else
+            Run, %path%
+    }
 }
