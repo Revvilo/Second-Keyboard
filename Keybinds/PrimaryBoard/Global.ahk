@@ -129,22 +129,10 @@ Class Global {
     ; Enter() {
     ; }
     RightBracket() {
-        ; WinMove, Twitch - Mozilla Firefox,, 50, 50, 200, 500
-        OBS.CloseComponents(,,True) ; Close OBS
-        OBS.OpenComponents(True, True) ; Open chat and events log
-        OBS.WaitForComponents(True, True) ; Wait for them
-        OBS.SizeComponents(True, True) ; Size chat and events log
     }
     LeftBracket() {
-        OBS.OpenComponents(True, True, True) ; Open all
-        OBS.WaitForComponents(True, True, True) ; Wait for all
-        OBS.SizeComponents(True, True, True) ; Size all
     }
     BackSlash() {
-        ; OBS.CloseComponents(True, True) ; Close chat and events log
-        OBS.OpenComponents(,,True) ; Open OBS
-        ; OBS.WaitForComponents(,,True) ; Wait for OBS
-        ; OBS.SizeComponents(,,True) ; Size it
     }
     ForwardSlash() {
         BrowserControl.Fullscreen()
@@ -358,7 +346,6 @@ Class Global {
     H() {
     }
     I() {
-        OBS.SizeComponents(True, True, True) ; -- Size windows according to current layout
     }
     J() {
     }
@@ -378,7 +365,6 @@ Class Global {
     O() {
     }
     P() {
-        OBS.CloseComponents(True, True, True)
     }
     Q(modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
