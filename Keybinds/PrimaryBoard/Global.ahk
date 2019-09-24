@@ -259,8 +259,9 @@ Class Global {
     NumpadEnter() {
         SendInput, !{F20} ; -- Toggle Discord mic
     }
-    ; Numlock() { ; This doesn't work - Both pause_break and scrolllock have the same keycode(?), god knows why.
-    ; }
+    Numlock() { ; This doesn't work - Both pause_break and scrolllock have the same keycode(?), god knows why.
+        This.Pause()
+    }
     Pause() {
         ; OBS.ToggleStudioMode() ; Doesn't work
         OBS.SendToOBS("{F17}")

@@ -102,7 +102,7 @@ Class OBS {
         If reqSelection is not integer
             Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
 
-        ; Changing the dock layout on OBS will screw the path up
+        ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
         oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
         ; Acc_Children(oAcc)[3].accSelect(0x2, 0) ; Does not work - Wish it did tho
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
@@ -345,7 +345,7 @@ Class OBS {
     }
 
     SetMode(mode = "") {
-        Msgbox, SetOBSMode is unimplemented.
+        Throw { what: "Unimplemented Exception", message: "SetMode is currently unimplemented" }
         Return
         If(mode != "")
         {
@@ -371,6 +371,12 @@ Class OBS {
             Throw, Invalid Input for SendToOBS
         } Else {
             WinGet, winList, List, ahk_exe obs64.exe
+            If (winList == 0)
+            {
+                SoundPlay, % Sounds.Asterisk
+                return
+            }
+            ; PLEASE COMMENT WHY YOU REMOVE STUFF CMON MAN
             ; If (winList > 1) {
                 ; Loop, %winList%
                 ; {
