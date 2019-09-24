@@ -102,7 +102,7 @@ Class OBS {
         If reqSelection is not integer
             Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
 
-        ; Changing the dock layout will screw the path up
+        ; Changing the dock layout on OBS will screw the path up
         oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
         ; Acc_Children(oAcc)[3].accSelect(0x2, 0) ; Does not work - Wish it did tho
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
@@ -122,7 +122,7 @@ Class OBS {
 
     ToggleStudioMode()
     {
-        ; Doesn't work ffs
+        ; Doesn't work ffs - why does this shit just do everything except actually run the purpose of the control
         Acc_Get("DoAction", "4.8.1.3", 0, "ahk_exe obs64.exe")
     }
 
