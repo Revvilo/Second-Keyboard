@@ -1,9 +1,9 @@
 Class Global {
 
     ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when retreiving modifiers. Eg { "RAlt": "Alt" } - 'RAlt' is known as 'Alt'
-    Static modifierKeys := { "NumpadSub": "NumpadSub"
-    , "RControl": "Control" 
-    , "RShift": "Shift" }
+    Static modifierKeys := {  "NumpadSub": "NumpadSub"
+                            , "RControl": "Control" 
+                            , "RShift": "Shift" }
 
     ; PrintScreen() {
     ;     KeybindSets.PrimaryBoard.Global.Appskey()

@@ -259,9 +259,10 @@ Class Global {
     NumpadEnter() {
         SendInput, !{F20} ; -- Toggle Discord mic
     }
-    ; Numlock() { ; This doesn't work - Both pause_break and scrolllock show up as "Pause", god knows why.
+    ; Numlock() { ; This doesn't work - Both pause_break and scrolllock have the same keycode(?), god knows why.
     ; }
     Pause() {
+        ; OBS.ToggleStudioMode() ; Doesn't work
         OBS.SendToOBS("{F17}")
         ; WinGet, obslist, ControlList, ahk_exe obs64.exe
         ; Msgbox, %obslist%
@@ -344,6 +345,12 @@ Class Global {
         }
     }
     F() {
+        TestChars := "!()0123456789?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        TestChars := StrSplit(TestChars)
+        For i, v in TestChars
+        {
+            SendInput, % Asc(v) . "{enter}"
+        }
     }
     G() {
     }
@@ -402,6 +409,8 @@ Class Global {
     S(modifiers) {
         If (modifiers == "Shift") {
             Misc.SpaceOutLetters()
+        } Else If (modifiers == "Alt") {
+            Misc.SmallLetters()
         }
     }
     T(modifiers) {

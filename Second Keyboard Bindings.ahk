@@ -341,7 +341,8 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     Try {
         callback.Call(Modifiers.Get())
     } Catch e {
-        Msgbox, % "An error occured within the callback.`n`nYou can double click the icon in the system tray while this msgbox is open to see the line where it errored."
+        MsgBox, 16,, % "Exception thrown!`n`nWhat: " e.what "`nFile: " e.file
+        . "`nLine: " e.line "`nMessage: " e.message "`nExtra: " e.extra
     }
 }
 

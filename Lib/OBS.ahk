@@ -1,4 +1,5 @@
 Class OBS {
+    Static SceneListClassNN := "Qt5QWindowIcon23"
     Static ChatPopoutTitle := "Twitch - Mozilla Firefox"
     Static EventsPopoutTitle := "StreamElements - Activity Feed - Mozilla Firefox"
     Static EventsPopoutTitleAlt := "Streamlabs Login - Mozilla Firefox"
@@ -93,6 +94,36 @@ Class OBS {
         this.obs_y_dual2 := this.topleft_origin_y + this.obs_h_dual1 - 7 ; idfk, but it fixes the stupid gap
         this.obs_w_dual2 := this.obs_w_dual1
         this.obs_h_dual2 := this.obs_h_dual1
+    }
+
+    ; Select scene based on the index within the list control.
+    SelectScene(reqSelection)
+    {
+        If reqSelection is not integer
+            Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
+
+        ; Changing the dock layout will screw the path up
+        oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
+        ; Acc_Children(oAcc)[3].accSelect(0x2, 0) ; Does not work - Wish it did tho
+        id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
+        selectedIndex := oAcc.accSelection ; Currently selected index
+        selectedIndexDelta := reqSelection - selectedIndex ; Difference between destination index and current index
+        ; Msgbox, % Format("Delta: {}`nRequest: {}`nCurrent: {}", selectedIndexDelta, reqSelection, selectedIndex) ; Debug dialog
+        If (selectedIndexDelta < 0) {
+            ; Need to go upward to get to the requested value
+            Loop, % Abs(selectedIndexDelta)
+                ControlSend,, {Up}, ahk_id %id%
+        } Else If (selectedIndexDelta > 0) {
+            ; Need to go downward to get to the requested value - Abs omitted for cleanliness
+            Loop, % selectedIndexDelta
+                ControlSend,, {Down}, ahk_id %id%
+        }
+    }
+
+    ToggleStudioMode()
+    {
+        ; Doesn't work ffs
+        Acc_Get("DoAction", "4.8.1.3", 0, "ahk_exe obs64.exe")
     }
 
     SizeComponents(Chat = False, Events = False, OBS = False)
@@ -292,7 +323,7 @@ Class OBS {
         }
     }
 
-    CheckOBSRecordingStatus() {
+    CheckRecordingStatus() {
         Msgbox, CheckOBSRecordingStatus is unimplemented.
         Return
         WinGet, OutputVar, ControlListHwnd, ahk_exe obs64.exe
@@ -313,7 +344,7 @@ Class OBS {
         Msgbox, %Str%
     }
 
-    SetOBSMode(mode = "") {
+    SetMode(mode = "") {
         Msgbox, SetOBSMode is unimplemented.
         Return
         If(mode != "")
@@ -329,48 +360,6 @@ Class OBS {
         }
     }
 
-    ; Select scene based on the name or part of it. Selects first occurrence of the requestedScene.
-    SelectScene(requestedScene)
-    {
-        ; Msgbox % Acc_Get("Location", "4.4.1.1.1.3", 0, "ahk_exe obs64.exe")
-        ; Msgbox, % oAcc.accRole(0)
-        ; oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "ahk_exe obs64.exe")
-        ; Loop % oAcc.accChildCount
-        ; {
-        ;     If (InStr(oAcc.accName(A_Index), requestedScene))
-        ;     {
-                ; Msgbox, % oAcc.accName(Key)
-                ; oAcc.accDoDefaultAction(A_Index) ; Does not work
-                ; oAcc.accChild(A_Index).accDoDefaultAction() ; Works
-                ; Test := SendMessage, LVM_FINDITEMA := 0x100D, -1, %requestedScene%, Qt5QWindowIcon17, ahk_exe obs64.exe
-                ; Msgbox, %ErrorLevel%
-                ; oAcc := Acc_Get("Object", "4.4.1.1.1." A_Index, 0, "ahk_exe obs64.exe")
-                ; oAcc.accDoDefaultAction()
-                ; oAcc.accSelect(0x3, A_Index)
-                ; Msgbox, %ErrorLevel%
-        ;         Return
-        ;     }
-        ; }
-        ; SoundPlay, % Sounds.Asterisk ; Plays if the requested scene wasn't found
-        ; WinGet, obsControlList, ControlList, ahk_exe obs64.exe
-        ; ; ControlGet, obsScenesText, Cmd, [Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText
-        ; ; Msgbox, %obsScenesText%
-        ; ; OutStr := ""
-        ; Loop, Parse, obsControlList
-        ; {
-        ;     ControlGetText, obsScenesText, %A_LoopField%, ahk_exe obs64.exe
-        ;     Msgbox, %obsScenesText%
-        ; }
-        ; Msgbox, %obsControlList%
-        ; Return
-        ; ControlGet, controlText, Cmd, [Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText
-        ; Return
-        ; ControlSend, Qt5QWindowIcon26, %keys%, ahk_exe obs64.exe
-        ControlSend, Qt5QWindowIcon26, %requestedScene%, ahk_exe obs64.exe
-        ; ControlSend, Qt5QWindowIcon17, %requestedScene%, ahk_exe obs64.exe
-        ; ControlSend, Qt5QWindowIcon14, %keys%, ahk_exe obs64.exe
-    }
-
     AutoTransition(modifiers) {
         If (modifiers == "NumpadSub") {
             This.SendToOBS("{F14}")  ; -- OBS Transition 2 (Cut)
@@ -383,14 +372,16 @@ Class OBS {
         } Else {
             WinGet, winList, List, ahk_exe obs64.exe
             ; If (winList > 1) {
-            ;     Loop, %winList%
-            ;     {
-            ;         this_id := winList%a_index%
-            ;         ControlSend,, %input%, ahk_id %this_id%
-            ;         Sleep, 1000
-            ;     }
-            ; } Else {
+                ; Loop, %winList%
+                ; {
+                    ; msgbox % winList%a_index%
+                    ; this_id := winList%a_index%
+                    ; ControlSend,, %input%, ahk_id %this_id%
+                    ; Sleep, 1000
+                ; }
+            ; } ;Else {
                 this_id := winList1
+                ; msgbox %this_id%
                 ControlSend,, %input%, ahk_id %this_id%
             ; }
         }
