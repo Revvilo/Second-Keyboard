@@ -12,9 +12,14 @@ Class OBS {
 
         oAcc := OBS.GetSceneList()
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
+        If (!id)
+        {
+            SoundPlay, % Sounds.asterisk
+            Return
+        }
         selectedIndex := oAcc.accSelection ; Currently selected index
         selectedIndexDelta := reqSelection - selectedIndex ; Difference between destination index and current index
-        ; Msgbox, % Format("Delta: {}`nRequest: {}`nCurrent: {}", selectedIndexDelta, reqSelection, selectedIndex) ; Debug dialog
+        ; Msgbox, % Format("Delta: {}`nRequest: {}`nCurrent: {}`n`nHWND of scene list: {}", selectedIndexDelta, reqSelection, selectedIndex, id) ; Debug dialog
         If (selectedIndexDelta < 0) {
             ; Need to go upward to get to the requested value
             Loop, % Abs(selectedIndexDelta)
@@ -83,7 +88,7 @@ Class OBS {
 
     AutoTransition(modifiers) {
         If (modifiers == "NumpadSub") {
-            This.SendToOBS("{F14}")  ; -- OBS Transition 2 (Cut)
+            OBS.SendToOBS("{F14}")  ; -- OBS Transition 2 (Cut)
         }
     }
 
@@ -117,6 +122,6 @@ Class OBS {
     GetSceneList()
     {
         ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
-        Return Acc_Get("Object", "4.4.1.1.1", 0, "OBS Studio ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
+        Return Acc_Get("Object", "4.4.1.1.1", 0, "OBS ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
     }
 }
