@@ -11,7 +11,7 @@ Class OBS {
             Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
 
         ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
-        oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
+        oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "OBS Studio ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
         ; Acc_Children(oAcc)[3].accSelect(0x2, 0) ; Does not work - Wish it did tho
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
         selectedIndex := oAcc.accSelection ; Currently selected index
