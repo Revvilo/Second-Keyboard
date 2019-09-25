@@ -11,11 +11,11 @@ Class Global {
     Apostrophe() {
         ToggleTimer("AutoClicker")
     }
-    Up() { ; RIGHT
-        SendInput, {Media_Next}
-    }
-    Down() { ; LEFT
+    Up() { ; LEFT
         SendInput, {Media_Prev}
+    }
+    Down() { ; RIGHT
+        SendInput, {Media_Next}
     }
     Right(modifiers) { ; UP
         If (modifiers == "") { ; -- Spotify vol +5

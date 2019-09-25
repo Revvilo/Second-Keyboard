@@ -10,9 +10,7 @@ Class OBS {
         If reqSelection is not integer
             Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
 
-        ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
-        oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "OBS Studio ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
-        ; Acc_Children(oAcc)[3].accSelect(0x2, 0) ; Does not work - Wish it did tho
+        oAcc := OBS.GetSceneList()
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
         selectedIndex := oAcc.accSelection ; Currently selected index
         selectedIndexDelta := reqSelection - selectedIndex ; Difference between destination index and current index
@@ -26,6 +24,11 @@ Class OBS {
             Loop, % selectedIndexDelta
                 ControlSend,, {Down}, ahk_id %id%
         }
+    }
+
+    SceneControlSend(key)
+    {
+        Controlsend,, %key%, % "ahk_id " Acc_WindowFromObject(OBS.GetSceneList())
     }
 
     ToggleStudioMode()
@@ -92,7 +95,7 @@ Class OBS {
             If (winList == 0)
             {
                 SoundPlay, % Sounds.Asterisk
-                return
+                Return
             }
             ; PLEASE COMMENT WHY YOU REMOVE STUFF CMON MAN
             ; If (winList > 1) {
@@ -109,5 +112,11 @@ Class OBS {
                 ControlSend,, %input%, ahk_id %this_id%
             ; }
         }
+    }
+
+    GetSceneList()
+    {
+        ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
+        Return Acc_Get("Object", "4.4.1.1.1", 0, "OBS Studio ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
     }
 }
