@@ -341,8 +341,15 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     Try {
         callback.Call(Modifiers.Get())
     } Catch e {
-        MsgBox, 16,, % "Exception thrown!`n`nWhat: " e.what "`nFile: " e.file
-        . "`nLine: " e.line "`nMessage: " e.message "`nExtra: " e.extra
+        If (e.level = "fatal" || !e.level) {
+            ErrorMsg := "Exception thrown!`n`nWhat: " e.what "`nFile: " e.file
+            . "`nLine: " e.line "`nMessage: " e.message "`nExtra: " e.extra
+
+            MsgBox, 16, Exception in Callback, %ErrorMsg%
+        } Else If (e.level = "info") {
+            ErrorMsg := e.what "`n" e.message "`n" e.extra
+            TrayTip,, %ErrorMsg%
+        }
     }
 }
 

@@ -12,11 +12,6 @@ Class OBS {
 
         oAcc := OBS.GetSceneList()
         id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
-        If (!id)
-        {
-            SoundPlay, % Sounds.asterisk
-            Return
-        }
         selectedIndex := oAcc.accSelection ; Currently selected index
         selectedIndexDelta := reqSelection - selectedIndex ; Difference between destination index and current index
         ; Msgbox, % Format("Delta: {}`nRequest: {}`nCurrent: {}`n`nHWND of scene list: {}", selectedIndexDelta, reqSelection, selectedIndex, id) ; Debug dialog
@@ -72,7 +67,7 @@ Class OBS {
 
     SetMode(mode = "") {
         Throw { what: "Unimplemented Exception", message: "SetMode is currently unimplemented" }
-        Return
+        Return ; is this needed? who knows who cares
         If(mode != "")
         {
             If(mode == "Record") {
@@ -122,6 +117,13 @@ Class OBS {
     GetSceneList()
     {
         ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
-        Return Acc_Get("Object", "4.4.1.1.1", 0, "OBS ahk_exe obs64.exe") ; Resulting acc obj is list of scenes in OBS - acc role 33
+        oAcc := ""
+        If (not (oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "OBS ahk_exe obs64.exe")))
+        {
+            SoundPlay, % Sounds.asterisk
+            Throw { what: "Could not locate scene list in OBS", level: "Info"}
+        } Else {
+            Return oAcc
+        }
     }
 }
