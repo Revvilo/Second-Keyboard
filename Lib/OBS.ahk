@@ -4,44 +4,34 @@ Class OBS {
     Static EventsPopoutTitle := "StreamElements - Activity Feed - Mozilla Firefox"
     Static EventsPopoutTitleAlt := "Streamlabs Login - Mozilla Firefox"
 
-    ; Select scene based on the index within the list control.
-    SelectScene(reqSelection)
-    {
-        If reqSelection is not integer
-            Throw { what: "Invalid argument", file: A_LineFile, line: A_LineNumber, message: "SelectScene argument must be a number!" }
+    Static WebSocket := ""
 
-        oAcc := OBS.GetSceneList()
-        id := Acc_WindowFromObject(oAcc) ; Gets control HWND from object
-        selectedIndex := oAcc.accSelection ; Currently selected index
-        selectedIndexDelta := reqSelection - selectedIndex ; Difference between destination index and current index
-        ; Msgbox, % Format("Delta: {}`nRequest: {}`nCurrent: {}`n`nHWND of scene list: {}", selectedIndexDelta, reqSelection, selectedIndex, id) ; Debug dialog
-        If (selectedIndexDelta < 0) {
-            ; Need to go upward to get to the requested value
-            Loop, % Abs(selectedIndexDelta)
-                ControlSend,, {Up}, ahk_id %id%
-        } Else If (selectedIndexDelta > 0) {
-            ; Need to go downward to get to the requested value - Abs omitted for cleanliness
-            Loop, % selectedIndexDelta
-                ControlSend,, {Down}, ahk_id %id%
+    ; Select scene based on the index within the list control.
+    SelectScene(RequestedScene)
+    {
+        Socket := OBS.GetOBSWebsocket()
+        ; temp := Socket.SendRequest("ToggleStudioMode")
+        ; listvars
+        ; pause
+        ; reader := temp.CreateReader()
+        ; Return
+        Try {
+            Socket.SetPreviewScene(RequestedScene)
+        } Catch e {
+            Throw { what: "Scene not found: """ RequestedScene """", message: "Scene names are case-sensitive.", level: "info" }
         }
+        
+        ; The below comments are related to getting values which is in need of implementation
+        ; Return
+        ; temp := Socket.SendRequest("GetCurrentScene")
+        ; msgbox % temp.TryGetValue("Message")
+        ; listvars
+        ; Return
     }
 
     SceneControlSend(key)
     {
         Controlsend,, %key%, % "ahk_id " Acc_WindowFromObject(OBS.GetSceneList())
-    }
-
-    ToggleStudioMode()
-    {
-        ; Doesn't work ffs - why does this shit just do everything except actually run the purpose of the control
-        Acc_Get("DoAction", "4.8.1.3", 0, "ahk_exe obs64.exe")
-    }
-
-    ; Literally all this does is skip if fortnite is active. Just so the game doesn't tab out.
-    SpiffyActivate(intitle) {
-        IfWinActive, Fortnite
-            Return
-        WinActivate, %intitle%
     }
 
     CheckRecordingStatus() {
@@ -121,9 +111,28 @@ Class OBS {
         If (not (oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "OBS ahk_exe obs64.exe")))
         {
             SoundPlay, % Sounds.asterisk
-            Throw { what: "Could not locate scene list in OBS", level: "Info"}
+            Throw { what: "Could not locate scene list in OBS", level: "Info" }
         } Else {
             Return oAcc
         }
+    }
+
+    GetOBSWebsocket() {
+        ; Msgbox, % OBS.OBSSocket "`n`n" (new OBSWebSocket("")) "`n`n" (OBS.OBSSocket == "") "`n`n" (This.OBSSocket == "")
+        ; If (OBS.OBSSocket = "") {
+        ;     OBS.OBSSocket := new OBS.OBSWebSocket("ws://127.0.0.1:4444")
+        ; }
+        If (not WinExist("ahk_exe obs64.exe"))
+        {
+            SoundPlay, % Sounds.asterisk
+            Return
+        }
+        If (OBS.WebSocket = "") {
+            asm := CLR_LoadLibrary("Lib\OBS-Websocket\obs-websocket-dotnet.dll")
+            OBS.WebSocket := CLR_CreateObject(asm, "OBSWebsocketDotNet.OBSWebSocket")
+            ; OBS.WebSocket.WSTimout := new OBS.WebSocket.WSTimeout(10)
+            OBS.WebSocket.Connect("ws://127.0.0.1:4444", "webpleb")
+        }
+        Return OBS.WebSocket
     }
 }

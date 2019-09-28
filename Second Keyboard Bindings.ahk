@@ -199,6 +199,10 @@ Return
 ^!F4::
     WinKill, A
 Return
+^!h::
+    Socket := OBS.GetOBSWebsocket()
+    Msgbox, % Socket.GetCurrentScene()
+Return
 ; ^!p::
 ; {
 ;     ControlClick, Start, Alarms & Clock

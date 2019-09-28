@@ -191,39 +191,39 @@ Class Global {
         OBS.SendToOBS("{F16}") ; -- OBS Toggle Mic
     }
     NumpadEnd(modifiers) { ; -- Numpad1
-        OBS.SelectScene("1")
+        OBS.SelectScene("Game")
         OBS.AutoTransition(modifiers)
     }
     NumpadDown(modifiers) { ; -- Numpad2
-        OBS.SelectScene("2")
+        OBS.SelectScene("Stand By")
         OBS.AutoTransition(modifiers)
     }
     NumpadPgDn(modifiers) { ; -- Numpad3
-        OBS.SelectScene("3")
+        OBS.SelectScene("Desktop")
         OBS.AutoTransition(modifiers)
     }
     NumpadLeft(modifiers) { ; -- Numpad4
-        OBS.SelectScene("4")
+        OBS.SelectScene("Fullscreen Cam")
         OBS.AutoTransition(modifiers)
     }
     NumpadClear(modifiers) { ; -- Numpad5
-        OBS.SelectScene("5")
+        OBS.SelectScene("Zoom Cam 1")
         OBS.AutoTransition(modifiers)
     }
     NumpadRight(modifiers) { ; -- Numpad6
-        OBS.SelectScene("6")
+        OBS.SelectScene("Zoom Cam 2")
         OBS.AutoTransition(modifiers)
     }
     NumpadHome(modifiers) { ; -- Numpad7
-        OBS.SelectScene("7")
+        OBS.SelectScene("Flipped Cam")
         OBS.AutoTransition(modifiers)
     }
     NumpadUp(modifiers) { ; -- Numpad8
-        OBS.SelectScene("8")
+        OBS.SelectScene("Zoom Flipped Cam 1")
         OBS.AutoTransition(modifiers)
     }
     NumpadPgUp(modifiers) { ; -- Numpad9
-        OBS.SelectScene("9")
+        OBS.SelectScene("Zoom Flipped Cam 2")
         OBS.AutoTransition(modifiers)
     }
 
@@ -251,7 +251,6 @@ Class Global {
         This.Pause()
     }
     Pause() {
-        ; OBS.ToggleStudioMode() ; Doesn't work
         OBS.SendToOBS("{F17}")
         ; WinGet, obslist, ControlList, ahk_exe obs64.exe
         ; Msgbox, %obslist%
