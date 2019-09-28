@@ -71,10 +71,50 @@ Class OBS {
         }
     }
 
+    Transition(RequestedTransition := "") {
+        Socket := OBS.GetOBSWebsocket()
+        If (!RequestedTransition) {
+            OBS.SendToOBS("{F13}")
+        } Else If (RequestedTransition is integer && RequestedTransition < 3 && RequestedTransition > 0) {
+            ; Msgbox, % Format("{{}F1{}{}}", RequestedTransition + 3)
+            OBS.SendToOBS(Format("{{}F1{}{}}", RequestedTransition + 3)) ; + 2 to index it to F14 and F15
+        }
+    }
+
     AutoTransition(modifiers) {
         If (modifiers == "NumpadSub") {
-            OBS.SendToOBS("{F14}")  ; -- OBS Transition 2 (Cut)
+            OBS.Transition()
         }
+    }
+
+    ToggleRecording() {
+        Socket := OBS.GetOBSWebsocket()
+        Socket.SendRequest("StartStopRecording")
+    }
+
+    ToggleStreaming() {
+        Socket := OBS.GetOBSWebsocket()
+        Socket.SendRequest("StartStopStreaming")
+    }
+
+    MuteUnmuteMic() {
+        OBS.SendToOBS("{F16}")
+    }
+
+    MuteUnmuteSystem() {
+        OBS.SendToOBS("{F18}")
+    }
+
+    HideShowWebcam() {
+        OBS.SendToOBS("{F17}")
+    }
+
+    ToggleStudioMode() {
+        OBS.SendToOBS("{F24}")
+    }
+
+    SaveReplayBuffer() {
+        OBS.SendToOBS("{F21}")
     }
 
     SendToOBS(input := "") {

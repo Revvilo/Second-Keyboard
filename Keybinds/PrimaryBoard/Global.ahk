@@ -70,30 +70,54 @@ Class Global {
     ; --------------- ;
     ; -- MISC KEYS -- ;
 
-    ; F1() {
-    ; }
-    ; F2() {
-    ; }
-    ; F3() {
-    ; }
-    ; F4() {
-    ; }
-    ; F5() {
-    ; }
-    ; F6() {
-    ; }
-    ; F7() {
-    ; }
-    ; F8() {
-    ; }
-    ; F9() {
-    ; }
-    ; F10() {
-    ; }
-    ; F11() {
-    ; }
-    ; F12() {
-    ; }
+    F1(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F13}
+    }
+    F2(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F14}
+    }
+    F3(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F15}
+    }
+    F4(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F16}
+    }
+    F5(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F17}
+    }
+    F6(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F18}
+    }
+    F7(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F19}
+    }
+    F8(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F20}
+    }
+    F9(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F21}
+    }
+    F10(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F22}
+    }
+    F11(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F23}
+    }
+    F12(Modifiers) {
+        If (Modifiers == "Alt")
+            SendInput, {F24}
+    }
 
     Left() {
         SendInput, ^#{left} ; -- Virtual desktop left
@@ -166,21 +190,24 @@ Class Global {
         Run, "C:\Program Files (x86)\VB\Voicemeeter\voicemeeterpro.exe" -R
     }
     PgUp() {
-        OBS.SendToOBS("{F23}")    ; -- Toggle Streaming
-        SoundPlay, % Sounds.connected
+        ; OBS.Transition()
     }
     PgDn() {
-        OBS.SendToOBS("{F22}")    ; Toggle Recording
+        OBS.Transition()
     }
     End() {
-        OBS.SendToOBS("{F21}")    ; Save Replay Buffer
+        OBS.SaveReplayBuffer()
     }
     Home() {
-        OBS.SendToOBS("{F24}") ; Toggle capture foreground window.
-    }
-    Delete() {
+        ; OBS.SendToOBS("{F24}") ; Toggle capture foreground window.
     }
     Insert() {
+        OBS.ToggleStreaming()
+        SoundPlay, % Sounds.connected
+    }
+    Delete() {
+        OBS.ToggleRecording()
+        ; OBS.SendToOBS("{F22}")    ; Toggle Recording
     }
 
 
@@ -188,7 +215,7 @@ Class Global {
     ; -- NUMPAD CONTROLS -- ;
 
     NumpadIns() { ; -- Numpad0
-        OBS.SendToOBS("{F16}") ; -- OBS Toggle Mic
+        OBS.MuteUnmuteMic()
     }
     NumpadEnd(modifiers) { ; -- Numpad1
         OBS.SelectScene("Game")
@@ -207,7 +234,7 @@ Class Global {
         OBS.AutoTransition(modifiers)
     }
     NumpadClear(modifiers) { ; -- Numpad5
-        OBS.SelectScene("Zoom Cam 1")
+        OBS.SelectScene("Big sad")
         OBS.AutoTransition(modifiers)
     }
     NumpadRight(modifiers) { ; -- Numpad6
@@ -231,27 +258,27 @@ Class Global {
         SendInput, !{F19} ; -- Toggle Discord deafen
     }
     NumpadDiv() {
-        OBS.SendToOBS("{F13}") ; -- OBS Transition 1 (Luma Wipe)
+        OBS.Transition(1)
     }
     NumpadMult() {
-        OBS.SendToOBS("{F14}")  ; -- OBS Transition 2 (Cut)
+        OBS.Transition(2)
     }
     ; NumpadSub() {
     ; }
     NumpadDel(Modifiers) {
         If (Modifiers == "NumpadSub")
-        OBS.SendToOBS("{F15}") ; -- OBS Toggle Camera
+            OBS.ShowHideWebcam()
         Else If (Modifiers == "")
-        OBS.SendToOBS("{F18}") ; -- OBS Toggle System Audio
+            OBS.MuteUnmuteSystem()
     }
     NumpadEnter() {
         SendInput, !{F20} ; -- Toggle Discord mic
     }
-    Numlock() { ; This doesn't work - Both pause_break and scrolllock have the same keycode(?), god knows why.
+    Numlock() { ; This doesn't work - Both numlock and scrolllock have the same keycode(?), god knows why.
         This.Pause()
     }
     Pause() {
-        OBS.SendToOBS("{F17}")
+        OBS.ToggleStudioMode()
         ; WinGet, obslist, ControlList, ahk_exe obs64.exe
         ; Msgbox, %obslist%
         ; Loop, Parse, obslist, "`n"
@@ -267,30 +294,32 @@ Class Global {
     ; ------------- ;
     ; -- NUMBERS -- ;
 
-    1() {
+    1(Modifiers) {
         PlayPreloadedSound(Sounds.SFX["applause"])
         ; SoundPlay, % Sounds.SFX.applause
     }
-    2() {
+    2(Modifiers) {
         SoundPlay, % Sounds.SFX["Badum Tss"]
     }
-    3() {
+    3(Modifiers) {
         SoundPlay, % Sounds.SFX["357 Magnum Gun Shot Fire"]
     }
-    4() {
+    4(Modifiers) {
         SoundPlay, % Sounds.SFX.fart
     }
-    5() {
+    5(Modifiers) {
         SoundPlay, % Sounds.SFX["Crab Rave"]
     }
-    6() {
+    6(Modifiers) {
         SoundPlay, % Sounds.SFX["Song - Ocean Man"]
     }
-    7() {
+    7(Modifiers) {
     }
-    8() {
+    8(Modifiers) {
     }
-    9() {
+    9(Modifiers) {
+    }
+    0(Modifiers) {
     }
 
 
