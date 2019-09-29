@@ -20,13 +20,10 @@ CoordMode, Pixel, Screen
 Process, Exist
 Process, Priority, %ErrorLevel%, High
 
-; These are super outdated
-#Include F:\Programming\AHK Scripts\Fullscreen Windowed.ahk
-#Include Initialization\Vegas.ahk
-
 ; AHI Key subscription
 #Include Keybinds\SubscribeKeys.ahk
 
+#Include Lib\FullscreenWindowed.ahk
 #Include Lib\BrowserControl.ahk
 #Include Lib\Misc.ahk
 #Include Lib\MixerControl.ahk

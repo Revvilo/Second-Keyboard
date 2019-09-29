@@ -52,12 +52,12 @@ Class Global {
     ; -- MODIFIER CALLBACKS -- ;
 
     ; WinKey_Shift is to handle winkey+shift keypress while still using main WinKey func
-    WinKey_Shift(Key) {
+    Shift_WinKey(Key) {
         This.WinKey(Key, ShiftHeld := true)
     }
     WinKey(Key, ShiftHeld := false) {
         If (Key == "p") {
-            Misc.ExploreTo("F:\Programming", ShiftHeld)
+            Misc.ExploreTo("F:\Dev", ShiftHeld)
         } Else If (Key == "v") {
             Misc.ExploreTo("F:\Video", ShiftHeld)
         } Else If (Key == "r") {
