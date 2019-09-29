@@ -234,7 +234,7 @@ Class Global {
         OBS.AutoTransition(modifiers)
     }
     NumpadClear(modifiers) { ; -- Numpad5
-        OBS.SelectScene("Big sad")
+        OBS.SelectScene("Zoom Cam 1")
         OBS.AutoTransition(modifiers)
     }
     NumpadRight(modifiers) { ; -- Numpad6
@@ -242,7 +242,7 @@ Class Global {
         OBS.AutoTransition(modifiers)
     }
     NumpadHome(modifiers) { ; -- Numpad7
-        OBS.SelectScene("Flipped Cam")
+        OBS.SelectScene("Big sad")
         OBS.AutoTransition(modifiers)
     }
     NumpadUp(modifiers) { ; -- Numpad8
