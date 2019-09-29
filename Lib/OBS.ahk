@@ -164,6 +164,7 @@ Class OBS {
         ; }
         If (not WinExist("ahk_exe obs64.exe"))
         {
+            OBS.WebSocket.Disconnect()
             SoundPlay, % Sounds.asterisk
             Return
         }
