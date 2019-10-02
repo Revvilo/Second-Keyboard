@@ -1,7 +1,7 @@
 Class Global {
 
-    ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when checking for said modifiers.
-    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (modifiers == "Alt")
+    ; List of keys that will be considered Modifiers instead of hotkeys along with their respective aliases to use when checking for said Modifiers.
+    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (Modifiers == "Alt")
     ; Of course any name can be used as the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
     Static modifierKeys := {  "LControl":   "Control"
                             , "RControl":   "Control"
@@ -36,10 +36,10 @@ Class Global {
         Reload
     }
     ; Mode change
-    Tab(modifiers) {
-        If (modifiers == "Control")  { ; Reset mode - Ctrl Tab
+    Tab(Modifiers) {
+        If (Modifiers == "Control")  { ; Reset mode - Ctrl Tab
             ModeHandler.Mode := 1
-        } Else If (modifiers == "") { ; Cycle mode - Tab
+        } Else If (Modifiers == "") { ; Cycle mode - Tab
             ModeHandler.Cycle()
         }
     }
@@ -125,10 +125,10 @@ Class Global {
     Right() {
         SendInput, ^#{right} ; -- Virutal desktop right
     }
-    Up(modifiers) {
-        If (modifiers == "") {
+    Up(Modifiers) {
+        If (Modifiers == "") {
             OBS.SceneControlSend("{UP}")
-        } Else If (modifiers == "Control") {
+        } Else If (Modifiers == "Control") {
             ToggleFakeFullscreen()
         }
     }
@@ -217,41 +217,41 @@ Class Global {
     NumpadIns() { ; -- Numpad0
         OBS.MuteUnmuteSystem()
     }
-    NumpadEnd(modifiers) { ; -- Numpad1
+    NumpadEnd(Modifiers) { ; -- Numpad1
         OBS.SelectScene("Game")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadDown(modifiers) { ; -- Numpad2
+    NumpadDown(Modifiers) { ; -- Numpad2
         OBS.SelectScene("Stand By")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadPgDn(modifiers) { ; -- Numpad3
+    NumpadPgDn(Modifiers) { ; -- Numpad3
         OBS.SelectScene("Desktop")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadLeft(modifiers) { ; -- Numpad4
+    NumpadLeft(Modifiers) { ; -- Numpad4
         OBS.SelectScene("Fullscreen Cam")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadClear(modifiers) { ; -- Numpad5
+    NumpadClear(Modifiers) { ; -- Numpad5
         OBS.SelectScene("Zoom Cam 1")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadRight(modifiers) { ; -- Numpad6
+    NumpadRight(Modifiers) { ; -- Numpad6
         OBS.SelectScene("Zoom Cam 2")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadHome(modifiers) { ; -- Numpad7
+    NumpadHome(Modifiers) { ; -- Numpad7
         OBS.SelectScene("Big sad")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadUp(modifiers) { ; -- Numpad8
+    NumpadUp(Modifiers) { ; -- Numpad8
         OBS.SelectScene("Zoom Flipped Cam 1")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
-    NumpadPgUp(modifiers) { ; -- Numpad9
+    NumpadPgUp(Modifiers) { ; -- Numpad9
         OBS.SelectScene("Zoom Flipped Cam 2")
-        OBS.AutoTransition(modifiers)
+        OBS.AutoTransition(Modifiers)
     }
 
     NumpadAdd(Modifiers) {
@@ -334,38 +334,38 @@ Class Global {
     ; ------------- ;
     ; -- LETTERS -- ;
 
-    A(modifiers) {
+    A(Modifiers) {
         If (WinExist("ahk_exe Spotif.exe")) {
-            If (modifiers == "") { ; -- Spotify vol decrease
+            If (Modifiers == "") { ; -- Spotify vol decrease
                 Spotify.VolChange(-1, "change")
-            } Else If (modifiers == "Shift") { ; -- Spotify vol -5
+            } Else If (Modifiers == "Shift") { ; -- Spotify vol -5
                 Spotify.VolChange(-5, "change")
-            } Else If (modifiers == "Control") { ; -- Spotify quiet vol
+            } Else If (Modifiers == "Control") { ; -- Spotify quiet vol
                 Spotify.VolChange(Spotify.volQuiet, "set")
             }
         } Else {
-            If (modifiers == "") { ; -- vol increase
+            If (Modifiers == "") { ; -- vol increase
                 MixerControl.ChangeVolume("Mozilla Firefox", -1, "change")
-            } Else If (modifiers == "Alt") {
+            } Else If (Modifiers == "Alt") {
                 BrowserControl.YoutubeMusic.VolDown()
-            } Else If (modifiers == "Shift") { ; -- vol +5
+            } Else If (Modifiers == "Shift") { ; -- vol +5
                 MixerControl.ChangeVolume("Mozilla Firefox", -5, "change")
-            } Else If (modifiers == "Control") { ; -- set to loud vol
+            } Else If (Modifiers == "Control") { ; -- set to loud vol
                 MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volQuiet, "set")
             }
         }
     }
     B() {
     }
-    C(modifiers) {
-        If (modifiers == "Alt") { ; -- Autoclicker - Ctrl Alt C
+    C(Modifiers) {
+        If (Modifiers == "Alt") { ; -- Autoclicker - Ctrl Alt C
             ToggleTimer("AutoClicker")
         }
     }
     D() {
     }
-    E(modifiers) {
-        If (modifiers == "WinKey") { ; -- Open editing folder
+    E(Modifiers) {
+        If (Modifiers == "WinKey") { ; -- Open editing folder
             Run, F:\Video\Editing
         }
     }
@@ -389,8 +389,8 @@ Class Global {
     }
     L() {
     }
-    M(modifiers) {
-        If (modifiers == "Alt Control") { ; -- Copy Mouse Position - Ctrl Alt M
+    M(Modifiers) {
+        If (Modifiers == "Alt Control") { ; -- Copy Mouse Position - Ctrl Alt M
             MouseGetPos, OutputVarX, OutputVarY
             Clipboard := OutputVarX . ", " . OutputVarY
             SoundPlay, % Sounds.connected
@@ -402,77 +402,77 @@ Class Global {
     }
     P() {
     }
-    Q(modifiers) {
+    Q(Modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
-            If (modifiers == "") { ; -- Spotify vol increase
+            If (Modifiers == "") { ; -- Spotify vol increase
                 Spotify.VolChange(1, "change") 
-            } Else If (modifiers == "Shift") { ; -- Spotify vol +5
+            } Else If (Modifiers == "Shift") { ; -- Spotify vol +5
                 Spotify.VolChange(5, "change")
-            } Else If (modifiers == "Control") { ; -- Spotify loud vol
+            } Else If (Modifiers == "Control") { ; -- Spotify loud vol
                 Spotify.VolChange(Spotify.volLoud, "set")
-            } Else If (modifiers == "Control Shift") {
+            } Else If (Modifiers == "Control Shift") {
                 Spotify.VolChange(Spotify.systemVol, "set")
             }
         } Else {
-            If (modifiers == "") { ; -- vol increase
+            If (Modifiers == "") { ; -- vol increase
                 MixerControl.ChangeVolume("Mozilla Firefox", 1, "change")
-            } Else If (modifiers == "Alt") {
+            } Else If (Modifiers == "Alt") {
                 BrowserControl.YoutubeMusic.VolUp()
-            } Else If (modifiers == "Shift") { ; -- vol +5
+            } Else If (Modifiers == "Shift") { ; -- vol +5
                 MixerControl.ChangeVolume("Mozilla Firefox", 5, "change")
-            } Else If (modifiers == "Control") { ; -- set to loud vol
+            } Else If (Modifiers == "Control") { ; -- set to loud vol
                 MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volLoud, "set")
-            } Else If (modifiers == "Control Shift") {
+            } Else If (Modifiers == "Control Shift") {
                 MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.systemVol, "set")
             }
         }
     }
     R() {
     }
-    S(modifiers) {
-        If (modifiers == "Shift") {
+    S(Modifiers) {
+        If (Modifiers == "Shift") {
             Misc.SpaceOutLetters()
-        } Else If (modifiers == "Alt") {
+        } Else If (Modifiers == "Alt") {
             Misc.SmallLetters()
         }
     }
-    T(modifiers) {
-        If (modifiers == "")
+    T(Modifiers) {
+        If (Modifiers == "")
             Spotify.ToggleVisibility()
-        Else If (modifiers == "Shift") {
+        Else If (Modifiers == "Shift") {
             SendInput, {U+2713} ; -- ✓ Check mark
-        } Else If (modifiers == "Control Shift") {
+        } Else If (Modifiers == "Control Shift") {
             SendInput, {U+2714} ; -- ✔ Heavy check mark
         }
     }
     U() {
     }
-    V(modifiers) {
-        If (modifiers == "WinKey") { ; -- Open video folder
+    V(Modifiers) {
+        If (Modifiers == "WinKey") { ; -- Open video folder
             If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
                 SendInput, ^lF:\Video{enter}
             Else
                 Run, F:\Video
-        } Else If (modifiers == "Shift WinKey") {
+        } Else If (Modifiers == "Shift WinKey") {
             Run, F:\Video
         }
     }
     W() {
     }
-    X(modifiers) {
-        If (modifiers == "") {
+    X(Modifiers) {
+        If (Modifiers == "") {
             SendInput, {Media_Next} ; Next Song
-        } Else If (modifiers == "Alt") {
+        } Else If (Modifiers == "Alt") {
             Minecraft.MouseMove(2100, 350)
         }
     }
     Y() {
         ResetVolumeMixer()
     }
-    Z(modifiers) {
-        If (modifiers == "") {
+    Z(Modifiers) {
+        If (Modifiers == "") {
             SendInput, {Media_Prev} ; Prev song
-        } Else If (modifiers == "Alt") {
+        } Else If (Modifiers == "Alt") {
             Minecraft.MouseMove(-2100, -350)
         }
     }

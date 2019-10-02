@@ -18,7 +18,11 @@ Class OBS {
         Try {
             Socket.SetPreviewScene(RequestedScene)
         } Catch e {
-            Throw { what: "Scene not found: """ RequestedScene """", message: "Scene names are case-sensitive.", level: "info" }
+            Try {
+                Socket.SetCurrentScene(RequestedScene)
+            } Catch e {
+                Throw { what: "Scene not found: """ RequestedScene """", message: "Scene names are case-sensitive.", level: "info" }
+            }
         }
         
         ; The below comments are related to getting values which is in need of implementation
