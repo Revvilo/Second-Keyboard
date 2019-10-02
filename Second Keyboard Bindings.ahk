@@ -3,7 +3,7 @@
 #HotkeyInterval 99000000
 #KeyHistory 0
 ; #Warn
-ListLines Off
+ListLines, Off
 ; SetCapsLockState, AlwaysOff
 Process, Priority, , A
 SetBatchLines, -1
@@ -256,11 +256,12 @@ Return
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
+    If (!debug) ListLines, Off
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
     DeviceModeClass := KeybindSets[deviceName][mode]
 
-    ; I use an 'if debug' in this case for performance, since it would construct the entire message before checking 'debug' if passed as a param to debugmessage()
+    ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message before checking if debug mode was on
     If (debug)
     Msgbox, % (Format("A macro key was pressed and debug mode is on.`n`n"
     . "Device name: " . deviceName . "`n`n"
@@ -305,7 +306,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
     ; -Else it runs the callback from the current mode's class instead.
     ; -Otherwise, if no callback is available, notify the user and return.
-    ; TODO: EXPLAIN NEW MECHANIC: MODIFIER CALLBACKS
+    ; TODO: DOCUMENT NEW MECHANIC: MODIFIER CALLBACKS
 
     CurrentModifiers := Modifiers.Get(Modifiers.CallbackFriendlyDelimiter)
     ; Msgbox %CurrentModifiers%
@@ -337,6 +338,9 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
         DebugMessage("No callback available.")
         Return
     }
+
+    If (debug)
+        ListLines, On
 
     ; And finally calls the callback
     Try {

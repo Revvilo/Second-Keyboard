@@ -55,19 +55,23 @@ Class OBS {
         Msgbox, %Str%
     }
 
-    SetMode(mode = "") {
-        Throw { what: "Unimplemented Exception", message: "SetMode is currently unimplemented" }
-        Return ; is this needed? who knows who cares
-        If(mode != "")
+    SetProfile(RequestedProfile = "") {
+        If(RequestedProfile != "")
         {
-            If(mode == "Record") {
-                ; WinMenuSelectItem, OBS,, Profile, 7
-            }
-            Else If(mode == "Stream") {
-
-            }
+            Socket := OBS.GetOBSWebsocket()
+            Socket.SetCurrentProfile(RequestedProfile)
         } Else {
-            Throw, "SetOBSMode: Non existant mode requested: " + mode
+            Throw { What: "Error setting OBS Profile", Message: "SetProfile: Non existant mode requested: " RequestedProfile }
+        }
+    }
+
+    SetSceneCollection(RequestedCollection = "") {
+        If(RequestedCollection != "")
+        {
+            Socket := OBS.GetOBSWebsocket()
+            Socket.SetCurrentSceneCollection(RequestedCollection)
+        } Else {
+            Throw { What: "Error setting OBS Scene Collection", Message: "SetSceneCollection: Non existant collection requested: " RequestedCollection }
         }
     }
 
@@ -76,7 +80,6 @@ Class OBS {
         If (!RequestedTransition) {
             OBS.SendToOBS("{F13}")
         } Else If (RequestedTransition is integer && RequestedTransition < 3 && RequestedTransition > 0) {
-            ; Msgbox, % Format("{{}F1{}{}}", RequestedTransition + 3)
             OBS.SendToOBS(Format("{{}F1{}{}}", RequestedTransition + 3)) ; + 2 to index it to F14 and F15
         }
     }
@@ -105,7 +108,7 @@ Class OBS {
         OBS.SendToOBS("{F18}")
     }
 
-    HideShowWebcam() {
+    ToggleWebcam() {
         OBS.SendToOBS("{F17}")
     }
 
@@ -127,26 +130,13 @@ Class OBS {
                 SoundPlay, % Sounds.Asterisk
                 Return
             }
-            ; PLEASE COMMENT WHY YOU REMOVE STUFF CMON MAN
-            ; If (winList > 1) {
-                ; Loop, %winList%
-                ; {
-                    ; msgbox % winList%a_index%
-                    ; this_id := winList%a_index%
-                    ; ControlSend,, %input%, ahk_id %this_id%
-                    ; Sleep, 1000
-                ; }
-            ; } ;Else {
-                this_id := winList1
-                ; msgbox %this_id%
-                ControlSend,, %input%, ahk_id %this_id%
-            ; }
+            ControlSend,, %input%, ahk_id %winList1%
         }
     }
 
     GetSceneList()
     {
-        ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the garbage ClassNN tho.
+        ; Changing the dock layout on OBS will screw the path up. Yea idk. It's still more reliable than the ClassNN tho.
         oAcc := ""
         If (not (oAcc := Acc_Get("Object", "4.4.1.1.1", 0, "OBS ahk_exe obs64.exe")))
         {
@@ -158,20 +148,25 @@ Class OBS {
     }
 
     GetOBSWebsocket() {
-        ; Msgbox, % OBS.OBSSocket "`n`n" (new OBSWebSocket("")) "`n`n" (OBS.OBSSocket == "") "`n`n" (This.OBSSocket == "")
-        ; If (OBS.OBSSocket = "") {
-        ;     OBS.OBSSocket := new OBS.OBSWebSocket("ws://127.0.0.1:4444")
-        ; }
+        ; Play a sound and stop here if OBS isn't running
+        ;  (also deletes the variable incase a socket was previously connected)
         If (not WinExist("ahk_exe obs64.exe"))
         {
             OBS.WebSocket.Disconnect()
+            OBS.WebSocket := ""
             SoundPlay, % Sounds.asterisk
             Return
         }
-        If (OBS.WebSocket = "") {
+
+        ; We detect if OBS has been closed and re-opened since the last check by seeing if the PID has changed
+        ;  if it has changed we have to re-establish the connection
+        WinGet, CurrentPID, PID, ahk_exe obs64.exe
+
+        If (OBS.WebSocket = "" || OBS.PreviousPID != CurrentPID) {
+            OBS.PreviousPID := CurrentPID
             asm := CLR_LoadLibrary("Lib\OBS-Websocket\obs-websocket-dotnet.dll")
             OBS.WebSocket := CLR_CreateObject(asm, "OBSWebsocketDotNet.OBSWebSocket")
-            ; OBS.WebSocket.WSTimout := new OBS.WebSocket.WSTimeout(10)
+            ; OBS.WebSocket.WSTimeout(10) ; Doesn't work because fuck knows
             OBS.WebSocket.Connect("ws://127.0.0.1:4444", "webpleb")
         }
         Return OBS.WebSocket

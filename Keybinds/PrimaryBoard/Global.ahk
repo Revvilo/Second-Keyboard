@@ -215,7 +215,7 @@ Class Global {
     ; -- NUMPAD CONTROLS -- ;
 
     NumpadIns() { ; -- Numpad0
-        OBS.MuteUnmuteMic()
+        OBS.MuteUnmuteSystem()
     }
     NumpadEnd(modifiers) { ; -- Numpad1
         OBS.SelectScene("Game")
@@ -254,7 +254,11 @@ Class Global {
         OBS.AutoTransition(modifiers)
     }
 
-    NumpadAdd() {
+    NumpadAdd(Modifiers) {
+        If (Modifiers == "NumpadSub") {
+            OBS.SetProfile("Stream")
+            Return
+        }
         SendInput, !{F19} ; -- Toggle Discord deafen
     }
     NumpadDiv() {
@@ -267,11 +271,15 @@ Class Global {
     ; }
     NumpadDel(Modifiers) {
         If (Modifiers == "NumpadSub")
-            OBS.ShowHideWebcam()
+            OBS.ToggleWebcam()
         Else If (Modifiers == "")
-            OBS.MuteUnmuteSystem()
+            OBS.MuteUnmuteMic()
     }
-    NumpadEnter() {
+    NumpadEnter(Modifiers) {
+        If (Modifiers == "NumpadSub") {
+            OBS.SetProfile("1080p60 Recording")
+            Return
+        }
         SendInput, !{F20} ; -- Toggle Discord mic
     }
     Numlock() { ; This doesn't work - Both numlock and scrolllock have the same keycode(?), god knows why.
