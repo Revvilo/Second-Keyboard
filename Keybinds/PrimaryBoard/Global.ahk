@@ -214,8 +214,12 @@ Class Global {
     ; --------------------- ;
     ; -- NUMPAD CONTROLS -- ;
 
-    NumpadIns() { ; -- Numpad0
-        OBS.MuteUnmuteSystem()
+    NumpadIns(Modifiers) { ; -- Numpad0
+        If (Modifiers == "NumpadSub") {
+            OBS.FlipCamera()
+        } Else {
+            OBS.MuteUnmuteSystem()
+        }
     }
     NumpadEnd(Modifiers) { ; -- Numpad1
         OBS.SelectScene("Game")
@@ -271,7 +275,7 @@ Class Global {
     ; }
     NumpadDel(Modifiers) {
         If (Modifiers == "NumpadSub")
-            OBS.ToggleWebcam()
+            OBS.ToggleCamera()
         Else If (Modifiers == "")
             OBS.MuteUnmuteMic()
     }

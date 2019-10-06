@@ -38,23 +38,23 @@ Class Global {
         SendInput, {Media_Play_Pause}
     }
 
-    Delete() {
-        KeybindSets.PrimaryBoard.Global.Delete()
+    Delete(modifiers) {
+        KeybindSets.PrimaryBoard.Global.Delete(modifiers)
     }
-    Insert() {
-        KeybindSets.PrimaryBoard.Global.Insert()
+    Insert(modifiers) {
+        KeybindSets.PrimaryBoard.Global.Insert(modifiers)
     }
-    Home() {
-        KeybindSets.PrimaryBoard.Global.Home()
+    Home(modifiers) {
+        KeybindSets.PrimaryBoard.Global.Home(modifiers)
     }
-    End() {
-        KeybindSets.PrimaryBoard.Global.End()
+    End(modifiers) {
+        KeybindSets.PrimaryBoard.Global.End(modifiers)
     }
-    PgUp() {
-        KeybindSets.PrimaryBoard.Global.PgUp()
+    PgUp(modifiers) {
+        KeybindSets.PrimaryBoard.Global.PgUp(modifiers)
     }
-    PgDn() {
-        KeybindSets.PrimaryBoard.Global.PgDn()
+    PgDn(modifiers) {
+        KeybindSets.PrimaryBoard.Global.PgDn(modifiers)
     }
     Backslash(modifiers) {
         If (modifiers == "") {
@@ -74,49 +74,49 @@ Class Global {
         SendInput, {Control Up}
     }
 
-    NumpadIns() {
+    NumpadIns(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadIns(modifiers)
     }
-    NumpadEnd() {
+    NumpadEnd(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadEnd(modifiers)
     }
-    NumpadDown() {
+    NumpadDown(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadDown(modifiers)
     }
-    NumpadPgDn() {
+    NumpadPgDn(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadPgDn(modifiers)
     }
-    NumpadLeft() {
+    NumpadLeft(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadLeft(modifiers)
     }
-    NumpadClear() {
+    NumpadClearmodifiers(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadClear(modifiers)
     }
-    NumpadRight() {
+    NumpadRight(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadRight(modifiers)
     }
-    NumpadHome() {
+    NumpadHome(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadHome(modifiers)
     }
-    NumpadUp() {
+    NumpadUp(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadUp(modifiers)
     }
-    NumpadPgUp() {
+    NumpadPgUp(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadPgUp(modifiers)
     }
-    NumpadAdd() {
-        KeybindSets.PrimaryBoard.Global.NumpadAdd()
+    NumpadAdd(modifiers) {
+        KeybindSets.PrimaryBoard.Global.NumpadAdd(modifiers)
     }
-    NumpadDiv() {
-        KeybindSets.PrimaryBoard.Global.NumpadDiv()
+    NumpadDiv(modifiers) {
+        KeybindSets.PrimaryBoard.Global.NumpadDiv(modifiers)
     }
-    NumpadMult() {
-        KeybindSets.PrimaryBoard.Global.NumpadMult()
+    NumpadMult(modifiers) {
+        KeybindSets.PrimaryBoard.Global.NumpadMult(modifiers)
     }
     NumpadDel(modifiers) {
         KeybindSets.PrimaryBoard.Global.NumpadDel(modifiers)
     }
-    NumpadEnter() {
-        KeybindSets.PrimaryBoard.Global.NumpadEnter()
+    NumpadEnter(modifiers) {
+        KeybindSets.PrimaryBoard.Global.NumpadEnter(modifiers)
     }
 }

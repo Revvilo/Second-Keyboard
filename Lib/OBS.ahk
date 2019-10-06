@@ -112,7 +112,11 @@ Class OBS {
         OBS.SendToOBS("{F18}")
     }
 
-    ToggleWebcam() {
+    FlipCamera() {
+        OBS.SendToOBS("{F22}")
+    }
+
+    ToggleCamera() {
         OBS.SendToOBS("{F17}")
     }
 
