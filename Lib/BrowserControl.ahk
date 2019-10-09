@@ -1,5 +1,6 @@
 Class BrowserControl {
     Static PreferredBrowserExe := "Firefox.exe"
+
     PlayPause() {
         oldTMM := A_TitleMatchMode
         oldDHW := A_DetectHiddenWindows
@@ -13,9 +14,11 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            Sleep, 50
-            ControlSend,, {space}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ; MouseMove, 400, 300
+            ; ControlClick, X300 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ; Sleep, 50
+            ; ControlSend,, {space}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ControlSend,, k, % "ahk_exe " . BrowserControl.PreferredBrowserExe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
@@ -37,9 +40,10 @@ Class BrowserControl {
         If (InStr(FirefoxTitle, "Twitch")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
             ; ControlFocus,, ahk_id %ControlID%
-            ControlClick, X400 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            Sleep, 50
-            ControlSend,, {Control Down}f{Control Up}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ; ControlClick, X400 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ; Sleep, 50
+            ; ControlSend,, {Control Down}f{Control Up}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+            ControlSend,, f, % "ahk_exe " . BrowserControl.PreferredBrowserExe
         } Else If (InStr(FirefoxTitle, "Youtube")) {
             ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
             ; ControlFocus,, ahk_id %ControlID%
