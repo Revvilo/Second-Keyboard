@@ -311,19 +311,21 @@ Class Global {
         ; SoundPlay, % Sounds.SFX.applause
     }
     2(Modifiers) {
-        SoundPlay, % Sounds.SFX["Badum Tss"]
+        Sounds.PlaySoundEffect("Badum Tss")
+        ; Sounds.PlaySoundEffect("Badum Tss")
     }
     3(Modifiers) {
-        SoundPlay, % Sounds.SFX["357 Magnum Gun Shot Fire"]
+        Sounds.PlaySoundEffect("357 Magnum Gun Shot Fire")
     }
     4(Modifiers) {
-        SoundPlay, % Sounds.SFX.fart
+        Sounds.PlaySoundEffect("fart")
+        ; SoundPlay, % Sounds.SFX.fart
     }
     5(Modifiers) {
-        SoundPlay, % Sounds.SFX["Crab Rave"]
+        Sounds.PlaySoundEffect("Crab Rave")
     }
     6(Modifiers) {
-        SoundPlay, % Sounds.SFX["Song - Ocean Man"]
+        Sounds.PlaySoundEffect("Song - Ocean Man")
     }
     7(Modifiers) {
     }
@@ -339,7 +341,7 @@ Class Global {
     ; -- LETTERS -- ;
 
     A(Modifiers) {
-        If (WinExist("ahk_exe Spotif.exe")) {
+        If (WinExist("ahk_exe Spotify.exe")) {
             If (Modifiers == "") { ; -- Spotify vol decrease
                 Spotify.VolChange(-1, "change")
             } Else If (Modifiers == "Shift") { ; -- Spotify vol -5
