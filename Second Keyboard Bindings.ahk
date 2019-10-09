@@ -378,6 +378,10 @@ Class Sounds {
         }
     }
 
+    PlaySoundEffect(RequestedSound) {
+        SoundPlay, % this.SFX[RequestedSound]
+    }
+
     PopulateSounds() {
         Loop, Files, Sounds\*.mp3, F
         {
