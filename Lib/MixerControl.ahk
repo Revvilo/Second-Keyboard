@@ -13,7 +13,7 @@ Class MixerControl {
     systemVol {
         get {
             SoundGet, systemVolume ; Gets the current system volume to use as the max limit for setting volume
-            Return systemVolume
+            Return Floor(systemVolume)
         }
     }
     volLoud {

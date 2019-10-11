@@ -23,11 +23,11 @@ Class Global {
     ; ==================
 
 
-    ;v ==================================================== v;
-    ;v == CRITICAL HOTKEYS ================================ v;
-    ;v == These only need to exist once, in global ======== v;
-    ;v == They allow you to have control over the script == v;
-    ;v ==================================================== v;
+    ;v ================================================================================ v;
+    ;v == CRITICAL HOTKEYS ============================================================ v;
+    ;v == These only need to exist once, in global, for this respective device ======== v;
+    ;v == They allow you to have control over the script ============================== v;
+    ;v ================================================================================ v;
 
     Escape() {
         ExitApp

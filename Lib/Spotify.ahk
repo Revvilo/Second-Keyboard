@@ -1,7 +1,7 @@
 Class Spotify {
 
     ; These two multipliers determine the volume - relative to the current system vol - that will be known as the loud and quiet settings.
-    Static volLoudMultiplier := 0.6
+    Static volLoudMultiplier := 0.3
     Static volQuietMultiplier := 0.05
 
     Static currentVolume := ""
@@ -15,7 +15,8 @@ Class Spotify {
     systemVol {
         get {
             SoundGet, systemVolume ; Gets the current system volume to use as the max limit for setting volume
-            Return systemVolume
+            ; Msgbox, %systemVolume%
+            Return Floor(systemVolume)
         }
     }
     volLoud {
