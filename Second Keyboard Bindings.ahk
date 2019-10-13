@@ -17,6 +17,8 @@ CoordMode, Tooltip, Screen
 CoordMode, Mouse, Relative
 CoordMode, Pixel, Screen
 
+OnExit(Func("ExitRoutine"))
+
 Process, Exist
 Process, Priority, %ErrorLevel%, High
 
@@ -33,21 +35,26 @@ Process, Priority, %ErrorLevel%, High
 #Include Lib\OBS.ahk
 #Include Lib\VLC.ahk
 #Include Lib\Acc.ahk
+#Include Lib\TrayMenu.ahk
+#Include Lib\ModeHandler.ahk
 
 ; Tray menu info
-Global tray_mainHotkeysName := "Main Keyboard Hotkeys"
+Global tray_mainHotkeysName := "Enable Main Keyboard Binds"
 
 ; ==== Tray Menu assembly ====
 Menu, Tray, Icon, Second Keyboard Icon.ico
+
+Menu, Tray, NoStandard
+Menu, Tray, Add, % TrayMenu.Names.Open, TrayMenu.ListLines
 Menu, Tray, Add
-Menu, Tray, Add, Cycle Mode, TrayMenu_CycleMode
-Menu, Tray, Add, Debug Mode, ToggleDebug
-Menu, Tray, Add, %tray_mainHotkeysName%, ToggleMainHotkeys
-; Menu, Tray, Check, %tray_mainHotkeysName%
+Menu, Tray, Add, % TrayMenu.Names.CycleMode, TrayMenu.CycleMode
+Menu, Tray, Add, % TrayMenu.Names.ToggleDebug, TrayMenu.ToggleDebug
+Menu, Tray, Add, % TrayMenu.Names.MainHotkeys, TrayMenu.ToggleMainHotkeys
 Menu, Tray, Add
-Menu, Tray, Add, % "Second Keyboard Bindings HUB", nothing
-Menu, Tray, Add, % "© Revvilo - 2019", nothing
+Menu, Tray, Add, % TrayMenu.Names.Reload, TrayMenu.Reload
+Menu, Tray, Add, % TrayMenu.Names.Exit, TrayMenu.Exit
 ; ===========================
+Menu, Tray, Default, % TrayMenu.Names.Open
 
 ; Initialize AHI - AutoHotInterception - https://github.com/evilC/AutoHotInterception
 #Include Lib\AutoHotInterception\AutoHotInterception.ahk
@@ -124,10 +131,6 @@ Class KeybindSets {
     }
 }
 
-Return
-
-TrayMenu_CycleMode:
-    ModeHandler.Cycle()
 Return
 
 ; =================== ;
@@ -364,6 +367,8 @@ nothing() {
 
 ; Sounds provider
 Class Sounds {
+    Static MMDevice := "{0.0.0.00000000}.{f79535b0-e0a7-4524-91b9-3f9a8592dc69}"
+
     Class SFX {
         PopulateSounds() {
             Loop, Files, SoundEffects\*, F
@@ -378,7 +383,25 @@ Class Sounds {
         }
     }
 
+    StopSounds() {
+        ; -- Failed VLC usage
+        ; DetectHiddenWindows, On
+        ; WinGet, OutputVar, List, ahk_exe vlc.exe
+        ; ; WinClose, ahk_id %OutputVar2%
+        ; Loop %OutputVar% {
+        ;     WinKill, % "ahk_id " Outputvar%A_Index%
+        ; }
+        ; Msgbox, %OutputVar%
+        SoundPlay, % this.SFX["StopSounds"]
+    }
+
     PlaySoundEffect(RequestedSound) {
+        ; -- Using VLC - Works, but found no way to stop it on command.
+        ; Sound := this.SFX[RequestedSound]
+        ; If (Sound == "" || Sound == "Sounds\")
+        ;     Return
+        ; Device := Sounds.MMDevice
+        ; run vlc.exe "%Sound%" vlc -I null --mmdevice-audio-device=%Device% --play-and-exit 
         SoundPlay, % this.SFX[RequestedSound]
     }
 
@@ -423,18 +446,6 @@ Class Modifiers {
     }
 }
 
-ToggleMainHotkeys() {
-    If (mainKeyboardHotkeys) {
-        mainKeyboardHotkeys := False
-        Menu, Tray, Uncheck, %tray_mainHotkeysName%
-        SoundPlay, % sounds.disconnected
-    } Else {
-        mainKeyboardHotkeys := True
-        Menu, Tray, Check, %tray_mainHotkeysName%
-        SoundPlay, % Sounds.connected
-    }
-}
-
 ToggleDebug() {
     If (debug) {
         Global debug = False    ; Disable
@@ -462,52 +473,8 @@ CheckRedundantKeybinds() {
 }
 
 PlayPreloadedSound(ByRef Sound) {
-    Msgbox, % &Sound
+    ; Msgbox, % &Sound
     Return DLLCall("winmm.dll\sndPlaySoundA", UInt, &Sound, UInt, ((SND_MEMORY:=0x4) | (SND_NODEFAULT:=0x2)))
-}
-
-
-; Mode change handling
-Class ModeHandler
-{
-    Static ModeList
-    Static ModeIndex
-    Static CurrentMode
-
-    Cycle() {
-        ModeHandler.Mode := "Cycle"
-    }
-
-    Mode {
-        get {
-            Return ModeHandler.CurrentMode
-        }
-
-        ; TODO: This seriously needs optimising. Like really. I just made it "work" when I changed from a monolithic system.
-        set {
-            DebugMessage("Requested Mode: " . value)
-
-            If ((value is integer) && (value > 0)) { ; If value is an integer that is above 0: set CurrentMode to that CurrentMode out of the list
-                this.ModeIndex := value
-                this.CurrentMode := this.ModeList[this.ModeIndex]
-                SoundPlay, % Sounds[this.CurrentMode], Wait
-            } Else { ; Otherwise just cycle it through
-                If (this.CurrentMode == "") { ; Failsafe for in case CurrentMode isn't set yet
-                    this.ModeIndex := 1
-                    this.CurrentMode := this.ModeList[this.ModeIndex]
-                } Else {
-                    If (this.ModeIndex >= this.ModeList.MaxIndex()) { ; If at the end of the list of modes, go back to the start
-                        this.ModeIndex := 1
-                        this.CurrentMode := this.ModeList[this.ModeIndex]
-                    } Else { ; Otherwise cycle by one
-                        this.ModeIndex++
-                        this.CurrentMode := this.ModeList[this.ModeIndex]
-                    }
-                }
-                SoundPlay, % Sounds[this.CurrentMode]
-            }
-        }
-    }
 }
 
 ResetVolumeMixer(vol := "") {
@@ -526,7 +493,10 @@ ResetVolumeMixer(vol := "") {
     If (vol == "") {
         ; Sets every entry in the Audio Mixer to the current system volume
         SoundGet, systemVolume
+        systemVolume := Floor(systemVolume)
         MsgBox, 1, Reset Volume Mixer?, This will reset all sliders in the volume mixer to the system volume: %systemVolume%
+        IfMsgBox, Cancel
+            Return
         TrayTip, Resetting all sliders in the Mixer, No target volume specified.`nDefaulting to system volume: %systemVolume%
         vol := 100 - systemVolume
     } Else {
@@ -637,4 +607,8 @@ Stopwatch() {
         FormatTime, OutputTime, HHMMSS, Format
         Msgbox, %ElapsedMS%
     }
+}
+
+ExitRoutine(ExitReason, ExitCode) { ; All code for closing script here
+    ExitApp
 }

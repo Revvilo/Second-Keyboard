@@ -45,7 +45,7 @@ Class MixerControl {
             WinGet, outControlList, ControlList, ahk_id %mixerHandle%
 
 
-            ;;;; Unneeded due to general use of the mixer not requiring the program to work around Spotify's title changing antics ;;;;
+            ;;;; Unneeded due to normal use of the mixer not requiring the program to work around Spotify's title changing antics ;;;;
             ; WinGet, spotifyProcesses, List, ahk_exe Spotify.exe
 
             ; currentSpotifyTitle := ""

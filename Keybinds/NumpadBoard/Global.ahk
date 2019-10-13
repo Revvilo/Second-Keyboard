@@ -5,6 +5,13 @@ Class Global {
                             , "RControl": "Control" 
                             , "RShift": "Shift" }
 
+    Space() {
+        If (WinActive("ahk_exe Firefox.exe")) {
+            Sendinput, {Ctrl Down}m{Ctrl Up}
+        }
+        WinMinimize, ahk_exe Firefox.exe
+    }
+
     ; PrintScreen() {
     ;     KeybindSets.PrimaryBoard.Global.Appskey()
     ; }

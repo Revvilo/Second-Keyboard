@@ -307,25 +307,22 @@ Class Global {
     ; -- NUMBERS -- ;
 
     1(Modifiers) {
-        PlayPreloadedSound(Sounds.SFX["applause"])
-        ; SoundPlay, % Sounds.SFX.applause
+        Sounds.StopSounds()
     }
     2(Modifiers) {
         Sounds.PlaySoundEffect("Badum Tss")
-        ; Sounds.PlaySoundEffect("Badum Tss")
     }
     3(Modifiers) {
-        Sounds.PlaySoundEffect("357 Magnum Gun Shot Fire")
+        Sounds.PlaySoundEffect("Applause")
     }
     4(Modifiers) {
-        Sounds.PlaySoundEffect("fart")
-        ; SoundPlay, % Sounds.SFX.fart
+        Sounds.PlaySoundEffect("Song - Crab Rave")
     }
     5(Modifiers) {
-        Sounds.PlaySoundEffect("Crab Rave")
+        Sounds.PlaySoundEffect("Song - Ocean Man")
     }
     6(Modifiers) {
-        Sounds.PlaySoundEffect("Song - Ocean Man")
+        Sounds.PlaySoundEffect("Song - No Time For Caution")
     }
     7(Modifiers) {
     }
