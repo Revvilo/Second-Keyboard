@@ -152,21 +152,26 @@ Class Global {
     }
     ; Enter() {
     ; }
-    RightBracket() {
-    }
-    LeftBracket() {
-    }
-    BackSlash() {
-    }
-    ForwardSlash() {
-        BrowserControl.Fullscreen()
-    }
+    ; RightBracket() {
+    ; }
+    ; LeftBracket() {
+    ; }
+    ; BackSlash() {
+    ; }
+    ; ForwardSlash() {
+    ; }
     ; LWin() {
     ; }
     ; RWin() {
     ; }
-    AppsKey() {
-        BrowserControl.PlayPause()
+    AppsKey(Modifiers) {
+        If (Modifiers == "") {
+            BrowserControl.PlayPause()
+        } Else If (Modifiers == "Control") {
+            BrowserControl.MuteUnmute()
+        } Else If (Modifiers == "WinKey") {
+            BrowserControl.Fullscreen()
+        }
     }
     Apostrophe(Modifiers) {
         If (Modifiers == "") {
@@ -437,6 +442,8 @@ Class Global {
             Misc.SpaceOutLetters()
         } Else If (Modifiers == "Alt") {
             Misc.SmallLetters()
+        } Else If (Modifiers == "") {
+            Spotify.ToggleVol()
         }
     }
     T(Modifiers) {

@@ -1,59 +1,21 @@
 Class BrowserControl {
-    Static PreferredBrowserExe := "Firefox.exe"
+    Static PreferredBrowserExe := "ahk_exe Firefox.exe"
+
+    SendToBrowser(Input) {
+        ControlSend, ahk_parent, %Input%, % BrowserControl.PreferredBrowserExe
+    }
 
     PlayPause() {
-        oldTMM := A_TitleMatchMode
-        oldDHW := A_DetectHiddenWindows
-        SetTitleMatchMode, 2
-        DetectHiddenWindows, On
+        This.SendToBrowser("k")
+    }
 
-        ; ControlSend,, k, Firefox
-
-        WinGetTitle, FirefoxTitle, Firefox
-        DebugMessage("Firefox's Title: " . FirefoxTitle)
-        If (InStr(FirefoxTitle, "Twitch")) {
-            ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
-            ; ControlFocus,, ahk_id %ControlID%
-            ; MouseMove, 400, 300
-            ; ControlClick, X300 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            ; Sleep, 50
-            ; ControlSend,, {space}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            ControlSend,, k, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-        } Else If (InStr(FirefoxTitle, "Youtube")) {
-            ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
-            ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, k, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-        }
-
-        SetTitleMatchMode, % oldTMM
-        DetectHiddenWindows, % oldDHW
+    MuteUnmute() {
+        This.SendToBrowser("m")
     }
 
     Fullscreen() {
-        oldTMM := A_TitleMatchMode
-        oldDHW := A_DetectHiddenWindows
-        SetTitleMatchMode, 2
-        DetectHiddenWindows, On
-
-        WinGetTitle, FirefoxTitle, Firefox
-        DebugMessage("Firefox's Title: " . FirefoxTitle)
-        If (InStr(FirefoxTitle, "Twitch")) {
-            ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox
-            ; ControlFocus,, ahk_id %ControlID%
-            ; ControlClick, X400 Y300, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            ; Sleep, 50
-            ; ControlSend,, {Control Down}f{Control Up}, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-            ControlSend,, f, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-        } Else If (InStr(FirefoxTitle, "Youtube")) {
-            ; ControlGet, ControlID, Hwnd,, MozillaWindowClass, Firefox.
-            ; ControlFocus,, ahk_id %ControlID%
-            ControlSend,, f, % "ahk_exe " . BrowserControl.PreferredBrowserExe
-        }
-
-        SetTitleMatchMode, % oldTMM
-        DetectHiddenWindows, % oldDHW
+        This.SendToBrowser("f")
     }
-
 
     Class YoutubeMusic {
         PlayPause() {

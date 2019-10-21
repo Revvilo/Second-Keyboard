@@ -3,7 +3,6 @@
 #HotkeyInterval 99000000
 #KeyHistory 0
 ; #Warn
-ListLines, Off
 ; SetCapsLockState, AlwaysOff
 Process, Priority, , A
 SetBatchLines, -1
@@ -48,6 +47,7 @@ Menu, Tray, NoStandard
 Menu, Tray, Add, % TrayMenu.Names.Open, TrayMenu.ListLines
 Menu, Tray, Add
 Menu, Tray, Add, % TrayMenu.Names.CycleMode, TrayMenu.CycleMode
+; Menu, Tray, Add, % TrayMenu.Names.EnableListLines, TrayMenu.EnableListLines
 Menu, Tray, Add, % TrayMenu.Names.ToggleDebug, TrayMenu.ToggleDebug
 Menu, Tray, Add, % TrayMenu.Names.MainHotkeys, TrayMenu.ToggleMainHotkeys
 Menu, Tray, Add
@@ -136,7 +136,6 @@ Return
 ; =================== ;
 ; Main Keyboard Binds ;
 ; ====================;
-
 #IfWinActive, Minecraft
 ; Hotstrings
 ::#sel::{#}selection
@@ -259,28 +258,28 @@ Return
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
-    If (!debug) ListLines, Off
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
     DeviceModeClass := KeybindSets[deviceName][mode]
 
-    ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message before checking if debug mode was on
-    If (debug)
-    Msgbox, % (Format("A macro key was pressed and debug mode is on.`n`n"
-    . "Device name: " . deviceName . "`n`n"
-    . "Global bind:`t{}`n`n"
-    . "Callback: `t{}`n"
-    . "Key Code:`t{}`n"
-    . "Modifiers:`t{}`n`n"
-    . "Using alias:`t{}{}`n"
-    . "Ignore key up:`t{}`n`n"
-    , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
-    , name
-    , code
-    , Modifiers.Get() == "" ? "None" : Modifiers.Get()
-    , keyAliases.HasKey(input) ? "Yes" : "No"
-    , keyAliases.HasKey(input) ? ("`nOriginal Name:`t" . input) : ""
-    , skipKeyUp ? "Yes" : "No"))
+    ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message even if debug was off
+    If (debug) {
+        Msgbox, % (Format("A macro key was pressed and debug mode is on.`n`n"
+        . "Device name: " . deviceName . "`n`n"
+        . "Global bind:`t{}`n`n"
+        . "Callback: `t{}`n"
+        . "Key Code:`t{}`n"
+        . "Modifiers:`t{}`n`n"
+        . "Using alias:`t{}{}`n"
+        . "Ignore key up:`t{}`n`n"
+        , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
+        , keyAliases.HasKey(name) ? keyAliases[name] : name
+        , code
+        , Modifiers.Get() == "" ? "None" : Modifiers.Get()
+        , keyAliases.HasKey(name) ? "Yes" : "No"
+        , keyAliases.HasKey(name) ? ("`nOriginal Name:`t" . name) : ""
+        , skipKeyUp ? "Yes" : "No"))
+    }
 
     ; Handles modifier keys [always before skipping the up event]
     If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
@@ -309,41 +308,34 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
     ; -Else it runs the callback from the current mode's class instead.
     ; -Otherwise, if no callback is available, notify the user and return.
-    ; TODO: DOCUMENT NEW MECHANIC: MODIFIER CALLBACKS
+    ; TODO: DOCUMENT NEW MECHANIC: MODIFIER CALLBACKS (Disabled for now - Overlooked the fact that they override normal callbacks)
 
-    CurrentModifiers := Modifiers.Get(Modifiers.CallbackFriendlyDelimiter)
-    ; Msgbox %CurrentModifiers%
+    CurrentModifiers := Modifiers.Get(Delimiter := Modifiers.CallbackFriendlyDelimiter)
 
-    ; This code here is very copy-pasty - a function would be better suited for this but I can't be bothered atm
-    If (DeviceGlobalClass.HasKey(CurrentModifiers)) { ; Do the global binds have a callback for the pressed modifiers?
+    ; TODO: This code here is very copy-pasty - a function would be better suited for this but I can't be bothered atm
+    /*If (DeviceGlobalClass.HasKey(CurrentModifiers)) { ; Does this device's global bindset have a callback for the pressed modifiers?
         callback := ObjBindMethod(DeviceGlobalClass, CurrentModifiers)
         Try {
             callback.Call(name)
         } Catch e {
             SoundPlay, % Sounds.Error
         }
-        return
-    } Else If (DeviceGlobalClass.HasKey(name)) { ; Do the global binds have a callback for this key?
-        callback := ObjBindMethod(DeviceGlobalClass, name)
-    } Else If (DeviceModeClass.HasKey(CurrentModifiers)) { ; Does this mode have a callback for the pressed modifiers?
+    } Else If (DeviceModeClass.HasKey(CurrentModifiers)) { ; Does this device's current mode bindset have a callback for the pressed modifiers?
         callback := ObjBindMethod(DeviceModeClass, CurrentModifiers)
-        callback.Call(Modifiers.Get())
         Try {
             callback.Call(name)
         } Catch e {
             SoundPlay, % Sounds.Error
         }
-        return
-    } Else If (DeviceModeClass.HasKey(name)) { ; Does this mode have a callback for this key?
+    } Else
+    */ If (DeviceGlobalClass.HasKey(name)) { ; Does this device's global bindset have a callback for this key?
+        callback := ObjBindMethod(DeviceGlobalClass, name)
+    } Else If (DeviceModeClass.HasKey(name)) { ; Does this device's current mode bindset have a callback for this key?
         callback := ObjBindMethod(DeviceModeClass, name)
     } Else {
         TrayTip,, % Format("Not modifier & no callback available`nKey: {}`t`tMode: {}`nDevice: {}", name, ModeHandler.Mode, deviceName)
         DebugMessage("No callback available.")
-        Return
     }
-
-    If (debug)
-        ListLines, On
 
     ; And finally calls the callback
     Try {
@@ -449,11 +441,11 @@ Class Modifiers {
 ToggleDebug() {
     If (debug) {
         Global debug = False    ; Disable
-        Menu, Tray, Uncheck, Debug Mode
+        Menu, Tray, Uncheck, % TrayMenu.Names.ToggleDebug
         SoundPlay, % sounds.disconnected
     } Else {
         Global debug = True     ; Enable
-        Menu, Tray, Check, Debug Mode
+        Menu, Tray, Check, % TrayMenu.Names.ToggleDebug
         SoundPlay, % Sounds.connected
     }
 }

@@ -11,6 +11,7 @@ Class Spotify {
     Static volSliderClassNN := ""
     Static spotifyNameClassNN := ""
     Static sliderPos := ""
+    Static isVolToggled := false
 
     systemVol {
         get {
@@ -64,6 +65,16 @@ Class Spotify {
 
     VolSetPercent(percent := "") {
         
+    }
+
+    ToggleVol() {
+        If (Spotify.isVolToggled) {
+            Spotify.VolChange(Spotify.volLoud, "set")
+            Spotify.isVolToggled := false
+        } Else {
+            Spotify.VolChange(Spotify.volQuiet, "set")
+            Spotify.isVolToggled := true
+        }
     }
 
     ; TODO: Change the system so that it takes one of either a percentage value, a positive number, or a negative number to avoid this silly 'vol mode' thing

@@ -41,7 +41,6 @@ AHI.SubscribeKey(secondKeyboardID, GetKeySC("\"), true, Func("Backslash")) ; \
 
 ; -- Subscribes all keys to the keyboard's respective predicate function
 SubscribeAllKeys() {
-    ListLines, Off
     ; outputArray := []
     ; For each keyboard that is wanted to be a macro board
     For deviceName, deviceHandle in MacroKeyboards {
@@ -60,7 +59,6 @@ SubscribeAllKeys() {
             }
         }
     }
-    ListLines, On
     OutputDebug, Finished subscribing all keys.
     ; For Key, Val in outputArray {
     ;     outputString := val . " " . outputString

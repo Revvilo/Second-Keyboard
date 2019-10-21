@@ -6,10 +6,13 @@ Class Global {
                             , "RShift": "Shift" }
 
     Space() {
+        Spotify.ToggleVol()
+        Return
         If (WinActive("ahk_exe Firefox.exe")) {
             Sendinput, {Ctrl Down}m{Ctrl Up}
         }
         WinMinimize, ahk_exe Firefox.exe
+        WinMinimize, a
     }
 
     ; PrintScreen() {

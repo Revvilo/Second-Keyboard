@@ -1,6 +1,7 @@
 Class TrayMenu {
     Class Names {
         Static MainHotkeys := "Enable Main Keyboard Binds"
+        Static EnableListLines := "Enable List Lines"
         Static ToggleDebug := "Toggle Debug Mode"
         Static Reload := "Reload Script"
         Static CycleMode := "Cycle Mode"
@@ -15,11 +16,24 @@ Class TrayMenu {
     ToggleMainHotkeys() {
         If (mainKeyboardHotkeys) {
             mainKeyboardHotkeys := False
-            Menu, Tray, Uncheck, %tray_mainHotkeysName%
+            Menu, Tray, Uncheck, % TrayMenu.Names.MainHotkeys
             SoundPlay, % sounds.disconnected
         } Else {
             mainKeyboardHotkeys := True
-            Menu, Tray, Check, %tray_mainHotkeysName%
+            Menu, Tray, Check, % TrayMenu.Names.MainHotkeys
+            SoundPlay, % Sounds.connected
+        }
+    }
+
+    ; Unused
+    EnableListLines() {
+        If (A_ListLines) {
+            Menu, Tray, Uncheck, % TrayMenu.Names.EnableListLines
+            ListLines, Off
+            SoundPlay, % sounds.disconnected
+        } Else {
+            Menu, Tray, Check, % TrayMenu.Names.EnableListLines
+            ListLines, On
             SoundPlay, % Sounds.connected
         }
     }

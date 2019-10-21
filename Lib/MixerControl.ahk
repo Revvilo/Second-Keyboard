@@ -7,8 +7,14 @@ Class MixerControl {
     Static volQuietMultiplier := 0.05
 
     Static volSliderClassNN := ""
+    Static staticControlHistory := {}
     Static programNameControlClassNN := ""
     Static sliderPos := ""
+
+    Class Alert {
+        Static Title := "MixerControl Vol Control"
+        Static ErrorTitle := "MixerControl Vol Control - Error"
+    }
 
     systemVol {
         get {
@@ -25,6 +31,66 @@ Class MixerControl {
         get {
             Return this.systemVol * this.volQuietMultiplier
         }
+    }
+
+    GetMixerHandle() {
+        If (!WinExist("ahk_exe SndVol.exe")) {
+            Run, SndVol.exe,, Min
+            WinWait, Volume Mixer,, 10
+            If (ErrorLevel) {
+                SoundPlay, % Sounds.disconnected, Wait
+                MsgBox,, % MixerControl.Alert.ErrorTitle, % "Ran out of time while waiting for Volume Mixer to open."
+                Return False
+            }
+            Sleep, 1000 ; Give the mixer time to be fully open
+        }
+        WinGet, mixerHandle, ID, Volume Mixer
+        Return mixerHandle
+    }
+
+    GetSliderByText(ByRef RequestedText) {
+        If (not MixerHandle:=MixerControl.GetMixerHandle())
+            Return ; Return if the mixer, in some way, is not accessible
+        WinGet, MixerControlList, ControlList, ahk_id %MixerHandle%
+
+        ; Only executes if the control that was last confirmed to contain the programs's name doesn't contain it anymore.
+        ControlGetText, wasProgramsTitle, % This.staticControlHistory[RequestedText], ahk_id %MixerHandle% ; Gets the current text of the control that was originally the programs's title
+
+        If (This.volSliderClassNN == "" || TargetProgramName != wasProgramsTitle) {
+            ControlsArray := StrSplit(MixerControlList, "`n")
+            FoundProgram := 0
+            For i, e in ControlsArray {
+                ; If the line is a static text control
+                If (RegExMatch(e, "Static")) {
+                    ; Get the text stored in the static text control
+                    ControlGetText, controlText, %e%, ahk_id %MixerHandle%
+
+                    ; If the control's text is the same as the title found earlier
+                    If (controlText == TargetProgramName) {
+                        ; Record the index of the volume slider for the program - Two is added because the program's name control preceeds the slider by two controls
+                        This.StaticControlHistory[RequestedText] := ControlsArray[A_Index]
+                        This.volSliderClassNN := ControlsArray[A_Index + 2]
+
+                        ; The program was found in the mixer
+                        Soundplay, % Sounds.connected
+                        FoundProgram := 1
+                        Break
+                    }
+                }
+            }
+            If (!FoundProgram) {
+                Soundplay, % Sounds.asterisk, Wait
+                ; SendInput, {Media_Play_Pause}
+                ; Sleep, 500
+                ; SendInput, {Media_Play_Pause}
+                ; Sleep, 2000
+                ; TrayTip, % Spotify.Alert.Title, % "Cannot find Spotify in the audio mixer.`nTry playing a track."
+            }
+        } Else {
+            DebugTrayTip("No change in the Mixer was detected.`nSliderClassNN: " . This.volSliderClassNN . "`nCurrentSpotifyTitle: " . currentSpotifyTitle . "`nTitle unchanged?: " . ((wasSpotifysTitle == currentSpotifyTitle) ? "True" : "False"))
+        }
+        ; ========================================================
+
     }
 
     ; Changes the volume relatively, or sets an absolute volume
