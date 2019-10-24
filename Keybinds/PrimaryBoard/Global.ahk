@@ -1,7 +1,7 @@
 Class Global {
 
     ; List of keys that will be considered Modifiers instead of hotkeys along with their respective aliases to use when checking for said Modifiers.
-    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (Modifiers == "Alt")
+    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (Modifiers.IsPressed("Alt"))
     ; Of course any name can be used as the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
     Static modifierKeys := {  "LControl":   "Control"
                             , "RControl":   "Control"
@@ -37,9 +37,9 @@ Class Global {
     }
     ; Mode change
     Tab(Modifiers) {
-        If (Modifiers == "Control")  { ; Reset mode - Ctrl Tab
+        If (Modifiers.IsPressed("Control"))  { ; Reset mode - Ctrl Tab
             ModeHandler.Mode := 1
-        } Else If (Modifiers == "") { ; Cycle mode - Tab
+        } Else If (Modifiers.IsPressed()) { ; Cycle mode - Tab
             ModeHandler.Cycle()
         }
     }
@@ -71,51 +71,51 @@ Class Global {
     ; -- MISC KEYS -- ;
 
     F1(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F13}
     }
     F2(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F14}
     }
     F3(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F15}
     }
     F4(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F16}
     }
     F5(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F17}
     }
     F6(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F18}
     }
     F7(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F19}
     }
     F8(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F20}
     }
     F9(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F21}
     }
     F10(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F22}
     }
     F11(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F23}
     }
     F12(Modifiers) {
-        If (Modifiers == "Alt")
+        If (Modifiers.IsPressed("Alt"))
             SendInput, {F24}
     }
 
@@ -126,9 +126,9 @@ Class Global {
         SendInput, ^#{right} ; -- Virutal desktop right
     }
     Up(Modifiers) {
-        If (Modifiers == "") {
+        If (Modifiers.IsPressed()) {
             OBS.SceneControlSend("{UP}")
-        } Else If (Modifiers == "Control") {
+        } Else If (Modifiers.IsPressed("Control")) {
             ToggleFakeFullscreen()
         }
     }
@@ -165,16 +165,16 @@ Class Global {
     ; RWin() {
     ; }
     AppsKey(Modifiers) {
-        If (Modifiers == "") {
+        If (Modifiers.IsPressed()) {
             BrowserControl.PlayPause()
-        } Else If (Modifiers == "Control") {
+        } Else If (Modifiers.IsPressed("Control")) {
             BrowserControl.MuteUnmute()
-        } Else If (Modifiers == "WinKey") {
+        } Else If (Modifiers.IsPressed("WinKey")) {
             BrowserControl.Fullscreen()
         }
     }
     Apostrophe(Modifiers) {
-        If (Modifiers == "") {
+        If (Modifiers.IsPressed()) {
             IfWinExist, Firefox
             {
                 WinRestore, Firefox
@@ -183,7 +183,7 @@ Class Global {
             } Else {
                 Run, Firefox.exe
             }
-        } Else If (Modifiers == "Alt") {
+        } Else If (Modifiers.IsPressed("Alt")) {
             WinClose, Firefox
         }
     }
@@ -220,7 +220,7 @@ Class Global {
     ; -- NUMPAD CONTROLS -- ;
 
     NumpadIns(Modifiers) { ; -- Numpad0
-        If (Modifiers == "NumpadSub") {
+        If (Modifiers.IsPressed("NumpadSub")) {
             OBS.FlipCamera()
         } Else {
             OBS.MuteUnmuteSystem()
@@ -264,7 +264,7 @@ Class Global {
     }
 
     NumpadAdd(Modifiers) {
-        If (Modifiers == "NumpadSub") {
+        If (Modifiers.IsPressed("NumpadSub")) {
             OBS.SetProfile("Stream")
             Return
         }
@@ -279,13 +279,13 @@ Class Global {
     ; NumpadSub() {
     ; }
     NumpadDel(Modifiers) {
-        If (Modifiers == "NumpadSub")
+        If (Modifiers.IsPressed("NumpadSub"))
             OBS.ToggleCamera()
-        Else If (Modifiers == "")
+        Else If (Modifiers.IsPressed())
             OBS.MuteUnmuteMic()
     }
     NumpadEnter(Modifiers) {
-        If (Modifiers == "NumpadSub") {
+        If (Modifiers.IsPressed("NumpadSub")) {
             OBS.SetProfile("1080p60 Recording")
             Return
         }
@@ -342,38 +342,19 @@ Class Global {
     ; ------------- ;
     ; -- LETTERS -- ;
 
-    A(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            If (Modifiers == "") { ; -- Spotify vol decrease
-                Spotify.VolChange(-1, "change")
-            } Else If (Modifiers == "Shift") { ; -- Spotify vol -5
-                Spotify.VolChange(-5, "change")
-            } Else If (Modifiers == "Control") { ; -- Spotify quiet vol
-                Spotify.VolChange(Spotify.volQuiet, "set")
-            }
-        } Else {
-            If (Modifiers == "") { ; -- vol increase
-                MixerControl.ChangeVolume("Mozilla Firefox", -1, "change")
-            } Else If (Modifiers == "Alt") {
-                BrowserControl.YoutubeMusic.VolDown()
-            } Else If (Modifiers == "Shift") { ; -- vol +5
-                MixerControl.ChangeVolume("Mozilla Firefox", -5, "change")
-            } Else If (Modifiers == "Control") { ; -- set to loud vol
-                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volQuiet, "set")
-            }
-        }
-    }
+    ; A(Modifiers) {
+    ; }
     B() {
     }
     C(Modifiers) {
-        If (Modifiers == "Alt") { ; -- Autoclicker - Ctrl Alt C
+        If (Modifiers.IsPressed("Alt")) { ; -- Autoclicker - Ctrl Alt C
             ToggleTimer("AutoClicker")
         }
     }
     D() {
     }
     E(Modifiers) {
-        If (Modifiers == "WinKey") { ; -- Open editing folder
+        If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
             Run, F:\Video\Editing
         }
     }
@@ -398,7 +379,7 @@ Class Global {
     L() {
     }
     M(Modifiers) {
-        If (Modifiers == "Alt Control") { ; -- Copy Mouse Position - Ctrl Alt M
+        If (Modifiers.IsPressed("Alt", "Control")) { ; -- Copy Mouse Position - Ctrl Alt M
             MouseGetPos, OutputVarX, OutputVarY
             Clipboard := OutputVarX . ", " . OutputVarY
             SoundPlay, % Sounds.connected
@@ -410,69 +391,46 @@ Class Global {
     }
     P() {
     }
-    Q(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            If (Modifiers == "") { ; -- Spotify vol increase
-                Spotify.VolChange(1, "change") 
-            } Else If (Modifiers == "Shift") { ; -- Spotify vol +5
-                Spotify.VolChange(5, "change")
-            } Else If (Modifiers == "Control") { ; -- Spotify loud vol
-                Spotify.VolChange(Spotify.volLoud, "set")
-            } Else If (Modifiers == "Control Shift") {
-                Spotify.VolChange(Spotify.systemVol, "set")
-            }
-        } Else {
-            If (Modifiers == "") { ; -- vol increase
-                MixerControl.ChangeVolume("Mozilla Firefox", 1, "change")
-            } Else If (Modifiers == "Alt") {
-                BrowserControl.YoutubeMusic.VolUp()
-            } Else If (Modifiers == "Shift") { ; -- vol +5
-                MixerControl.ChangeVolume("Mozilla Firefox", 5, "change")
-            } Else If (Modifiers == "Control") { ; -- set to loud vol
-                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.volLoud, "set")
-            } Else If (Modifiers == "Control Shift") {
-                MixerControl.ChangeVolume("Mozilla Firefox", MixerControl.systemVol, "set")
-            }
-        }
-    }
+    ; Q(Modifiers) {
+    ; }
     R() {
     }
     S(Modifiers) {
-        If (Modifiers == "Shift") {
+        If (Modifiers.IsPressed("Shift")) {
             Misc.SpaceOutLetters()
-        } Else If (Modifiers == "Alt") {
+        } Else If (Modifiers.IsPressed("Alt")) {
             Misc.SmallLetters()
-        } Else If (Modifiers == "") {
+        } Else If (Modifiers.IsPressed()) {
             Spotify.ToggleVol()
         }
     }
     T(Modifiers) {
-        If (Modifiers == "")
+        If (Modifiers.IsPressed())
             Spotify.ToggleVisibility()
-        Else If (Modifiers == "Shift") {
+        Else If (Modifiers.IsPressed("Shift")) {
             SendInput, {U+2713} ; -- ✓ Check mark
-        } Else If (Modifiers == "Control Shift") {
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
             SendInput, {U+2714} ; -- ✔ Heavy check mark
         }
     }
     U() {
     }
     V(Modifiers) {
-        If (Modifiers == "WinKey") { ; -- Open video folder
+        If (Modifiers.IsPressed("WinKey")) { ; -- Open video folder
             If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
                 SendInput, ^lF:\Video{enter}
             Else
                 Run, F:\Video
-        } Else If (Modifiers == "Shift WinKey") {
+        } Else If (Modifiers.IsPressed("Shift", "WinKey")) {
             Run, F:\Video
         }
     }
     W() {
     }
     X(Modifiers) {
-        If (Modifiers == "") {
+        If (Modifiers.IsPressed()) {
             SendInput, {Media_Next} ; Next Song
-        } Else If (Modifiers == "Alt") {
+        } Else If (Modifiers.IsPressed("Alt")) {
             Minecraft.MouseMove(2100, 350)
         }
     }
@@ -480,9 +438,9 @@ Class Global {
         ResetVolumeMixer()
     }
     Z(Modifiers) {
-        If (Modifiers == "") {
+        If (Modifiers.IsPressed()) {
             SendInput, {Media_Prev} ; Prev song
-        } Else If (Modifiers == "Alt") {
+        } Else If (Modifiers.IsPressed("Alt")) {
             Minecraft.MouseMove(-2100, -350)
         }
     }

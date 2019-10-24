@@ -30,16 +30,16 @@ Class Global {
     Right(modifiers) { ; UP
         If (modifiers == "") { ; -- Spotify vol +5
             Spotify.VolChange(5, "change")
-        } Else If (modifiers == "Control") { ; -- Spotify loud vol
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
             Spotify.VolChange(Spotify.volLoud, "set")
-        } Else If (modifiers == "Control Shift") {
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
             Spotify.VolChange(Spotify.systemVol, "set")
         }
     }
     Left(modifiers) { ; DOWN
         If (modifiers == "") { ; -- Spotify vol -5
             Spotify.VolChange(-5, "change")
-        } Else If (modifiers == "Control") { ; -- Spotify quiet vol
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
             Spotify.VolChange(Spotify.volQuiet, "set")
         }
     }
@@ -69,7 +69,7 @@ Class Global {
     Backslash(modifiers) {
         If (modifiers == "") {
             BrowserControl.PlayPause()
-        } Else If (modifiers == "NumpadSub") {
+        } Else If (Modifiers.IsPressed("NumpadSub")) {
             BrowserControl.ToggleFullscreen()
         }
     }

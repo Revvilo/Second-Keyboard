@@ -108,7 +108,7 @@ Sounds.PopulateSounds()
 Sounds.SFX.PopulateSounds()
 SubscribeAllKeys()
 
-ModeHandler.ModeList := ["General", "Minecraft", "Editing", "Animating"]
+ModeHandler.ModeList := ["General", "Browser"]
 ModeHandler.Mode := 1
 
 CheckRedundantKeybinds()
@@ -123,6 +123,8 @@ Class KeybindSets {
         ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
         #Include Keybinds\PrimaryBoard\Global.ahk
         ; -- #Include other callback classes below here with the same name as it's respective mode
+        #Include Keybinds\PrimaryBoard\Browser.ahk
+        #Include Keybinds\PrimaryBoard\General.ahk
     }
     Class NumpadBoard {
         ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
@@ -202,84 +204,30 @@ Return
     Socket := OBS.GetOBSWebsocket()
     Msgbox, % Socket.GetCurrentScene()
 Return
-; ^!p::
-; {
-;     ControlClick, Start, Alarms & Clock
-; }
-; Return
-; ~CapsLock UP::
-;     SetCapsLockState, Off
-; ^p::
-;     ; SendMessage %LB_SELECTSTRING%,0,&txt,, ahk_id %hlblList% 
-;     txt := "1"
-;     SendMessage, LB_SELECTSTRING := 0x018C, 0, "1",, ahk_id 0x740440 ;LB_SETCURSEL := 0x186
-;     Msgbox, %ErrorLevel%
-
-    ; MsgBox, % oAcc.accSelection()
-    ; coAcc := oAcc.accChild(1)
-    ; MsgBox, % coAcc.accName(0)
-    ; oAcc.accSelect(2, "1")
-    ; Msgbox, %ErrorLevel%
-    ; Control, ChooseString, 1, Qt5QWindowIcon17, ahk_exe obs64.exe
-    ; SendMessage, LB_SELECTSTRING, [wParam, lParam, Qt5QWindowIcon17, OBS
-    ; ControlGet items, Visible, , Qt5QWindowIcon17, OBS
-    ; Msgbox, %items%
-Return
-; ^F1::
-; {
-;     Try {
-;         SoundPlay, % Sounds.SFX.stopSounds
-;     } Catch e {
-;         Msgbox, Error
-;     }
-;     ; ControlGet, OutputVar, List,, Qt5QWindowIcon5, ahk_exe obs64.exe
-;     ; Msgbox, %OutputVar%
-;     ; WinGet, obsControlList, ControlList, ahk_exe obs64.exe
-;     ; ; ControlGet, obsScenesText, Cmd, [Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText
-;     ; ; Msgbox, %obsScenesText%
-;     ; OutStr := ""
-;     ; Loop, Parse, obsControlList
-;     ; {
-;     ;     ; ControlGetText, obsScenesText, %A_LoopField%, ahk_exe obs64.exe
-;     ;     ; Msgbox, %A_Index%`t%obsScenesText%
-;     ;     ControlGet, OutputVar, List, Count, Qt5QWindowIcon5, OBS
-;     ;     ; Msgbox, %A_Index%`t%OutputVar%
-;     ;     OutStr .= OutputVar . "`n"
-;     ; }
-    
-;     ; Msgbox, %OutStr%
-;     ; Return
-; }
-; Return
-; ============================ ;
-; AHI Keypress callbacks below ;
-; ============================ ;
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
-    DeviceModeClass := KeybindSets[deviceName][mode]
+    DeviceModeClass := KeybindSets[deviceName][ModeHandler.Mode]
 
     ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message even if debug was off
-    If (debug) {
-        Msgbox, % (Format("A macro key was pressed and debug mode is on.`n`n"
-        . "Device name: " . deviceName . "`n`n"
-        . "Global bind:`t{}`n`n"
-        . "Callback: `t{}`n"
-        . "Key Code:`t{}`n"
-        . "Modifiers:`t{}`n`n"
-        . "Using alias:`t{}{}`n"
-        . "Ignore key up:`t{}`n`n"
-        , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
-        , keyAliases.HasKey(name) ? keyAliases[name] : name
-        , code
-        , Modifiers.Get() == "" ? "None" : Modifiers.Get()
-        , keyAliases.HasKey(name) ? "Yes" : "No"
-        , keyAliases.HasKey(name) ? ("`nOriginal Name:`t" . name) : ""
-        , skipKeyUp ? "Yes" : "No"))
-    }
+    DebugMessage((Format("========== A macro key changed state ==========`n`n"
+    . "Device name: " . deviceName . "`n`n"
+    . "Global bind:`t{}`n`n"
+    . "Callback: `t{}`n"
+    . "Key Code:`t{}`n"
+    . "Modifiers:`t{}`n`n"
+    . "Using alias:`t{}{}`n"
+    . "Ignore key up:`t{}"
+    , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
+    , keyAliases.HasKey(name) ? keyAliases[name] : name
+    , code
+    , Modifiers.ToString() == "" ? "None" : Modifiers.ToString()
+    , keyAliases.HasKey(name) ? "Yes" : "No"
+    , keyAliases.HasKey(name) ? ("`nOriginal Name:`t" . name) : ""
+    , skipKeyUp ? "Yes" : "No")))
 
     ; Handles modifier keys [always before skipping the up event]
     If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
@@ -308,27 +256,9 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
     ; -Else it runs the callback from the current mode's class instead.
     ; -Otherwise, if no callback is available, notify the user and return.
-    ; TODO: DOCUMENT NEW MECHANIC: MODIFIER CALLBACKS (Disabled for now - Overlooked the fact that they override normal callbacks)
 
-    CurrentModifiers := Modifiers.Get(Delimiter := Modifiers.CallbackFriendlyDelimiter)
-
-    ; TODO: This code here is very copy-pasty - a function would be better suited for this but I can't be bothered atm
-    /*If (DeviceGlobalClass.HasKey(CurrentModifiers)) { ; Does this device's global bindset have a callback for the pressed modifiers?
-        callback := ObjBindMethod(DeviceGlobalClass, CurrentModifiers)
-        Try {
-            callback.Call(name)
-        } Catch e {
-            SoundPlay, % Sounds.Error
-        }
-    } Else If (DeviceModeClass.HasKey(CurrentModifiers)) { ; Does this device's current mode bindset have a callback for the pressed modifiers?
-        callback := ObjBindMethod(DeviceModeClass, CurrentModifiers)
-        Try {
-            callback.Call(name)
-        } Catch e {
-            SoundPlay, % Sounds.Error
-        }
-    } Else
-    */ If (DeviceGlobalClass.HasKey(name)) { ; Does this device's global bindset have a callback for this key?
+    ; CurrentModifiers := Modifiers.ToString(Delimiter := Modifiers.CallbackFriendlyDelimiter)
+    If (DeviceGlobalClass.HasKey(name)) { ; Does this device's global bindset have a callback for this key?
         callback := ObjBindMethod(DeviceGlobalClass, name)
     } Else If (DeviceModeClass.HasKey(name)) { ; Does this device's current mode bindset have a callback for this key?
         callback := ObjBindMethod(DeviceModeClass, name)
@@ -413,9 +343,24 @@ Class Modifiers {
     Static CallbackFriendlyDelimiter := "_"
     Static ActiveModifiers := {}
 
+    HandleState(pressed, key) {
+        If (pressed == 1) {
+            If (!Modifiers.ActiveModifiers[key]) {
+                Modifiers.ActiveModifiers[key] := True
+                ; ToolTip, ▼ %key%
+            }
+        } Else {
+            Modifiers.ActiveModifiers.Delete(key)
+            ; ToolTip, % "▲ " key " " Modifiers.ActiveModifiers.Count()
+        }
+    }
+
+    Modifiers() {
+    }
+
     ; Gets a string of all the currently pressed modifiers separated by 'delimiter'
     ; delimiter defaults to a space
-    Get(delimiter = " ") {
+    ToString(delimiter = " ") {
         output := ""
         For Key, Val in Modifiers.ActiveModifiers {
             If (Val) {
@@ -425,16 +370,46 @@ Class Modifiers {
         Return Trim(output, delimiter)
     }
 
-    HandleState(pressed, key) {
-        If (pressed == 1) {
-            If (!Modifiers.ActiveModifiers[key]) {
-                Modifiers.ActiveModifiers[key] := True
-                ; ToolTip, ▼ %key%
+    Get() {
+        Return new Modifiers()
+    }
+
+    IsPressed(Keys*) {
+        DebugMessage(Format("`n[Modifier Handler]`tBeginning {}    Held modifiers: {}", Keys.Count() < 1 ? "check for no modifiers." : "search for following modifiers:    Requested Modifiers: " . Keys.Count(), This.ActiveModifiers.Count()))
+
+        If (Keys.Count() > 0) {
+            Msg := ""
+            For Index, Name in Keys {
+                Msg .= " " . Name . ","
             }
-        } Else {
-            Modifiers.ActiveModifiers[key] := False
-            ; ToolTip, ▲ %key%
+            DebugMessage("`t-" . SubStr(Msg, 1, -1))
         }
+
+        RequestList := Keys
+        ActiveList := This.ActiveModifiers
+
+        If (ActiveList.Count() != RequestList.Count()) {
+            DebugMessage("`tArray lengths do not match.")
+            DebugMessage(">> Match failure, returning False.")
+            Return False ; Match impossible if count of entries does not match
+        }
+
+        For NeedleIndex, NeedleKey in RequestList { ; For each requested modifier
+            Success := False
+            For ActiveKey, ActiveIndex in ActiveList { ; For each active modifier
+                If (NeedleKey = ActiveKey) {
+                    Success := True
+                    Break ; This iteration's search has succeeded
+                }
+            }
+            If (!Success) {
+                DebugMessage("`tSearch iteration completed without finding match.")
+                DebugMessage(">> Match failure, returning False.")
+                Return False ; Loop has exited without finding match
+            }
+        }
+        DebugMessage(">>> Match success; returning True.`n`n")
+        Return True
     }
 }
 
@@ -460,7 +435,7 @@ CheckRedundantKeybinds() {
             }
         }
         If (listOfRedundantCallbacks != "")
-            Msgbox, % Format("The following list of keys will not trigger because they already have a callback inside of Global.`n`n`nMode: {}{}", val, listOfRedundantCallbacks)
+            Msgbox, % Format("The following list of keys will not ever trigger because they already have a callback inside of Global.`n`n`nMode: {}{}", val, listOfRedundantCallbacks)
     }
 }
 
@@ -510,13 +485,15 @@ ResetVolumeMixer(vol := "") {
 ; Msgbox that requires 'debug' to be true in order to show
 DebugMessage(inMsg := "")
 {
-    If (debug) {
-        Msgbox, % inMsg
-    }
+    OutputDebug, % inMSG
+    ; If (debug) {
+    ;     Msgbox, % inMsg
+    ; }
 }
 
 ; Traytip variation of above
 DebugTrayTip(inMSG := "") {
+    OutputDebug, % inMSG
     If (debug) {
         TrayTip, % "Debugging", %inMSG%
     }
