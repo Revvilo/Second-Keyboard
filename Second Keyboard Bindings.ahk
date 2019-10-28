@@ -36,6 +36,7 @@ Process, Priority, %ErrorLevel%, High
 #Include Lib\Acc.ahk
 #Include Lib\TrayMenu.ahk
 #Include Lib\ModeHandler.ahk
+#Include Lib\VoicemeeterRemote.ahk
 
 ; Tray menu info
 Global tray_mainHotkeysName := "Enable Main Keyboard Binds"
@@ -114,7 +115,7 @@ ModeHandler.Mode := 1
 CheckRedundantKeybinds()
 
 If (WinExist("ahk_exe Spotify.exe") && WinExist("Volume Mixer")) {
-    Spotify.VolChange(0, "change")
+    Spotify.VolChange(0, "change") ; Workaround way of automatically locating spotify's volume slider on script-start. Should be improved.
 }
 
 Class KeybindSets {
@@ -213,17 +214,18 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     DeviceModeClass := KeybindSets[deviceName][ModeHandler.Mode]
 
     ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message even if debug was off
-    DebugMessage((Format("========== A macro key changed state ==========`n`n"
+    DebugMessage((Format("========== A macro key was {}. ==========`n`n"
     . "Device name: " . deviceName . "`n`n"
-    . "Global bind:`t{}`n`n"
     . "Callback: `t{}`n"
     . "Key Code:`t{}`n"
+    . "Global bind:`t{}`n`n"
     . "Modifiers:`t{}`n`n"
     . "Using alias:`t{}{}`n"
     . "Ignore key up:`t{}"
-    , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
+    , state ? "pressed" : "released"
     , keyAliases.HasKey(name) ? keyAliases[name] : name
     , code
+    , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
     , Modifiers.ToString() == "" ? "None" : Modifiers.ToString()
     , keyAliases.HasKey(name) ? "Yes" : "No"
     , keyAliases.HasKey(name) ? ("`nOriginal Name:`t" . name) : ""
@@ -579,5 +581,6 @@ Stopwatch() {
 }
 
 ExitRoutine(ExitReason, ExitCode) { ; All code for closing script here
+    VoicemeeterRemote.ExitCleanup()
     ExitApp
 }

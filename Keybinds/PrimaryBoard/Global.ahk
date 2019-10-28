@@ -345,6 +345,7 @@ Class Global {
     ; A(Modifiers) {
     ; }
     B() {
+        VoicemeeterRemote.SetStripGain(3, -10)
     }
     C(Modifiers) {
         If (Modifiers.IsPressed("Alt")) { ; -- Autoclicker - Ctrl Alt C

@@ -2,24 +2,31 @@ Class General {
     Q(Modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
             If (Modifiers.IsPressed()) { ; -- Spotify vol increase
-                Spotify.VolChange(1, "change") 
+                VoicemeeterRemote.ChangeStripGain(3, 1)
+                ; Spotify.VolChange(1, "change") 
             } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
-                Spotify.VolChange(5, "change")
+                VoicemeeterRemote.ChangeStripGain(3, 5)
+                ; Spotify.VolChange(5, "change")
             } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
-                Spotify.VolChange(Spotify.volLoud, "set")
+                VoicemeeterRemote.SetStripGain(3, -10)
+                ; Spotify.VolChange(Spotify.volLoud, "set")
             } Else If (Modifiers.IsPressed("Control", "Shift")) {
-                Spotify.VolChange(Spotify.systemVol, "set")
+                VoicemeeterRemote.SetStripGain(3, 0)
+                ; Spotify.VolChange(Spotify.systemVol, "set")
             }
         }
     }
     A(Modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
             If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
-                Spotify.VolChange(-1, "change")
+                VoicemeeterRemote.ChangeStripGain(3, -1)
+                ; Spotify.VolChange(-1, "change")
             } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
-                Spotify.VolChange(-5, "change")
+                VoicemeeterRemote.ChangeStripGain(3, -5)
+                ; Spotify.VolChange(-5, "change")
             } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
-                Spotify.VolChange(Spotify.volQuiet, "set")
+                VoicemeeterRemote.SetStripGain(3, -30)
+                ; Spotify.VolChange(Spotify.volQuiet, "set")
             }
         }
     }
