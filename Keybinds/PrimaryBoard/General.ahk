@@ -1,33 +1,235 @@
 Class General {
-    Q(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            If (Modifiers.IsPressed()) { ; -- Spotify vol increase
-                VoicemeeterRemote.ChangeStripGain(3, 1)
-                ; Spotify.VolChange(1, "change") 
-            } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
-                VoicemeeterRemote.ChangeStripGain(3, 5)
-                ; Spotify.VolChange(5, "change")
-            } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
-                VoicemeeterRemote.SetStripGain(3, -10)
-                ; Spotify.VolChange(Spotify.volLoud, "set")
-            } Else If (Modifiers.IsPressed("Control", "Shift")) {
-                VoicemeeterRemote.SetStripGain(3, 0)
-                ; Spotify.VolChange(Spotify.systemVol, "set")
-            }
+
+    ; List of keys that will be considered Modifiers instead of hotkeys along with their respective aliases to use when checking for said Modifiers.
+    ; For example: { "RAlt": "Alt" } - this means if 'RAlt' is pressed, it is sent as 'Alt' when passed into a callback, so you'd then check for (Modifiers.IsPressed("Alt"))
+    ; Of course any name can be used as the second string for you to identify later. The first string must be the key that will be pressed as a modifier.
+    ; Same rules as callbacks apply for mode specificity!
+    Static modifierKeys := {  "LControl":   "Control"
+                            , "RControl":   "Control"
+                            , "LShift":     "Shift"
+                            , "RShift":     "Shift"
+                            , "LAlt":       "Alt"
+                            , "RAlt":       "Alt"
+                            , "NumpadSub":  "NumpadSub"
+                            , "LWin":       "WinKey"
+                            , "RWin":       "WinKey" }
+
+    Up(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            OBS.SceneControlSend("{UP}")
+        } Else If (Modifiers.IsPressed("Control")) {
+            ToggleFakeFullscreen()
         }
     }
-    A(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
-                VoicemeeterRemote.ChangeStripGain(3, -1)
-                ; Spotify.VolChange(-1, "change")
-            } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
-                VoicemeeterRemote.ChangeStripGain(3, -5)
-                ; Spotify.VolChange(-5, "change")
-            } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
-                VoicemeeterRemote.SetStripGain(3, -30)
-                ; Spotify.VolChange(Spotify.volQuiet, "set")
+    Down() {
+        OBS.SceneControlSend("{DOWN}")
+    }
+    Apostrophe(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            IfWinExist, Firefox
+            {
+                WinRestore, Firefox
+                WinMaximize, Firefox
+                ; WinActivate, Firefox
+            } Else {
+                Run, Firefox.exe
             }
+        } Else If (Modifiers.IsPressed("Alt")) {
+            WinClose, Firefox
+        }
+    }
+    ; Semicolon() {
+    ; }
+    ; Comma() {
+    ; }
+    ; Dot() {
+    ; }
+    ; PgUp() {
+        ; OBS.Transition()
+    ; }
+    PgDn() {
+        OBS.Transition()
+    }
+    End() {
+        OBS.SaveReplayBuffer()
+    }
+    Home() {
+        ; OBS.SendToOBS("{F24}") ; Toggle capture foreground window.
+    }
+    Insert() {
+        OBS.ToggleStreaming()
+        SoundPlay, % Sounds.connected
+    }
+    Delete() {
+        OBS.ToggleRecording()
+        ; OBS.SendToOBS("{F22}")    ; Toggle Recording
+    }
+
+    ; --------------------- ;
+    ; -- NUMPAD CONTROLS -- ;
+
+    NumpadIns(Modifiers) { ; -- Numpad0
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.FlipCamera()
+        } Else {
+            OBS.MuteUnmuteSystem()
+        }
+    }
+    NumpadEnd(Modifiers) { ; -- Numpad1
+        OBS.SelectScene("Game")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadDown(Modifiers) { ; -- Numpad2
+        OBS.SelectScene("Stand By")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadPgDn(Modifiers) { ; -- Numpad3
+        OBS.SelectScene("Desktop")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadLeft(Modifiers) { ; -- Numpad4
+        OBS.SelectScene("Fullscreen Cam")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadClear(Modifiers) { ; -- Numpad5
+        OBS.SelectScene("Zoom Cam 1")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadRight(Modifiers) { ; -- Numpad6
+        OBS.SelectScene("Zoom Cam 2")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadHome(Modifiers) { ; -- Numpad7
+        OBS.SelectScene("Big sad")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadUp(Modifiers) { ; -- Numpad8
+        OBS.SelectScene("Zoom Flipped Cam 1")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadPgUp(Modifiers) { ; -- Numpad9
+        OBS.SelectScene("Zoom Flipped Cam 2")
+        OBS.AutoTransition(Modifiers)
+    }
+
+    NumpadAdd(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.SetProfile("Stream")
+            Return
+        }
+        SendInput, !{F19} ; -- Toggle Discord deafen
+    }
+    NumpadDiv() {
+        OBS.Transition(1)
+    }
+    NumpadMult() {
+        OBS.Transition(2)
+    }
+    ; NumpadSub() {
+    ; }
+    NumpadDel(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub"))
+            OBS.ToggleCamera()
+        Else If (Modifiers.IsPressed())
+            OBS.MuteUnmuteMic()
+    }
+    NumpadEnter(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.SetProfile("1080p60 Recording")
+            Return
+        }
+        SendInput, !{F20} ; -- Toggle Discord mic
+    }
+    Numlock() { 
+        OBS.ToggleStudioMode()
+    }
+    ; Pause() { ; This doesn't work - Both numlock and scrolllock have the same keycode(?), god knows why.
+    ; }
+
+    ; ------------- ;
+    ; -- NUMBERS -- ;
+
+    1(Modifiers) {
+        Sounds.StopSounds()
+    }
+    2(Modifiers) {
+        Sounds.PlaySoundEffect("Badum Tss")
+    }
+    3(Modifiers) {
+        Sounds.PlaySoundEffect("Applause")
+    }
+    4(Modifiers) {
+        Sounds.PlaySoundEffect("Song - Crab Rave")
+    }
+    5(Modifiers) {
+        Sounds.PlaySoundEffect("Song - Ocean Man")
+    }
+    6(Modifiers) {
+        Sounds.PlaySoundEffect("Song - No Time For Caution")
+    }
+    ; 7(Modifiers) {
+    ; }
+    ; 8(Modifiers) {
+    ; }
+    ; 9(Modifiers) {
+    ; }
+    ; 0(Modifiers) {
+    ; }
+
+    ; A(Modifiers) {
+    ; }
+    ; B(Modifiers) {
+    ; }
+    C(Modifiers) {
+        If (Modifiers.IsPressed("Control", "Alt")) { ; -- Autoclicker - Ctrl Alt C
+            ToggleTimer("AutoClicker")
+        }
+    }
+    E(Modifiers) {
+        If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
+            Run, F:\Video\Editing
+        }
+    }
+    M(Modifiers) {
+        If (Modifiers.IsPressed("Alt", "Control")) { ; -- Copy Mouse Position - Ctrl Alt M
+            MouseGetPos, OutputVarX, OutputVarY
+            Clipboard := OutputVarX . ", " . OutputVarY
+            SoundPlay, % Sounds.connected
+        }
+    }
+    S(Modifiers) {
+        If (Modifiers.IsPressed("Shift")) {
+            Misc.SpaceOutLetters()
+        } Else If (Modifiers.IsPressed("Alt")) {
+            Misc.SmallLetters()
+        } Else If (Modifiers.IsPressed()) {
+            Spotify.ToggleVol()
+        }
+    }
+    T(Modifiers) {
+        If (Modifiers.IsPressed())
+            Spotify.ToggleVisibility()
+        Else If (Modifiers.IsPressed("Shift")) {
+            SendInput, {U+2713} ; -- ✓ Check mark
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
+            SendInput, {U+2714} ; -- ✔ Heavy check mark
+        }
+    }
+    X(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            SendInput, {Media_Next} ; Next Song
+        } Else If (Modifiers.IsPressed("Alt")) {
+            Minecraft.MouseMove(2100, 350)
+        }
+    }
+    Y() {
+        ResetVolumeMixer()
+    }
+    Z(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            SendInput, {Media_Prev} ; Prev song
+        } Else If (Modifiers.IsPressed("Alt")) {
+            Minecraft.MouseMove(-2100, -350)
         }
     }
 }

@@ -109,7 +109,7 @@ Sounds.PopulateSounds()
 Sounds.SFX.PopulateSounds()
 SubscribeAllKeys()
 
-ModeHandler.ModeList := ["General", "Browser"]
+ModeHandler.ModeList := ["General", "Browser", "Resolve"]
 ModeHandler.Mode := 1
 
 CheckRedundantKeybinds()
@@ -126,6 +126,7 @@ Class KeybindSets {
         ; -- #Include other callback classes below here with the same name as it's respective mode
         #Include Keybinds\PrimaryBoard\Browser.ahk
         #Include Keybinds\PrimaryBoard\General.ahk
+        #Include Keybinds\PrimaryBoard\Resolve.ahk
     }
     Class NumpadBoard {
         ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
@@ -215,7 +216,8 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message even if debug was off
     DebugMessage((Format("========== A macro key was {}. ==========`n`n"
-    . "Device name: " . deviceName . "`n`n"
+    . "Device name: " . deviceName . "`n"
+    . "Current mode: " . ModeHandler.Mode . "`n`n"
     . "Callback: `t{}`n"
     . "Key Code:`t{}`n"
     . "Global bind:`t{}`n`n"
@@ -266,7 +268,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
         callback := ObjBindMethod(DeviceModeClass, name)
     } Else {
         TrayTip,, % Format("Not modifier & no callback available`nKey: {}`t`tMode: {}`nDevice: {}", name, ModeHandler.Mode, deviceName)
-        DebugMessage("No callback available.")
+        DebugMessage("No callback available. Have you #included the mode class?")
     }
 
     ; And finally calls the callback

@@ -10,28 +10,42 @@ class VoicemeeterRemote {
     static mDLLFullPath := VoicemeeterRemote.mDLLDrive . "\" . VoicemeeterRemote.mDLLPath . "\"
 
     SetStripGain(ByRef StripIndex, ByRef Gain) {
-        VoicemeeterRemote.Init()
-        ; DllCall(VoicemeeterRemote.mFunctions["SetParameterFloat"], "AStr", Format("Strip[{}].gain", StripIndex), "Float", Gain, "Int")
-        DllCall(VoicemeeterRemote.mFunctions["SetParameters"], "AStr", Format("Strip[{}].gain = {}", StripIndex, Gain))
+        This.SendScript(Format("Strip[{}].gain = {}", StripIndex, Gain))
+    }
+
+    ZeroStripEQ(ByRef StripIndex) {
+        This.SetStripEQ(StripIndex, 0, 0, 0)
+    }
+
+    SetStripEQ(ByRef StripIndex, ByRef Frequency*) {
+        Loop, 3 {
+            This.SendScript(Format("Strip[{}].eqgain{} = {}", StripIndex, Abs(A_Index - 4), Frequency[A_Index]))
+            ; Abs(A_Index - 4) is a hacky... ish... solution to flip the order in which the parameters equate to the dials in Voicemeeter
+        }
     }
 
     ChangeStripGain(ByRef StripIndex, ByRef Gain) {
+        ; Supports negative values due to adding a negative number being the same as subtraction
+        This.SendScript(Format("Strip[{}].gain += {}", StripIndex, Gain))
+    }
+
+    FadeStripTo(ByRef StripIndex, ByRef TargetGain, ByRef FadeTime) {
+        This.SendScript(Format("Strip[{}].FadeTo = ({}, {})", StripIndex, TargetGain, FadeTime))
+    }
+
+    SendScript(ByRef ScriptString) {
         VoicemeeterRemote.Init()
-        ; If (Gain > 0) {
-            DllCall(VoicemeeterRemote.mFunctions["SetParameters"], "AStr", Format("Strip[{}].gain += {}", StripIndex, Gain))
-        ; } Else {
-        ;     DllCall(VoicemeeterRemote.mFunctions["SetParameters"], "AStr", Format("Strip[{}].gain -= {}", StripIndex, Gain))
-        ; }
+        DllCall(VoicemeeterRemote.mFunctions["SetParameters"], "AStr", ScriptString)
     }
 
     Login() {
-        return DllCall(VoicemeeterRemote.mFunctions["Login"], "Int")
+        Return DllCall(VoicemeeterRemote.mFunctions["Login"], "Int")
     }
 
     Init() {
         If (Not VoicemeeterRemote.IsInitialised)
         {
-            DebugMessage("Attempting to initialise and log in VoicemeeterRemote from Second Keyboard...")
+            DebugMessage("[VoicemeeterRemote Lib] Attempting to initialise and login...")
             VoicemeeterRemote.IsInitialised := True
 
             if (A_Is64bitOS) {
@@ -44,12 +58,13 @@ class VoicemeeterRemote {
             ; This returns a module handle
             VoicemeeterRemote.mModule := DllCall("LoadLibrary", "Str", VoicemeeterRemote.mDLLFullPath, "Ptr")
             if (ErrorLevel || VoicemeeterRemote.mModule == 0)
-                VoicemeeterRemote.Die("Attempt to load VoiceMeeter Remote DLL failed.")
+                VoicemeeterRemote.Die("`tAttempt to load VoicemeeterRemote DLL failed.")
 
             ; Populate VoicemeeterRemote.mFunctions
             VoicemeeterRemote.AddFunction("Login")
             VoicemeeterRemote.AddFunction("Logout")
             VoicemeeterRemote.AddFunction("SetParameterFloat")
+            ; VoicemeeterRemote.AddFunction("GetParameterFloat") ; Causes all kinds of buggy stuff
             VoicemeeterRemote.AddFunction("SetParameters")
 
             ; "Login" to Voicemeeter, by calling the function in the DLL named 'VBVMR_Login()'...
@@ -57,7 +72,7 @@ class VoicemeeterRemote {
             if (ErrorLevel || login_result < 0)
                 VoicemeeterRemote.Die("VoiceMeeter Remote login failed: " . ErrorLevel)
 
-            DebugMessage("`tVoicemeeterRemote Successfully Initialised and logged in.")
+            DebugMessage("`tVoicemeeterRemote successfully initialised and logged in.")
         }
     }
 
@@ -81,10 +96,11 @@ class VoicemeeterRemote {
             VoicemeeterRemote.Die("Failed to register VMR function " . func_name . ".")
     }
 
-    ExitCleanup(exit_reason, exit_code) {
-        DllCall(VoicemeeterRemote.mFunctions["Logout"], "Int")
-        ; OnExit functions must return 0 to allow the app to exit.
-        return 0
+    ExitCleanup() {
+        If (!VoicemeeterRemote.IsInitialised)
+            Return
+        VoicemeeterRemote.IsInitialised := False
+        DllCall(VoicemeeterRemote.mFunctions["Logout"], "Int", 0)
     }
 
     Die(Die_string:="UNSPECIFIED FATAL ERROR.", exit_status:=254) {

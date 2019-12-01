@@ -6,6 +6,19 @@ Class OBS {
 
     Static WebSocket := ""
 
+    Static Keymapping := { "Transition": "{F13}"
+                         , "Cut": "{F14}"
+                         , "Luma Wipe": "{F15}"
+                         , "Toggle Mic": "{F16}"
+                         , "Toggle Camera": "{F17}"
+                         , "Toggle System Audio": "{F18}"
+                         , "RESERVED": "{F19}"
+                         , "RESERVED": "{F20}"
+                         , "Save Replay": "{F21}"
+                         , "Flip Camera": "{F22}"
+                         , "Skip Alert": "{F23}"
+                         , "Toggle Studio Mode": "{F24}" }
+
     ; Select scene based on the index within the list control.
     SelectScene(RequestedScene)
     {
@@ -105,27 +118,32 @@ Class OBS {
     }
 
     MuteUnmuteMic() {
-        OBS.SendToOBS("{F16}")
+        OBS.SendToOBS(OBS.Keymapping["Toggle Mic"])
     }
 
     MuteUnmuteSystem() {
-        OBS.SendToOBS("{F18}")
+        OBS.SendToOBS(OBS.Keymapping["Toggle System Audio"])
     }
 
     FlipCamera() {
-        OBS.SendToOBS("{F22}")
+        OBS.SendToOBS(OBS.Keymapping["Flip Camera"])
     }
 
     ToggleCamera() {
-        OBS.SendToOBS("{F17}")
+        OBS.SendToOBS(OBS.Keymapping["Toggle Camera"])
     }
 
     ToggleStudioMode() {
-        OBS.SendToOBS("{F24}")
+        OBS.SendToOBS(OBS.Keymapping["Toggle Studio Mode"])
     }
 
     SaveReplayBuffer() {
-        OBS.SendToOBS("{F21}")
+        OBS.SendToOBS(OBS.Keymapping["Save Replay"])
+    }
+
+    SkipAlert() {
+        ; Msgbox, % OBS.Keymapping["Skip Alert"]
+        OBS.SendToOBS(OBS.Keymapping["Skip Alert"])
     }
 
     SendToOBS(input := "") {

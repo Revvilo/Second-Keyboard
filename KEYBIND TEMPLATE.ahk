@@ -1,16 +1,5 @@
 Class KEYBINDSTEMPLATE {
 
-    ; List of keys that will be considered modifiers instead of hotkeys along with their respective aliases to use when retreiving modifiers. Eg { "RAlt": "Alt" } - 'RAlt' becomes 'Alt'
-    Static modifierKeys := { "LControl": "Control"
-                    , "RControl": "Control"
-                    , "LShift": "Shift"
-                    , "RShift": "Shift"
-                    , "LAlt": "Alt"
-                    , "RAlt": "Alt"
-                    ; , "NumpadSub": "NumpadSub" ; This is an example of a key that isn't normally considered a modifier. I use this as a "shift" or "control" for the numpad.
-                    , "LWin": "WinKey"
-                    , "RWin": "WinKey" }
-
     F1() {
     }
     F2() {
@@ -214,7 +203,6 @@ Class KEYBINDSTEMPLATE {
 
 
     ; Numlock and Pause\Break both trigger as "Pause". God knows why. Go find Pause() instead if you want to bind Numlock.
-
     ; NumLock() {
     ; }
 
