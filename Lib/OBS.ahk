@@ -117,6 +117,19 @@ Class OBS {
         Socket.SendRequest("StartStopStreaming")
     }
 
+    PauseResumeRecording() {
+        Socket := OBS.GetOBSWebsocket()
+        Try {
+            Socket.SendRequest("PauseRecording")
+        } Catch {
+            Try {
+                Socket.SendRequest("ResumeRecording")
+            } Catch {
+                SoundPlay, % Sounds.Asterisk
+            }
+        }
+    }
+
     MuteUnmuteMic() {
         OBS.SendToOBS(OBS.Keymapping["Toggle Mic"])
     }

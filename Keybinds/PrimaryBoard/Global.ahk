@@ -164,8 +164,9 @@ Class Global {
     End() {
         OBS.SaveReplayBuffer()
     }
-    ; Home() {
-    ; }
+    Home() {
+        OBS.PauseResumeRecording()
+    }
     Insert() {
         OBS.ToggleStreaming()
         SoundPlay, % Sounds.connected
@@ -257,11 +258,11 @@ Class Global {
                 VoicemeeterRemote.ChangeStripGain(3, -5)
 
             } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
-                VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
+                ; VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
                 VoicemeeterRemote.FadeStripTo(3, -25, Fadetime)
 
             } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Quiet 2
-                VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
+                ; VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
                 VoicemeeterRemote.FadeStripTo(3, -35, Fadetime)
             } Else If (Modifiers.IsPressed("Alt")) {
                 VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
@@ -345,8 +346,17 @@ Class Global {
             Run, F:\Video
         }
     }
-    ; W() {
-    ; }
+    W(Modifiers) {
+        If (Modifiers.IsPressed("Alt")) {
+            VoicemeeterRemote.SendScript("Strip[3].B1 = 1")
+        } Else If (Modifiers.IsPressed("Alt", "Shift")) {
+            VoicemeeterRemote.SendScript("Strip[3].B1 = 0")
+        } Else If (Modifiers.IsPressed("Control")) {
+            VoicemeeterRemote.SendScript("Strip[0].A1 = 1")
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
+            VoicemeeterRemote.SendScript("Strip[0].A1 = 0")
+        }
+    }
     ; X(Modifiers) {
     ; }
     ; Y() {

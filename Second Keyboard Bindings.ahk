@@ -188,6 +188,12 @@ Return
 *>!o:: ; Right Alt + O
     OBS.SendToOBS("{F22}")    ; Toggle Recording
 Return
+*<!F1:: ; Left Alt + F1
+    Spotify.PlayPause()
+Return
+*<!F2:: ; Left Alt + F2
+    BrowserControl.PlayPause()
+Return
 !+p:: ; Alt Shift P
     ; DetectHiddenWindows, On
     WinGet, OutputVar, List, ahk_exe Spotify.exe

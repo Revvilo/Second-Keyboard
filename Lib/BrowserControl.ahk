@@ -1,5 +1,5 @@
 Class BrowserControl {
-    Static PreferredBrowserExe := "ahk_exe Firefox.exe"
+    Static PreferredBrowserExe := "ahk_exe firefox.exe"
 
     SendToBrowser(Input) {
         ControlSend, ahk_parent, %Input%, % BrowserControl.PreferredBrowserExe
@@ -54,7 +54,7 @@ Class BrowserControl {
             oldDHW := A_DetectHiddenWindows
             DetectHiddenWindows, On
             If (BrowserControl.YoutubeMusic.IsRunning()) {
-                ControlSend,, % input, % "ahk_exe " . BrowserControl.PreferredBrowserExe
+                ControlSend, ahk_parent, % input, % "ahk_exe " . BrowserControl.PreferredBrowserExe
             }
             DetectHiddenWindows, % oldDHW
         }

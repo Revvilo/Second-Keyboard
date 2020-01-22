@@ -106,8 +106,9 @@ class AutoHotInterception {
 		static devType := {0: "Keyboard", 1: "Mouse"}
 		dev := this.Instance.GetDeviceId(IsMouse, VID, PID, instance)
 		if (dev == 0) {
-			MsgBox % "Could not get " devType[isMouse] " with VID " VID ", PID " PID ", Instance " instance
-			ExitApp
+			Throw { what: "Could not get " devType[isMouse] " with VID " VID ", PID " PID ", Instance " instance, level: "info" }
+			; MsgBox % "Could not get " devType[isMouse] " with VID " VID ", PID " PID ", Instance " instance
+			; ExitApp
 		}
 		return dev
 	}
@@ -116,8 +117,9 @@ class AutoHotInterception {
 		static devType := {0: "Keyboard", 1: "Mouse"}
 		dev := this.Instance.GetDeviceIdFromHandle(IsMouse, handle, instance)
 		if (dev == 0) {
-			MsgBox % "Could not get " devType[isMouse] " with Handle " handle ", Instance " instance
-			ExitApp
+			Throw { what: "Could not get " devType[isMouse] " with Handle " handle ", Instance " instance, level: "info" }
+			; MsgBox % "Could not get " devType[isMouse] " with Handle " handle ", Instance " instance
+			; ExitApp
 		}
 		return dev
 	}

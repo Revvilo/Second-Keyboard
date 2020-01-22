@@ -44,7 +44,12 @@ SubscribeAllKeys() {
     ; outputArray := []
     ; For each keyboard that is wanted to be a macro board
     For deviceName, deviceHandle in MacroKeyboards {
-        deviceID := AHI.GetKeyboardIdFromHandle(deviceHandle)
+        Try {
+            deviceID := AHI.GetKeyboardIdFromHandle(deviceHandle)
+        } Catch e {
+            Msgbox, % "Device " deviceHandle " not found. `nCannot subscribe keys. Will skip device..."
+            Continue
+        }
         Loop 512 {
             code := Format("{:x}", A_Index)
             name := GetKeyName("sc" code)
