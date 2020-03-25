@@ -63,8 +63,8 @@ Global AHI := new AutoHotInterception()
 
 ; Add keyboards to this array to register their keys for macros
 ; WARNING - UNTESTED WITH ANYTHING EXCEPT KEYBOARDS.
-Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
-                        , "NumpadBoard": "HID\VID_03F0&PID_0024&REV_0300"}
+Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"}
+                        ; , "NumpadBoard": "HID\VID_03F0&PID_0024&REV_0300"}
 
 ; General globals
 Global mainKeyboardHotkeys := False

@@ -202,6 +202,8 @@ Class General {
             Misc.SpaceOutLetters()
         } Else If (Modifiers.IsPressed("Alt")) {
             Misc.SmallLetters()
+        } Else If (Modifiers.IsPressed("Winkey")) {
+            Run, F:\Games\Minecraft\Servers
         } Else If (Modifiers.IsPressed()) {
             Spotify.ToggleVol()
         }
