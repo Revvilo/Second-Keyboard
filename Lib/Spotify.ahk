@@ -37,10 +37,10 @@ Class Spotify {
     }
 
     PlayPause() {
-        DetectHiddenWindows On
+        DetectHiddenWindows, On
         If (WinExist("ahk_exe Spotify.exe"))
             PostMessage, 0x319,, 0xE0000,, ahk_exe Spotify.exe ; msg: WM_APPCOMMAND - lParam: APPCOMMAND_MEDIA_PLAY_PAUSE
-        DetectHiddenWindows Off
+        DetectHiddenWindows, Off
         ; ControlSend,, {Media_Play_Pause}, Spotify Free
     }
 
