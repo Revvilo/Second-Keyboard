@@ -52,54 +52,54 @@ Class Global {
     ; --------------- ;
     ; -- MISC KEYS -- ;
 
-    F1(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F13}
-    }
-    F2(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F14}
-    }
-    F3(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F15}
-    }
-    F4(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F16}
-    }
-    F5(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F17}
-    }
-    F6(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F18}
-    }
-    F7(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F19}
-    }
-    F8(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F20}
-    }
-    F9(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F21}
-    }
-    F10(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F22}
-    }
-    F11(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F23}
-    }
-    F12(Modifiers) {
-        If (Modifiers.IsPressed("Alt"))
-            SendInput, {F24}
-    }
+    ; F1(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F13}
+    ; }
+    ; F2(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F14}
+    ; }
+    ; F3(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F15}
+    ; }
+    ; F4(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F16}
+    ; }
+    ; F5(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F17}
+    ; }
+    ; F6(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F18}
+    ; }
+    ; F7(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F19}
+    ; }
+    ; F8(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F20}
+    ; }
+    ; F9(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F21}
+    ; }
+    ; F10(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F22}
+    ; }
+    ; F11(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F23}
+    ; }
+    ; F12(Modifiers) {
+    ;     If (Modifiers.IsPressed("Alt"))
+    ;         SendInput, {F24}
+    ; }
 
     Left() {
         SendInput, ^#{left} ; -- Virtual desktop left
@@ -250,24 +250,26 @@ Class Global {
     A(Modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
             Fadetime := 150
-            VoicemeeterRemote.ZeroStripEQ(3)
+            Strip := VoicemeeterRemote.strips["Spotify"]
+            VoicemeeterRemote.ZeroStripEQ()
             If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
-                VoicemeeterRemote.ChangeStripGain(3, -1)
-
+                VoicemeeterRemote.ChangeStripGain(Strip, -1)
+                VoicemeeterRemote.ChangePlaybackGain(-1)
             } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
-                VoicemeeterRemote.ChangeStripGain(3, -5)
-
+                VoicemeeterRemote.ChangeStripGain(Strip, -5)
+                VoicemeeterRemote.ChangePlaybackGain(-5)
             } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
-                ; VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
-                VoicemeeterRemote.FadeStripTo(3, -25, Fadetime)
-
+                ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+                VoicemeeterRemote.FadeStripTo(Strip, -25, Fadetime)
+                VoicemeeterRemote.SetPlaybackGain(-25)
             } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Quiet 2
-                ; VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
-                VoicemeeterRemote.FadeStripTo(3, -35, Fadetime)
+                ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+                VoicemeeterRemote.FadeStripTo(Strip, -35, Fadetime)
+                VoicemeeterRemote.SetPlaybackGain(-35)
             } Else If (Modifiers.IsPressed("Alt")) {
-                VoicemeeterRemote.SetStripEQ(3, -12, -12, 12)
+                VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
             } Else If (Modifiers.IsPressed("Alt", "Control")) {
-                VoicemeeterRemote.ZeroStripEQ(3)
+                VoicemeeterRemote.ZeroStripEQ(Strip)
             }
         }
     }
@@ -279,7 +281,7 @@ Class Global {
     ; }
     E(Modifiers) {
         If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
-            Run, F:\Video\Editing
+            Run, D:\Video\Editing
         }
     }
     ; F() {
@@ -312,19 +314,23 @@ Class Global {
     Q(Modifiers) {
         If (WinExist("ahk_exe Spotify.exe")) {
             Fadetime := 200
-            VoicemeeterRemote.ZeroStripEQ(3)
+            Strip := VoicemeeterRemote.strips["Spotify"]
+            VoicemeeterRemote.ZeroStripEQ(Strip)
             If (Modifiers.IsPressed()) { ; -- Spotify vol increase
-                VoicemeeterRemote.ChangeStripGain(3, 1)
+                VoicemeeterRemote.ChangeStripGain(Strip, 1)
+                VoicemeeterRemote.ChangePlaybackGain(1)
 
             } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
-                VoicemeeterRemote.ChangeStripGain(3, 5)
+                VoicemeeterRemote.ChangeStripGain(Strip, 5)
+                VoicemeeterRemote.ChangePlaybackGain(5)
 
             } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
-                VoicemeeterRemote.FadeStripTo(3, -10, Fadetime)
+                VoicemeeterRemote.FadeStripTo(Strip, -10, Fadetime)
+                VoicemeeterRemote.SetPlaybackGain(-10)
 
             } Else If (Modifiers.IsPressed("Control", "Shift")) {
-                VoicemeeterRemote.FadeStripTo(Strip := 3, Gain := 0, Fadetime)
-                
+                VoicemeeterRemote.FadeStripTo(Strip := Strip, Gain := 0, Fadetime)
+                VoicemeeterRemote.SetPlaybackGain(0)
             }
         }
     }
@@ -339,22 +345,28 @@ Class Global {
     V(Modifiers) {
         If (Modifiers.IsPressed("WinKey")) { ; -- Open video folder
             If (WinActive("ahk_exe explorer.exe ahk_class CabinetWClass"))
-                SendInput, ^lF:\Video{enter}
+                SendInput, ^lD:\Video{enter}
             Else
-                Run, F:\Video
+                Run, D:\Video
         } Else If (Modifiers.IsPressed("Shift", "WinKey")) {
-            Run, F:\Video
+            Run, D:\Video
         }
     }
     W(Modifiers) {
+        Strip := VoicemeeterRemote.strips["Spotify"]
+        MicStrip := VoicemeeterRemote.strips["Mic"]
         If (Modifiers.IsPressed("Alt")) {
-            VoicemeeterRemote.SendScript("Strip[3].B1 = 1")
+            VoicemeeterRemote.SendScript("Strip[" . Strip . "].B3 = 1")
         } Else If (Modifiers.IsPressed("Alt", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[3].B1 = 0")
+            VoicemeeterRemote.SendScript("Strip[" . Strip . "].B3 = 0")
         } Else If (Modifiers.IsPressed("Control")) {
-            VoicemeeterRemote.SendScript("Strip[0].A1 = 1")
+            VoicemeeterRemote.SendScript("Strip[" . MicStrip . "].A1 = 1")
         } Else If (Modifiers.IsPressed("Control", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[0].A1 = 0")
+            VoicemeeterRemote.SendScript("Strip[" . MicStrip . "].A1 = 0")
+        } Else If (Modifiers.IsPressed("WinKey")) {
+            VoicemeeterRemote.SendScript("Strip[" . Strip . "].A1 = 1")
+        } Else If (Modifiers.IsPressed("WinKey", "Shift")) {
+            VoicemeeterRemote.SendScript("Strip[" . Strip . "].A1 = 0")
         }
     }
     ; X(Modifiers) {

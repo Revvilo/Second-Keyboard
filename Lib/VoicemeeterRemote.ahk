@@ -6,11 +6,29 @@ class VoicemeeterRemote {
     static mDLLPath := "Program Files (x86)\VB\Voicemeeter"
     static mDLLFilename32 := "VoicemeeterRemote.dll"
     static mDLLFilename64 := "VoicemeeterRemote64.dll"
+    static strips := {"Spotify" : "5", "Mic" : "0"}
 
     static mDLLFullPath := VoicemeeterRemote.mDLLDrive . "\" . VoicemeeterRemote.mDLLPath . "\"
 
     SetStripGain(ByRef StripIndex, ByRef Gain) {
         This.SendScript(Format("Strip[{}].gain = {}", StripIndex, Gain))
+    }
+
+    PlayFile(ByRef Filepath) {
+        This.SendScript(Format("recorder.load=""{}""", Filepath))
+    }
+
+    StopPlayback() {
+        This.SendScript("recorder.stop=1")
+        This.SendScript("recorder.release")
+    }
+
+    SetPlaybackGain(ByRef Gain) {
+        This.SendScript("recorder.gain=" . Gain)
+    }
+
+    ChangePlaybackGain(ByRef Change) {
+        This.SendScript("recorder.gain += " . Change)
     }
 
     ZeroStripEQ(ByRef StripIndex) {

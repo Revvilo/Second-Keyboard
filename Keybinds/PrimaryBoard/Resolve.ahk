@@ -65,7 +65,7 @@ Class Resolve {
     H(Modifiers) {
     }
     I(Modifiers) {
-        SendInput, % "F:\Video\Renders\Intermediary Renders"
+        SendInput, % "D:\Video\Renders\Intermediary Renders"
     }
     J(Modifiers) {
     }

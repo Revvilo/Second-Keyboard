@@ -147,6 +147,8 @@ Class OBS {
     }
 
     ToggleStudioMode() {
+        ; Socket := OBS.GetOBSWebsocket()
+        ; Socket.SendRequest("ToggleStudioMode")
         OBS.SendToOBS(OBS.Keymapping["Toggle Studio Mode"])
     }
 
@@ -169,7 +171,7 @@ Class OBS {
                 SoundPlay, % Sounds.Asterisk
                 Return
             }
-            ControlSend,, %input%, ahk_id %winList1%
+            ControlSend, ahk_parent, %input%, ahk_id %winList1%
         }
     }
 

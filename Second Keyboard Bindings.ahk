@@ -106,6 +106,8 @@ If (Debug) {
 }
 
 Sounds.PopulateSounds()
+Soundboard.PopulateSounds()
+; Soundboard.LoadSettings() ; Not loading because there is no way of changing the settings from within the script yet
 Sounds.SFX.PopulateSounds()
 SubscribeAllKeys()
 
@@ -209,8 +211,12 @@ Return
     WinKill, A
 Return
 ^!h::
-    Socket := OBS.GetOBSWebsocket()
-    Msgbox, % Socket.GetCurrentScene()
+    ; Socket := OBS.GetOBSWebsocket()
+    ; Msgbox, % Socket.GetCurrentScene()
+    ; WinGet, temp, list, ahk_exe obs64.exe
+    ; ControlSend,, {F24}, ahk_id temp1
+    ControlSend,, {F24}, ahk_exe obs64.exe
+    ; SendInput, {F24}
 Return
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
@@ -220,7 +226,6 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
     DeviceModeClass := KeybindSets[deviceName][ModeHandler.Mode]
 
-    ; I use an 'if debug' in this case for performance, since if passed as a param to DebugMessage() it would construct the entire message even if debug was off
     DebugMessage((Format("========== A macro key was {}. ==========`n`n"
     . "Device name: " . deviceName . "`n"
     . "Current mode: " . ModeHandler.Mode . "`n`n"
@@ -297,44 +302,100 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
 nothing() {
 }
 
+Class Soundboard {
+    Static ProfileCount := 8
+    Static SlotCount := 9
+    Static IniName := "SoundboardConfig.ini"
+    Static CurrProfileIndex := 1
+    Static Binds := []
+    Static SoundList := {}
+
+    PopulateSounds() {
+        Loop, Files, Soundboard\*, F
+        {
+            fileName := StrSplit(A_LoopFileName, .)[1]
+            This.SoundList[filename] := A_ScriptDir . "\Soundboard\" . A_LoopFileName
+        }
+    }
+
+    StopSounds() {
+        VoicemeeterRemote.StopPlayback()
+    }
+
+    SetProfile(ByRef ProfileIndex) {
+        If (ProfileIndex is Number)
+            This.CurrProfileIndex := ProfileIndex
+    }
+
+    PlaySlot(ByRef Index) {
+        IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, %Index%
+        If (OutputVar != "") {
+            If (SubStr(OutputVar, 2, 1) == ":") {
+                VoicemeeterRemote.PlayFile(OutputVar)
+            } Else {
+                VoicemeeterRemote.PlayFile(This.SoundList[OutputVar])
+            }
+        } Else {
+            TrayTip, Soundboard, Slot not bound
+        }
+    }
+
+    SaveSettings() {
+        Loop, % This.ProfileCount {
+            ProfileIndex := A_Index
+            Loop, 9 {
+                IniWrite, % This.Binds[ProfileIndex][A_Index], % This.IniName, % ProfileIndex, %A_Index%
+            }
+        }
+    }
+
+    ShowSettings() {
+        Loop, % This.ProfileCount {
+            ProfileIndex := A_Index
+            Loop, % This.SlotCount {
+                IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
+                This.Binds[ProfileIndex][A_Index] := OutputVar
+            }
+        }
+    }
+
+    LoadSettings() {
+        Loop, % This.ProfileCount {
+            ProfileIndex := A_Index
+            This.Binds[ProfileIndex] := {}
+            Loop, % This.SlotCount {
+                IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
+                This.Binds[ProfileIndex][A_Index] := OutputVar
+            }
+        }
+        ; IniRead, OutputVar, Filename, Section, Key [, Default]
+    }
+}
+
 ; Sounds provider
 Class Sounds {
-    Static MMDevice := "{0.0.0.00000000}.{f79535b0-e0a7-4524-91b9-3f9a8592dc69}"
-
     Class SFX {
         PopulateSounds() {
-            Loop, Files, SoundEffects\*, F
+            Loop, Files, Soundboard\*, F
             {
                 fileName := StrSplit(A_LoopFileName, .)[1]
                 ; FileRead, fileData, %A_LoopFileName%
                 ; fileDataTwo := fileData
                 ; Msgbox, % A_LoopFileName . "`n`n" . &fileData . "`n`n" . &fileDataTwo
                 ; this[fileName] := fileData
-                this[filename] := "SoundEffects\" . A_LoopFileName
+                this[filename] := A_ScriptDir . "\Soundboard\" . A_LoopFileName
             }
         }
     }
 
     StopSounds() {
-        ; -- Failed VLC usage
-        ; DetectHiddenWindows, On
-        ; WinGet, OutputVar, List, ahk_exe vlc.exe
-        ; ; WinClose, ahk_id %OutputVar2%
-        ; Loop %OutputVar% {
-        ;     WinKill, % "ahk_id " Outputvar%A_Index%
-        ; }
-        ; Msgbox, %OutputVar%
-        SoundPlay, % this.SFX["StopSounds"]
+        VoicemeeterRemote.StopPlayback()
+        ; SoundPlay, % this.SFX["StopSounds"]
     }
 
     PlaySoundEffect(RequestedSound) {
-        ; -- Using VLC - Works, but found no way to stop it on command.
-        ; Sound := this.SFX[RequestedSound]
-        ; If (Sound == "" || Sound == "Sounds\")
-        ;     Return
-        ; Device := Sounds.MMDevice
-        ; run vlc.exe "%Sound%" vlc -I null --mmdevice-audio-device=%Device% --play-and-exit 
-        SoundPlay, % this.SFX[RequestedSound]
+        VoicemeeterRemote.PlayFile(this.SFX[RequestedSound])
+        ; SoundPlay, % this.SFX[RequestedSound]
     }
 
     PopulateSounds() {

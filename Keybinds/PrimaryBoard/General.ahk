@@ -146,35 +146,85 @@ Class General {
     ; Pause() { ; This doesn't work - Both numlock and scrolllock have the same keycode(?), god knows why.
     ; }
 
-    ; ------------- ;
-    ; -- NUMBERS -- ;
+    ; ---------------- ;
+    ; -- SOUNDBOARD -- ;
+
+    F1(Modifiers) {
+        Soundboard.SetProfile(1)
+    }
+
+    F2(Modifiers) {
+        Soundboard.SetProfile(2)
+    }
+
+    F3(Modifiers) {
+        Soundboard.SetProfile(3)
+    }
+
+    F4(Modifiers) {
+        Soundboard.SetProfile(4)
+    }
+
+    F5(Modifiers) {
+        Soundboard.SetProfile(5)
+    }
+
+    F6(Modifiers) {
+        Soundboard.SetProfile(6)
+    }
+
+    F7(Modifiers) {
+        Soundboard.SetProfile(7)
+    }
+
+    F8(Modifiers) {
+        Soundboard.SetProfile(8)
+    }
 
     1(Modifiers) {
+        ; Soundboard.SaveSettings()
         Sounds.StopSounds()
     }
     2(Modifiers) {
-        Sounds.PlaySoundEffect("Badum Tss")
+        ; Soundboard.LoadSettings()
+        Soundboard.PlaySlot(1)
+        ; Sounds.PlaySoundEffect("Badum Tss")
+        ; VoicemeeterRemote.PlayFile(Sounds.SFX["Applause"])
     }
     3(Modifiers) {
-        Sounds.PlaySoundEffect("Applause")
+        Soundboard.PlaySlot(2)
+        ; Sounds.PlaySoundEffect("Applause")
     }
     4(Modifiers) {
-        Sounds.PlaySoundEffect("Song - Crab Rave")
+        Soundboard.PlaySlot(3)
+        ; Sounds.PlaySoundEffect("Song - Crab Rave")
     }
     5(Modifiers) {
-        Sounds.PlaySoundEffect("Song - Ocean Man")
+        Soundboard.PlaySlot(4)
+        ; Sounds.PlaySoundEffect("Song - Ocean Man")
     }
     6(Modifiers) {
-        Sounds.PlaySoundEffect("Song - No Time For Caution")
+        Soundboard.PlaySlot(5)
+        ; Sounds.PlaySoundEffect("Song - No Time For Caution")
     }
-    ; 7(Modifiers) {
-    ; }
-    ; 8(Modifiers) {
-    ; }
-    ; 9(Modifiers) {
-    ; }
-    ; 0(Modifiers) {
-    ; }
+    7(Modifiers) {
+        Soundboard.PlaySlot(6)
+        ; Sounds.PlaySoundEffect("Gas Gas Gas")
+    }
+    8(Modifiers) {
+        Soundboard.PlaySlot(7)
+        ; VoicemeeterRemote.PlayFile("C:\Windows\Media\Windows Notify System Generic.wav")
+    }
+    9(Modifiers) {
+        Soundboard.PlaySlot(8)
+        ; Sounds.PlaySoundEffect("Windows Hardware Insert")
+        ; VoicemeeterRemote.PlayFile("C:\Windows\Media\Windows Hardware Insert.wav")
+    }
+    0(Modifiers) {
+        Soundboard.PlaySlot(9)
+        ; Sounds.PlaySoundEffect("Windows Hardware Remove")
+        ; VoicemeeterRemote.PlayFile("C:\Windows\Media\Windows Hardware Remove.wav")
+    }
 
     ; A(Modifiers) {
     ; }
@@ -187,7 +237,7 @@ Class General {
     }
     E(Modifiers) {
         If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
-            Run, F:\Video\Editing
+            Run, D:\Video\Editing
         }
     }
     M(Modifiers) {
@@ -203,7 +253,7 @@ Class General {
         } Else If (Modifiers.IsPressed("Alt")) {
             Misc.SmallLetters()
         } Else If (Modifiers.IsPressed("Winkey")) {
-            Run, F:\Games\Minecraft\Servers
+            Run, D:\Games\Minecraft\Servers
         } Else If (Modifiers.IsPressed()) {
             Spotify.ToggleVol()
         }
