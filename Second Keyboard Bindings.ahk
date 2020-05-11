@@ -374,30 +374,6 @@ Class Soundboard {
 
 ; Sounds provider
 Class Sounds {
-    Class SFX {
-        PopulateSounds() {
-            Loop, Files, Soundboard\*, F
-            {
-                fileName := StrSplit(A_LoopFileName, .)[1]
-                ; FileRead, fileData, %A_LoopFileName%
-                ; fileDataTwo := fileData
-                ; Msgbox, % A_LoopFileName . "`n`n" . &fileData . "`n`n" . &fileDataTwo
-                ; this[fileName] := fileData
-                this[filename] := A_ScriptDir . "\Soundboard\" . A_LoopFileName
-            }
-        }
-    }
-
-    StopSounds() {
-        VoicemeeterRemote.StopPlayback()
-        ; SoundPlay, % this.SFX["StopSounds"]
-    }
-
-    PlaySoundEffect(RequestedSound) {
-        VoicemeeterRemote.PlayFile(this.SFX[RequestedSound])
-        ; SoundPlay, % this.SFX[RequestedSound]
-    }
-
     PopulateSounds() {
         Loop, Files, Sounds\*.mp3, F
         {
