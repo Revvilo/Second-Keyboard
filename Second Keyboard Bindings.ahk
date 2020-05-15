@@ -141,39 +141,13 @@ Return
 
 ; =================== ;
 ; Main Keyboard Binds ;
-; ====================;
-#IfWinActive, Minecraft
-; Hotstrings
-::#sel::{#}selection
-::#set::{#}selection set
-::#killitems::kill @e[type=item]
-::#sp::{#}fill reccomplex:generic_space air
-::#y::{#}confirm
-::#n::{#}cancel
-::#cl::{#}fill air
-::#d::{#}selection clear
-::#tree::{#}selection wand log|log2|leaves|leaves2
-::#deltree::{#}fill air log|log2|leaves|leaves2
+; =================== ;
 
-::#testplatform::{#}selection set 699 4 -734 589 15 -848 --first --second
-::#testplatair::{#}selection set 699 16 -734 589 255 -848 --first --second
+; ==================== ;
+; ==== Hotstrings ==== ;
+; ==================== ;
 
-::#ex::{#}selection expand
-::#exh::{#}selection expand -z 1 -x 1
-::#shh::{#}selection expand -z -1 -x -1
-
-::#solid::{#}fill reccomplex:generic_solid air
-::#delsolid::{#}fill air reccomplex:generic_solid
-::#space::{#}fill reccomplex:generic_space air
-::#dsp::{#}fill air reccomplex:generic_space
-::#delspace::{#}fill air reccomplex:generic_space
-
-::#w::{#}selection wand
-::#up1::{#}selection set ~ ~1 ~
-::#dn1::{#}selection set ~ ~-1 ~
-:O:#p1::{#}selection set ~ ~ ~ --first{left 10}
-:O:#p2::{#}selection set ~ ~ ~ --second{left 11}
-Return
+#Include Hotstrings\Minecraft-Hotstrings.ahk
 
 #IfWinActive, Voltz
 ~$^w::
@@ -185,6 +159,9 @@ Return
     KeyWait, w
     SendInput, {w up}
 Return
+
+
+#Include Hotstrings\Path-Shortcuts.ahk
 
 #If
 *>!o:: ; Right Alt + O
@@ -311,6 +288,7 @@ Class Soundboard {
     Static SoundList := {}
 
     PopulateSounds() {
+        This.SoundList := {}
         Loop, Files, Soundboard\*, F
         {
             fileName := StrSplit(A_LoopFileName, .)[1]
@@ -318,26 +296,27 @@ Class Soundboard {
         }
     }
 
-    StopSounds() {
+    Stop() {
         VoicemeeterRemote.StopPlayback()
     }
 
     SetProfile(ByRef ProfileIndex) {
-        If (ProfileIndex is Number)
+        If ((ProfileIndex is Number) && (ProfileIndex <= This.ProfileCount))
             This.CurrProfileIndex := ProfileIndex
     }
 
     PlaySlot(ByRef Index) {
-        IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, %Index%
-        If (OutputVar != "") {
-            If (SubStr(OutputVar, 2, 1) == ":") {
-                VoicemeeterRemote.PlayFile(OutputVar)
+        If (Index <= This.SlotCount)
+            IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, %Index%
+            If (OutputVar != "") {
+                If (SubStr(OutputVar, 2, 1) == ":") {
+                    VoicemeeterRemote.PlayFile(OutputVar)
+                } Else {
+                    VoicemeeterRemote.PlayFile(This.SoundList[OutputVar])
+                }
             } Else {
-                VoicemeeterRemote.PlayFile(This.SoundList[OutputVar])
+                TrayTip, Soundboard, Slot not bound
             }
-        } Else {
-            TrayTip, Soundboard, Slot not bound
-        }
     }
 
     SaveSettings() {
@@ -349,15 +328,15 @@ Class Soundboard {
         }
     }
 
-    ShowSettings() {
-        Loop, % This.ProfileCount {
-            ProfileIndex := A_Index
-            Loop, % This.SlotCount {
-                IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
-                This.Binds[ProfileIndex][A_Index] := OutputVar
-            }
-        }
-    }
+    ; ShowSettings() {
+    ;     Loop, % This.ProfileCount {
+    ;         ProfileIndex := A_Index
+    ;         Loop, % This.SlotCount {
+    ;             IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
+    ;             This.Binds[ProfileIndex][A_Index] := OutputVar
+    ;         }
+    ;     }
+    ; }
 
     LoadSettings() {
         Loop, % This.ProfileCount {
@@ -378,8 +357,6 @@ Class Sounds {
         Loop, Files, Sounds\*.mp3, F
         {
             filename := StrSplit(A_LoopFileName, .)[1]
-            ; FileRead, fileData, filename
-            ; this[filename] := fileData
             this[filename] := "Sounds\" . A_LoopFileName
         }
     }
@@ -394,11 +371,9 @@ Class Modifiers {
         If (pressed == 1) {
             If (!Modifiers.ActiveModifiers[key]) {
                 Modifiers.ActiveModifiers[key] := True
-                ; ToolTip, ▼ %key%
             }
         } Else {
             Modifiers.ActiveModifiers.Delete(key)
-            ; ToolTip, % "▲ " key " " Modifiers.ActiveModifiers.Count()
         }
     }
 
