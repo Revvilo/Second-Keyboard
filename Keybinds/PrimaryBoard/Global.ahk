@@ -349,20 +349,18 @@ Class Global {
         }
     }
     W(Modifiers) {
-        Strip := VoicemeeterRemote.strips["Spotify"]
+        SpotifyStrip := VoicemeeterRemote.strips["Spotify"]
         MicStrip := VoicemeeterRemote.strips["Mic"]
-        If (Modifiers.IsPressed("Alt")) {
-            VoicemeeterRemote.SendScript("Strip[" . Strip . "].B3 = 1")
+        If (Modifiers.IsPressed("Alt", "Control")) {
+            VoicemeeterRemote.ToggleStripOutput(SpotifyStrip, "B3")
         } Else If (Modifiers.IsPressed("Alt", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[" . Strip . "].B3 = 0")
+            VoicemeeterRemote.SendScript("Strip[" . SpotifyStrip . "].B3 = 0")
+        } Else If (Modifiers.IsPressed("Control", "Shift", "Alt")) {
+            VoicemeeterRemote.ToggleStripOutput("5", "A2")
         } Else If (Modifiers.IsPressed("Control")) {
-            VoicemeeterRemote.SendScript("Strip[" . MicStrip . "].A1 = 1")
-        } Else If (Modifiers.IsPressed("Control", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[" . MicStrip . "].A1 = 0")
-        } Else If (Modifiers.IsPressed("WinKey")) {
-            VoicemeeterRemote.SendScript("Strip[" . Strip . "].A1 = 1")
-        } Else If (Modifiers.IsPressed("WinKey", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[" . Strip . "].A1 = 0")
+            VoicemeeterRemote.ToggleStripOutput(MicStrip, "A1")
+        } Else If (Modifiers.IsPressed("Alt")) {
+            VoicemeeterRemote.ToggleStripOutput(SpotifyStrip, "A1")
         }
     }
     ; X(Modifiers) {

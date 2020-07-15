@@ -55,6 +55,25 @@ class VoicemeeterRemote {
         This.SendScript(Format("Strip[{}].FadeTo = ({}, {})", StripIndex, TargetGain, FadeTime))
     }
 
+    GetParameterFloat(ByRef Parameter) {
+        VoicemeeterRemote.Init()
+        returnValue := 0
+        DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
+        DllCall(VoicemeeterRemote.mFunctions["GetParameterFloat"], "AStr", Parameter, "Float*", returnValue)
+        return returnValue
+    }
+
+    ToggleStripOutput(ByRef Strip, ByRef Output) {
+        VoicemeeterRemote.Init()
+
+        returnValue := 0
+        parameter := "Strip[" . Strip . "]." . Output
+        DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
+        DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
+        DllCall(VoicemeeterRemote.mFunctions["GetParameterFloat"], "AStr", parameter, "Float*", returnValue)
+        DllCall(VoicemeeterRemote.mFunctions["SetParameterFloat"], "AStr", parameter, "Float", returnValue > 0 ? 0 : 1)
+    }
+
     SendScript(ByRef ScriptString) {
         VoicemeeterRemote.Init()
         DllCall(VoicemeeterRemote.mFunctions["SetParameters"], "AStr", ScriptString)
@@ -86,8 +105,9 @@ class VoicemeeterRemote {
             VoicemeeterRemote.AddFunction("Login")
             VoicemeeterRemote.AddFunction("Logout")
             VoicemeeterRemote.AddFunction("SetParameterFloat")
-            ; VoicemeeterRemote.AddFunction("GetParameterFloat") ; Causes all kinds of buggy stuff
+            VoicemeeterRemote.AddFunction("GetParameterFloat") ; Causes all kinds of buggy stuff
             VoicemeeterRemote.AddFunction("SetParameters")
+            VoicemeeterRemote.AddFunction("IsParametersDirty")
 
             ; "Login" to Voicemeeter, by calling the function in the DLL named 'VBVMR_Login()'...
             login_result := VoicemeeterRemote.Login()

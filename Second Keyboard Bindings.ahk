@@ -170,6 +170,16 @@ Return
 *!d:: ; Alt + D
     Discord.ToggleDeafen()
 Return
+
+#IfWinActive, ahk_exe Resolve.exe
+*XButton1::
+    If(GetKeyState("LShift")) {
+        SendInput, ^+]
+        Return
+    }
+    SendInput, ^+[
+Return
+
 ~*!s:: ; Alt + S
     Discord.ToggleMute()
 Return
@@ -199,13 +209,9 @@ Return
 ^!F4::
     WinKill, A
 Return
-; ^!h::
-;     ; Socket := OBS.GetOBSWebsocket()
-;     ; Msgbox, % Socket.GetCurrentScene()
-;     ; WinGet, temp, list, ahk_exe obs64.exe
-;     ; ControlSend,, {F24}, ahk_id temp1
-;     ControlSend,, {F24}, ahk_exe obs64.exe
-;     ; SendInput, {F24}
+;Testing hotkey
+; ^h::
+;     Msgbox, % DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
 ; Return
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
@@ -431,10 +437,10 @@ Class Modifiers {
         RequestList := Keys
         ActiveList := This.ActiveModifiers
 
-        If (ActiveList.Count() != RequestList.Count()) {
+        If (ActiveList.Count() != RequestList.Count()) { ; Match impossible if count of entries does not match
             DebugMessage("`tArray lengths do not match.")
             DebugMessage(">> Match failure, returning False.")
-            Return False ; Match impossible if count of entries does not match
+            Return False
         }
 
         For NeedleIndex, NeedleKey in RequestList { ; For each requested modifier
