@@ -50,12 +50,14 @@ SubscribeAllKeys() {
             Msgbox, % "Device " deviceHandle " not found. `nCannot subscribe keys. Will skip device..."
             Continue
         }
+        If (deviceName)
         Loop 512 {
+            ; TODO: Make system for allocating an entire keyboard to be a pedal. Needs a way to check if the "pedal" is held
+            ; TODO: Check each key to see if it is an exception in a list stored within the device's class
             code := Format("{:x}", A_Index)
             name := GetKeyName("sc" code)
 
-
-            If (name != "" && code != 41) {
+            If (name != "") {
             ;     If (!outputArray.HasKey(name))
             ;         outputArray.Push(name)
 

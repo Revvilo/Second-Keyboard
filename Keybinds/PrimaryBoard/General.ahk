@@ -116,8 +116,9 @@ Class General {
         If (Modifiers.IsPressed("NumpadSub")) {
             OBS.SetProfile("Stream")
             Return
+        } Else {
+            Discord.ToggleDeafen()
         }
-        SendInput, !{F19} ; -- Toggle Discord deafen
     }
     NumpadDiv() {
         OBS.Transition(1)
@@ -137,8 +138,9 @@ Class General {
         If (Modifiers.IsPressed("NumpadSub")) {
             OBS.SetProfile("1080p60 Recording")
             Return
+        } Else {
+            Discord.ToggleMute()
         }
-        SendInput, !{F20} ; -- Toggle Discord mic
     }
     Numlock() { 
         OBS.ToggleStudioMode()
@@ -150,63 +152,61 @@ Class General {
     ; -- SOUNDBOARD -- ;
 
     F1(Modifiers) {
-        Soundboard.SetProfile(1)
-    }
-    F2(Modifiers) {
-        Soundboard.SetProfile(2)
-    }
-    F3(Modifiers) {
-        Soundboard.SetProfile(3)
-    }
-    F4(Modifiers) {
-        Soundboard.SetProfile(4)
-    }
-    F5(Modifiers) {
-        Soundboard.SetProfile(5)
-    }
-    F6(Modifiers) {
-        Soundboard.SetProfile(6)
-    }
-    F7(Modifiers) {
-        Soundboard.SetProfile(7)
-    }
-    F8(Modifiers) {
-        Soundboard.SetProfile(8)
-    }
-
-    1(Modifiers) {
         If (Modifiers.IsPressed("Ctrl")) {
             Soundboard.PopulateSounds()
         } Else {
             Soundboard.Stop()
         }
     }
-    2(Modifiers) {
+    F2(Modifiers) {
+        Soundboard.Play()
+    }
+    F3(Modifiers) {
+    }
+    F4(Modifiers) {
+    }
+    
+    F5(Modifiers) {
+        Soundboard.SetProfile(1)
+    }
+    F6(Modifiers) {
+        Soundboard.SetProfile(2)
+    }
+    F7(Modifiers) {
+        Soundboard.SetProfile(3)
+    }
+    F8(Modifiers) {
+        Soundboard.SetProfile(4)
+    }
+
+    1(Modifiers) {
         Soundboard.PlaySlot(1)
     }
-    3(Modifiers) {
+    2(Modifiers) {
         Soundboard.PlaySlot(2)
     }
-    4(Modifiers) {
+    3(Modifiers) {
         Soundboard.PlaySlot(3)
     }
-    5(Modifiers) {
+    4(Modifiers) {
         Soundboard.PlaySlot(4)
     }
-    6(Modifiers) {
+    5(Modifiers) {
         Soundboard.PlaySlot(5)
     }
-    7(Modifiers) {
+    6(Modifiers) {
         Soundboard.PlaySlot(6)
     }
-    8(Modifiers) {
+    7(Modifiers) {
         Soundboard.PlaySlot(7)
     }
-    9(Modifiers) {
+    8(Modifiers) {
         Soundboard.PlaySlot(8)
     }
-    0(Modifiers) {
+    9(Modifiers) {
         Soundboard.PlaySlot(9)
+    }
+    0(Modifiers) {
     }
 
     ; A(Modifiers) {

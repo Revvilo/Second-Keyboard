@@ -18,6 +18,10 @@ class VoicemeeterRemote {
         This.SendScript(Format("recorder.load=""{}""", Filepath))
     }
 
+    PlayRecorder() {
+        This.SendScript("recorder.play=1")
+    }
+
     StopPlayback() {
         This.SendScript("recorder.stop=1")
         This.SendScript("recorder.release")

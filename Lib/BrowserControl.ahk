@@ -1,7 +1,7 @@
 Class BrowserControl {
     Static PreferredBrowserExe := "ahk_exe firefox.exe"
 
-    SendToBrowser(Input) {
+    SendToBrowser(ByRef Input) {
         ControlSend, ahk_parent, %Input%, % BrowserControl.PreferredBrowserExe
     }
 

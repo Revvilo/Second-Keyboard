@@ -24,18 +24,19 @@ Process, Priority, %ErrorLevel%, High
 ; AHI Key subscription
 #Include Keybinds\SubscribeKeys.ahk
 
-#Include Lib\FullscreenWindowed.ahk
+#Include Lib\Acc.ahk
 #Include Lib\BrowserControl.ahk
+#Include Lib\Discord.ahk
+#Include Lib\FullscreenWindowed.ahk
+#Include Lib\Minecraft.ahk
 #Include Lib\Misc.ahk
 #Include Lib\MixerControl.ahk
-#Include Lib\Vegas.ahk
-#Include Lib\Minecraft.ahk
-#Include Lib\Spotify.ahk
-#Include Lib\OBS.ahk
-#Include Lib\VLC.ahk
-#Include Lib\Acc.ahk
-#Include Lib\TrayMenu.ahk
 #Include Lib\ModeHandler.ahk
+#Include Lib\OBS.ahk
+#Include Lib\Spotify.ahk
+#Include Lib\TrayMenu.ahk
+#Include Lib\Vegas.ahk
+#Include Lib\VLC.ahk
 #Include Lib\VoicemeeterRemote.ahk
 
 ; Tray menu info
@@ -63,8 +64,8 @@ Global AHI := new AutoHotInterception()
 
 ; Add keyboards to this array to register their keys for macros
 ; WARNING - UNTESTED WITH ANYTHING EXCEPT KEYBOARDS.
-Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"}
-                        ; , "NumpadBoard": "HID\VID_03F0&PID_0024&REV_0300"}
+Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
+                        , "FootPedal": "HID\VID_03F0&PID_0024&REV_0300"}
 
 ; General globals
 Global mainKeyboardHotkeys := False
@@ -75,7 +76,7 @@ Global BeginTickCount := ""
 Global EndTickCount := ""
 
 
-; List of keys that will be overridden to call a correct callback function
+; List of key names that will be overridden to call a correct callback function
 Global keyAliases := {   "/": "ForwardSlash"
                 , "'": "Apostrophe"
                 , ";": "Semicolon"
@@ -137,17 +138,13 @@ Class KeybindSets {
     }
 }
 
+Global DeviceTypes := {"Macroboard" : 0, "Pedal" : 1}
+    
 Return
 
 ; =================== ;
 ; Main Keyboard Binds ;
 ; =================== ;
-
-; ==================== ;
-; ==== Hotstrings ==== ;
-; ==================== ;
-
-#Include Hotstrings\Minecraft-Hotstrings.ahk
 
 #IfWinActive, Voltz
 ~$^w::
@@ -161,8 +158,21 @@ Return
 Return
 
 
+; ==================== ;
+; ==== Hotstrings ==== ;
+; ==================== ;
+
+#Include Hotstrings\Minecraft-Hotstrings.ahk
+
 #Include Hotstrings\Path-Shortcuts.ahk
 
+#IfWinNotActive, ahk_exe gimp-2.10.exe
+*!d:: ; Alt + D
+    Discord.ToggleDeafen()
+Return
+~*!s:: ; Alt + S
+    Discord.ToggleMute()
+Return
 #If
 *>!o:: ; Right Alt + O
     OBS.SendToOBS("{F22}")    ; Toggle Recording
@@ -171,6 +181,8 @@ Return
     Spotify.PlayPause()
 Return
 *<!F2:: ; Left Alt + F2
+    KeyWait, Alt, Up
+    Sleep, 10
     BrowserControl.PlayPause()
 Return
 !+p:: ; Alt Shift P
@@ -187,14 +199,14 @@ Return
 ^!F4::
     WinKill, A
 Return
-^!h::
-    ; Socket := OBS.GetOBSWebsocket()
-    ; Msgbox, % Socket.GetCurrentScene()
-    ; WinGet, temp, list, ahk_exe obs64.exe
-    ; ControlSend,, {F24}, ahk_id temp1
-    ControlSend,, {F24}, ahk_exe obs64.exe
-    ; SendInput, {F24}
-Return
+; ^!h::
+;     ; Socket := OBS.GetOBSWebsocket()
+;     ; Msgbox, % Socket.GetCurrentScene()
+;     ; WinGet, temp, list, ahk_exe obs64.exe
+;     ; ControlSend,, {F24}, ahk_id temp1
+;     ControlSend,, {F24}, ahk_exe obs64.exe
+;     ; SendInput, {F24}
+; Return
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
@@ -202,8 +214,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
     DeviceModeClass := KeybindSets[deviceName][ModeHandler.Mode]
-
-    DebugMessage((Format("========== A macro key was {}. ==========`n`n"
+    DebugMessage((Format("========== The key {} was intercepted. ==========`n`n"
     . "Device name: " . deviceName . "`n"
     . "Current mode: " . ModeHandler.Mode . "`n`n"
     . "Callback: `t{}`n"
@@ -294,10 +305,20 @@ Class Soundboard {
             fileName := StrSplit(A_LoopFileName, .)[1]
             This.SoundList[filename] := A_ScriptDir . "\Soundboard\" . A_LoopFileName
         }
+
+        Loop, Files, Soundboard\Voicemeeter\*, F
+        {
+            fileName := StrSplit(A_LoopFileName, .)[1]
+            This.SoundList[filename] := A_ScriptDir . "\Soundboard\Voicemeeter\" . A_LoopFileName
+        }
     }
 
     Stop() {
         VoicemeeterRemote.StopPlayback()
+    }
+
+    Play() {
+        VoicemeeterRemote.PlayRecorder()
     }
 
     SetProfile(ByRef ProfileIndex) {

@@ -117,11 +117,11 @@ Class Global {
     Space() { ; -- Play/pause media
         ; ControlSend,, {Media_Play_Pause}, Spotify
         ; SendInput, {Media_Play_Pause}
-        If (WinExist("ahk_exe Spotify.exe")) {
+        ; If (WinExist("ahk_exe Spotify.exe")) {
             Spotify.PlayPause()
-        } Else {
-            BrowserControl.YoutubeMusic.PlayPause()
-        }
+        ; } Else {
+            ; BrowserControl.YoutubeMusic.PlayPause()
+        ; }
     }
     ; Enter() {
     ; }
@@ -248,29 +248,27 @@ Class Global {
     ; -- LETTERS -- ;
 
     A(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            Fadetime := 150
-            Strip := VoicemeeterRemote.strips["Spotify"]
-            VoicemeeterRemote.ZeroStripEQ()
-            If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
-                VoicemeeterRemote.ChangeStripGain(Strip, -1)
-                VoicemeeterRemote.ChangePlaybackGain(-1)
-            } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
-                VoicemeeterRemote.ChangeStripGain(Strip, -5)
-                VoicemeeterRemote.ChangePlaybackGain(-5)
-            } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
-                ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
-                VoicemeeterRemote.FadeStripTo(Strip, -25, Fadetime)
-                VoicemeeterRemote.SetPlaybackGain(-25)
-            } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Quiet 2
-                ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
-                VoicemeeterRemote.FadeStripTo(Strip, -35, Fadetime)
-                VoicemeeterRemote.SetPlaybackGain(-35)
-            } Else If (Modifiers.IsPressed("Alt")) {
-                VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
-            } Else If (Modifiers.IsPressed("Alt", "Control")) {
-                VoicemeeterRemote.ZeroStripEQ(Strip)
-            }
+        Fadetime := 150
+        Strip := VoicemeeterRemote.strips["Spotify"]
+        VoicemeeterRemote.ZeroStripEQ()
+        If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
+            VoicemeeterRemote.ChangeStripGain(Strip, -1)
+            VoicemeeterRemote.ChangePlaybackGain(-1)
+        } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
+            VoicemeeterRemote.ChangeStripGain(Strip, -5)
+            VoicemeeterRemote.ChangePlaybackGain(-5)
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+            VoicemeeterRemote.FadeStripTo(Strip, -25, Fadetime)
+            VoicemeeterRemote.SetPlaybackGain(-25)
+        } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Quiet 2
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+            VoicemeeterRemote.FadeStripTo(Strip, -35, Fadetime)
+            VoicemeeterRemote.SetPlaybackGain(-35)
+        } Else If (Modifiers.IsPressed("Alt")) {
+            VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+        } Else If (Modifiers.IsPressed("Alt", "Control")) {
+            VoicemeeterRemote.ZeroStripEQ(Strip)
         }
     }
     ; B() {
@@ -312,26 +310,24 @@ Class Global {
     ; P() {
     ; }
     Q(Modifiers) {
-        If (WinExist("ahk_exe Spotify.exe")) {
-            Fadetime := 200
-            Strip := VoicemeeterRemote.strips["Spotify"]
-            VoicemeeterRemote.ZeroStripEQ(Strip)
-            If (Modifiers.IsPressed()) { ; -- Spotify vol increase
-                VoicemeeterRemote.ChangeStripGain(Strip, 1)
-                VoicemeeterRemote.ChangePlaybackGain(1)
+        Fadetime := 200
+        Strip := VoicemeeterRemote.strips["Spotify"]
+        VoicemeeterRemote.ZeroStripEQ(Strip)
+        If (Modifiers.IsPressed()) { ; -- Spotify vol increase
+            VoicemeeterRemote.ChangeStripGain(Strip, 1)
+            VoicemeeterRemote.ChangePlaybackGain(1)
 
-            } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
-                VoicemeeterRemote.ChangeStripGain(Strip, 5)
-                VoicemeeterRemote.ChangePlaybackGain(5)
+        } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
+            VoicemeeterRemote.ChangeStripGain(Strip, 5)
+            VoicemeeterRemote.ChangePlaybackGain(5)
 
-            } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
-                VoicemeeterRemote.FadeStripTo(Strip, -10, Fadetime)
-                VoicemeeterRemote.SetPlaybackGain(-10)
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
+            VoicemeeterRemote.FadeStripTo(Strip, -10, Fadetime)
+            VoicemeeterRemote.SetPlaybackGain(-10)
 
-            } Else If (Modifiers.IsPressed("Control", "Shift")) {
-                VoicemeeterRemote.FadeStripTo(Strip := Strip, Gain := 0, Fadetime)
-                VoicemeeterRemote.SetPlaybackGain(0)
-            }
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
+            VoicemeeterRemote.FadeStripTo(Strip := Strip, Gain := 0, Fadetime)
+            VoicemeeterRemote.SetPlaybackGain(0)
         }
     }
     ; R() {
