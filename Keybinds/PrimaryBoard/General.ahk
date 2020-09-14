@@ -162,6 +162,7 @@ Class General {
         Soundboard.Play()
     }
     F3(Modifiers) {
+        Soundboard.ShowSettings()
     }
     F4(Modifiers) {
     }

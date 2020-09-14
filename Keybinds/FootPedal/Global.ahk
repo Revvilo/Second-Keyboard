@@ -1,5 +1,5 @@
 class FootPedal {
-    static Type := DeviceTypes["Pedal"]
+    static TYPE := DeviceTypes["Pedal"]
     Space() {
     }
 }

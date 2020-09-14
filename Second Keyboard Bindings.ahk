@@ -166,7 +166,7 @@ Return
 
 #Include Hotstrings\Path-Shortcuts.ahk
 
-#IfWinNotActive, ahk_exe gimp-2.10.exe
+#If mainKeyboardHotkeys 
 *!d:: ; Alt + D
     Discord.ToggleDeafen()
 Return
@@ -180,12 +180,36 @@ Return
     SendInput, ^+[
 Return
 
+#IfWinActive, ahk_exe FactoryGame-Win64-Shipping.exe
+*XButton1::
+    ToggleTimer("Autoattack")
+Return
+*XButton1 UP::
+    ToggleTimer("Autoattack")
+Return
+*XButton2::
+    SendInput, {LControl down}
+    SendInput, {Sleep 5000}
+    SendInput, {LControl up}
+Return
+
+#IfWinActive Risk
+*XButton1::
+    Sendinput, {Click Down}
+    Sendinput, {r Down}
+Return
+*XButton1 UP::
+    Sendinput, {Click Up}
+    Sendinput, {r Up}
+Return
+
+
+#If
 ~*!s:: ; Alt + S
     Discord.ToggleMute()
 Return
-#If
 *>!o:: ; Right Alt + O
-    OBS.SendToOBS("{F22}")    ; Toggle Recording
+    OBS.ToggleRecording()    ; Toggle Recording
 Return
 *<!F1:: ; Left Alt + F1
     Spotify.PlayPause()
@@ -301,6 +325,8 @@ Class Soundboard {
     Static SlotCount := 9
     Static IniName := "SoundboardConfig.ini"
     Static CurrProfileIndex := 1
+    ; ^^ Config ^^
+
     Static Binds := []
     Static SoundList := {}
 
@@ -330,6 +356,7 @@ Class Soundboard {
     SetProfile(ByRef ProfileIndex) {
         If ((ProfileIndex is Number) && (ProfileIndex <= This.ProfileCount))
             This.CurrProfileIndex := ProfileIndex
+        This.ShowSettings(Refresh := True)
     }
 
     PlaySlot(ByRef Index) {
@@ -349,21 +376,41 @@ Class Soundboard {
     SaveSettings() {
         Loop, % This.ProfileCount {
             ProfileIndex := A_Index
-            Loop, 9 {
+            Loop, %SlotCount% {
                 IniWrite, % This.Binds[ProfileIndex][A_Index], % This.IniName, % ProfileIndex, %A_Index%
             }
         }
     }
 
-    ; ShowSettings() {
-    ;     Loop, % This.ProfileCount {
-    ;         ProfileIndex := A_Index
-    ;         Loop, % This.SlotCount {
-    ;             IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
-    ;             This.Binds[ProfileIndex][A_Index] := OutputVar
-    ;         }
-    ;     }
-    ; }
+    ShowSettings(Refresh := False) {
+        ; TODO: Close [fade out] soundboard display after a duration
+        Gui SoundboardDisplay:+LastFoundExist
+        If (WinExist() && !Refresh)
+            Gui SoundboardDisplay:Destroy
+        Else If !(!WinExist() && Refresh) {
+            SysGet, OutputVar, MonitorWorkArea
+            Width := 500
+            Height := 180
+            Padding := 2
+            PosX := OutputVarRight - Width - Padding
+            PosY := OutputVarBottom - Height - Padding
+
+            Gui SoundboardDisplay:New
+            Gui -Caption +AlwaysOnTop
+            Gui, Add, Text,, % "Current Profile: " . This.CurrProfileIndex
+            Gui, Add, Text, yp+15,
+
+            Loop % This.SlotCount {
+                IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, % A_Index
+                OutputVar := Format("{} - {}", A_Index, OutputVar)
+                Gui, Add, Text, yp+15, %OutputVar%
+            }
+
+            Gui, Show, W%Width% H%Height% X%PosX% Y%PosY% NA
+            Gui +LastFound
+            WinGet GUI_ID, ID
+        }
+    }
 
     LoadSettings() {
         Loop, % This.ProfileCount {
@@ -549,7 +596,7 @@ DebugTrayTip(inMSG := "") {
 }
 
 ; -- This automatically toggles a timer for the name provided.
-; -- The name must be a function or label NAME. Aka without the ().
+; -- The name must be a function or label NAME. Without the ().
 ; -- Returns 1 upon timer started and 0 for timer stopped
 ; --- TODO: Could possibly use Func() objects for this instead.
 ToggleTimer(timerName, endExec := "") {
@@ -569,6 +616,11 @@ ToggleTimer(timerName, endExec := "") {
 ; -- Autoclicker macro for use with 'settimer'
 AutoClicker() {
     Click, Right
+}
+
+; -- Autoclicker macro for use with 'settimer'
+AutoAttack() {
+    Click, Left
 }
 
 AutoFishing() {
