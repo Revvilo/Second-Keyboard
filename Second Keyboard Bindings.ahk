@@ -67,6 +67,7 @@ Global AHI := new AutoHotInterception()
 Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
                         , "FootPedal": "HID\VID_03F0&PID_0024&REV_0300"}
 
+
 ; General globals
 Global mainKeyboardHotkeys := False
 Global debug := False
@@ -178,6 +179,13 @@ Return
         Return
     }
     SendInput, ^+[
+Return
+#IfWinActive, Minecraft
+*XButton1::
+    ToggleTimer("AutoClicker")
+Return
+*XButton1 UP::
+    ToggleTimer("AutoClicker")
 Return
 
 #IfWinActive, ahk_exe FactoryGame-Win64-Shipping.exe
@@ -394,8 +402,8 @@ Class Soundboard {
             Padding := 2
             PosX := OutputVarRight - Width - Padding
             PosY := OutputVarBottom - Height - Padding
-
-            Gui SoundboardDisplay:New
+            
+            Gui SoundboardDisplay:New ; TODO: see if there's a way to update all the controls on the window without re-creating it (which makes it flash)
             Gui -Caption +AlwaysOnTop
             Gui, Add, Text,, % "Current Profile: " . This.CurrProfileIndex
             Gui, Add, Text, yp+15,
@@ -535,11 +543,6 @@ CheckRedundantKeybinds() {
     }
 }
 
-PlayPreloadedSound(ByRef Sound) {
-    ; Msgbox, % &Sound
-    Return DLLCall("winmm.dll\sndPlaySoundA", UInt, &Sound, UInt, ((SND_MEMORY:=0x4) | (SND_NODEFAULT:=0x2)))
-}
-
 ResetVolumeMixer(vol := "") {
     oldDHW := A_DetectHiddenWindows
     DetectHiddenWindows, On
@@ -599,17 +602,29 @@ DebugTrayTip(inMSG := "") {
 ; -- The name must be a function or label NAME. Without the ().
 ; -- Returns 1 upon timer started and 0 for timer stopped
 ; --- TODO: Could possibly use Func() objects for this instead.
-ToggleTimer(timerName, endExec := "") {
-    if (!timerVars[timerName]) {
+ToggleTimer(timerName, endExec := "", forceState := "") {
+    if (forceState == true) {
         timerVars[timerName] := True
         SoundPlay, % Sounds.Connected
         SetTimer, %timerName%, 0
         Return, timerVars[timerName]
-    } else {
+    } else if (forceState == false) {
         timerVars[timerName] := False
         SoundPlay, % Sounds.Disconnected
         SetTimer, %timerName%, Delete
         Return, timerVars[timerName]
+    } else {
+        if (!timerVars[timerName]) {
+            timerVars[timerName] := True
+            SoundPlay, % Sounds.Connected
+            SetTimer, %timerName%, 0
+            Return, timerVars[timerName]
+        } else {
+            timerVars[timerName] := False
+            SoundPlay, % Sounds.Disconnected
+            SetTimer, %timerName%, Delete
+            Return, timerVars[timerName]
+        }
     }
 }
 

@@ -250,7 +250,7 @@ Class Global {
     A(Modifiers) {
         Fadetime := 150
         Strip := VoicemeeterRemote.strips["Spotify"]
-        VoicemeeterRemote.ZeroStripEQ()
+        ; VoicemeeterRemote.ZeroStripEQ() ; Old revvilo why the fk did you put this here?
         If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
             VoicemeeterRemote.ChangeStripGain(Strip, -1)
             VoicemeeterRemote.ChangePlaybackGain(-1)
@@ -266,9 +266,14 @@ Class Global {
             VoicemeeterRemote.FadeStripTo(Strip, -35, Fadetime)
             VoicemeeterRemote.SetPlaybackGain(-35)
         } Else If (Modifiers.IsPressed("Alt")) {
-            VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+            VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 0)
         } Else If (Modifiers.IsPressed("Alt", "Control")) {
             VoicemeeterRemote.ZeroStripEQ(Strip)
+        } Else If (Modifiers.IsPressed("Alt", "Control", "Shift")) {
+            VoicemeeterRemote.FadeStripTo(Strip, -60, 15000)
+            Sleep, 15000
+            Spotify.PlayPause()
+            VoicemeeterRemote.FadeStripTo(Strip, -10, 2000)
         }
     }
     ; B() {
@@ -312,7 +317,7 @@ Class Global {
     Q(Modifiers) {
         Fadetime := 200
         Strip := VoicemeeterRemote.strips["Spotify"]
-        VoicemeeterRemote.ZeroStripEQ(Strip)
+        ; VoicemeeterRemote.ZeroStripEQ(Strip) ; Old revvilo why the fk did you put this here?
         If (Modifiers.IsPressed()) { ; -- Spotify vol increase
             VoicemeeterRemote.ChangeStripGain(Strip, 1)
             VoicemeeterRemote.ChangePlaybackGain(1)
@@ -357,6 +362,7 @@ Class Global {
             VoicemeeterRemote.SendScript("Strip[" . SpotifyStrip . "].B3 = 0")
         } Else If (Modifiers.IsPressed("Control", "Shift", "Alt")) {
             VoicemeeterRemote.ToggleStripOutput("5", "A2")
+            VoicemeeterRemote.ToggleStripOutput("5", "A1")
         } Else If (Modifiers.IsPressed("Control")) {
             VoicemeeterRemote.ToggleStripOutput(MicStrip, "A1")
         } Else If (Modifiers.IsPressed("Alt")) {
