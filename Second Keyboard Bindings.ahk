@@ -113,7 +113,7 @@ Soundboard.PopulateSounds()
 Sounds.SFX.PopulateSounds()
 SubscribeAllKeys()
 
-ModeHandler.ModeList := ["General", "Browser", "Resolve"]
+ModeHandler.ModeList := ["General", "Browser", "Resolve", "RPG"]
 ModeHandler.Mode := 1
 
 CheckRedundantKeybinds()
@@ -131,6 +131,7 @@ Class KeybindSets {
         #Include Keybinds\PrimaryBoard\Browser.ahk
         #Include Keybinds\PrimaryBoard\General.ahk
         #Include Keybinds\PrimaryBoard\Resolve.ahk
+        #Include Keybinds\PrimaryBoard\RPG.ahk
     }
     Class NumpadBoard {
         ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
@@ -168,9 +169,7 @@ Return
 #Include Hotstrings\Path-Shortcuts.ahk
 
 #If mainKeyboardHotkeys 
-*!d:: ; Alt + D
-    Discord.ToggleDeafen()
-Return
+
 
 #IfWinActive, ahk_exe Resolve.exe
 *XButton1::
@@ -213,14 +212,20 @@ Return
 
 
 #If
-~*!s:: ; Alt + S
+~*!x:: ; Alt + x
     Discord.ToggleMute()
+Return
+*!z:: ; Alt + z
+    Discord.ToggleDeafen()
 Return
 *>!o:: ; Right Alt + O
     OBS.ToggleRecording()    ; Toggle Recording
 Return
 *<!F1:: ; Left Alt + F1
     Spotify.PlayPause()
+Return
+*<!<^F2:: ; Left Alt + Control + F2
+    Spotify.Next()
 Return
 *<!F2:: ; Left Alt + F2
     KeyWait, Alt, Up
@@ -332,7 +337,7 @@ Class Soundboard {
     Static ProfileCount := 8
     Static SlotCount := 9
     Static IniName := "SoundboardConfig.ini"
-    Static CurrProfileIndex := 1
+    Static CurrProfileIndex := 1 ; Starting setting for selected profile on boot
     ; ^^ Config ^^
 
     Static Binds := []
@@ -390,12 +395,17 @@ Class Soundboard {
         }
     }
 
+    FadeOutSettings(duration := 100) {
+        DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", duration, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
+        Gui SoundboardDisplay:Destroy
+    }
+
     ShowSettings(Refresh := False) {
         ; TODO: Close [fade out] soundboard display after a duration
         Gui SoundboardDisplay:+LastFoundExist
-        If (WinExist() && !Refresh)
-            Gui SoundboardDisplay:Destroy
-        Else If !(!WinExist() && Refresh) {
+        If (WinExist() && !Refresh) {
+            This.FadeOutSettings()
+        } Else If !(!WinExist() && Refresh) {
             SysGet, OutputVar, MonitorWorkArea
             Width := 500
             Height := 180
@@ -417,6 +427,14 @@ Class Soundboard {
             Gui, Show, W%Width% H%Height% X%PosX% Y%PosY% NA
             Gui +LastFound
             WinGet GUI_ID, ID
+            SetTimer, FadeOutSettingsTimer, -1
+            Return
+
+            FadeOutSettingsTimer:
+                Sleep, 1500
+                DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", 1000, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
+                ; This.FadeOutSettings(1000)
+            Return
         }
     }
 

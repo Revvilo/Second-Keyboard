@@ -35,7 +35,9 @@ Class ModeHandler
                         this.CurrentMode := this.ModeList[this.ModeIndex]
                     }
                 }
-                SoundPlay, % Sounds[this.CurrentMode]
+                Try {
+                    SoundPlay, % Sounds[this.CurrentMode]
+                }
             }
         }
     }

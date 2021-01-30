@@ -214,6 +214,10 @@ Class General {
     ; }
     ; B(Modifiers) {
     ; }
+    ; P(Modifiers) {
+    ; }
+    ; R(Modifiers) {
+    ; }
     C(Modifiers) {
         If (Modifiers.IsPressed("Control", "Alt")) { ; -- Autoclicker - Ctrl Alt C
             ToggleTimer("AutoClicker")
@@ -264,8 +268,8 @@ Class General {
     Z(Modifiers) {
         If (Modifiers.IsPressed()) {
             SendInput, {Media_Prev} ; Prev song
-        } Else If (Modifiers.IsPressed("Alt")) {
-            Minecraft.MouseMove(-2100, -350)
+        ; } Else If (Modifiers.IsPressed("Alt")) {
+        ;     Minecraft.MouseMove(-2100, -350)
         }
     }
 }

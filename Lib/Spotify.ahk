@@ -36,6 +36,10 @@ Class Spotify {
         Static ErrorTitle := "Spotify Vol Control - Error"
     }
 
+    Next() {
+        SendInput, {Media_Next} ; Next Song
+    }
+
     PlayPause() {
         DetectHiddenWindows, On
         If (WinExist("ahk_exe Spotify.exe"))
