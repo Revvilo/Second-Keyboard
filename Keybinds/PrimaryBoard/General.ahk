@@ -223,11 +223,8 @@ Class General {
             ToggleTimer("AutoClicker")
         }
     }
-    E(Modifiers) {
-        If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
-            Run, D:\Video\Editing
-        }
-    }
+    ; E(Modifiers) {
+    ; }
     M(Modifiers) {
         If (Modifiers.IsPressed("Alt", "Control")) { ; -- Copy Mouse Position - Ctrl Alt M
             MouseGetPos, OutputVarX, OutputVarY
@@ -255,21 +252,9 @@ Class General {
             SendInput, {U+2714} ; -- ✔ Heavy check mark
         }
     }
-    X(Modifiers) {
-        If (Modifiers.IsPressed()) {
-            SendInput, {Media_Next} ; Next Song
-        } Else If (Modifiers.IsPressed("Alt")) {
-            Minecraft.MouseMove(2100, 350)
-        }
-    }
+
     Y() {
         ResetVolumeMixer()
     }
-    Z(Modifiers) {
-        If (Modifiers.IsPressed()) {
-            SendInput, {Media_Prev} ; Prev song
-        ; } Else If (Modifiers.IsPressed("Alt")) {
-        ;     Minecraft.MouseMove(-2100, -350)
-        }
-    }
+
 }

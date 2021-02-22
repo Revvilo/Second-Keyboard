@@ -114,11 +114,15 @@ Class Global {
 
     ; Equals() {
     ; }
-    Space() { ; -- Play/pause media
+    Space(Modifiers) { ; -- Play/pause media
         ; ControlSend,, {Media_Play_Pause}, Spotify
         ; SendInput, {Media_Play_Pause}
         ; If (WinExist("ahk_exe Spotify.exe")) {
+        If(Modifiers.IsPressed()) {
             Spotify.PlayPause()
+        } Else If (Modifiers.IsPressed("Control")) {
+            BrowserControl.PlayPause()
+        }
         ; } Else {
             ; BrowserControl.YoutubeMusic.PlayPause()
         ; }
@@ -253,22 +257,24 @@ Class Global {
         ; VoicemeeterRemote.ZeroStripEQ() ; Old revvilo why the fk did you put this here?
         If (Modifiers.IsPressed()) { ; -- Spotify vol decrease
             VoicemeeterRemote.ChangeStripGain(Strip, -1)
-            VoicemeeterRemote.ChangePlaybackGain(-1)
+
         } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol -5
             VoicemeeterRemote.ChangeStripGain(Strip, -5)
-            VoicemeeterRemote.ChangePlaybackGain(-5)
+
         } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify quiet vol
             ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
             VoicemeeterRemote.FadeStripTo(Strip, -25, Fadetime)
-            VoicemeeterRemote.SetPlaybackGain(-25)
+
         } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Quiet 2
             ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
             VoicemeeterRemote.FadeStripTo(Strip, -35, Fadetime)
-            VoicemeeterRemote.SetPlaybackGain(-35)
+
         } Else If (Modifiers.IsPressed("Alt")) {
             VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 0)
+
         } Else If (Modifiers.IsPressed("Alt", "Control")) {
             VoicemeeterRemote.ZeroStripEQ(Strip)
+
         } Else If (Modifiers.IsPressed("Alt", "Control", "Shift")) {
             VoicemeeterRemote.FadeStripTo(Strip, -60, 15000)
             Sleep, 15000
@@ -280,15 +286,41 @@ Class Global {
     ; }
     ; C(Modifiers) {
     ; }
-    ; D() {
-    ; }
+    D(Modifiers) {
+        VoicemeeterRemote.StandardVolumeControl(Modifiers, VoicemeeterRemote.Strips["Browser"], 0)
+    }
     E(Modifiers) {
+        strip := VoicemeeterRemote.Strips["Browser"]
+
+        VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 1)
+
         If (Modifiers.IsPressed("WinKey")) { ; -- Open editing folder
             Run, D:\Video\Editing
+        } Else If (Modifiers.IsPressed("Alt")) { ; -- Toggle Voice Changer
+            VoicemeeterRemote.ToggleStripOutput("3", "B3")
+            VoicemeeterRemote.ToggleStripOutput("4", "B3")
+        
+        } Else If (Modifiers.IsPressed("Control", "Shift", "Alt")) {
+            VoicemeeterRemote.ToggleStripOutput(strip, "A2")
+            VoicemeeterRemote.ToggleStripOutput(strip, "A1")
         }
     }
-    ; F() {
-    ; }
+    F(Modifiers) {
+        If (Modifiers.IsPressed()) { ; -- Playback vol decrease
+            VoicemeeterRemote.ChangePlaybackGain(-1)
+
+        } Else If (Modifiers.IsPressed("Shift")) { ; -- Playback vol -5
+            VoicemeeterRemote.ChangePlaybackGain(-5)
+
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Playback quiet vol
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+            VoicemeeterRemote.SetPlaybackGain(-25)
+
+        } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Playback quiet 2
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
+            VoicemeeterRemote.SetPlaybackGain(-35)
+        }
+    }
     ; G() {
     ; }
     ; H() {
@@ -318,27 +350,34 @@ Class Global {
         Fadetime := 200
         Strip := VoicemeeterRemote.strips["Spotify"]
         ; VoicemeeterRemote.ZeroStripEQ(Strip) ; Old revvilo why the fk did you put this here?
-        If (Modifiers.IsPressed()) { ; -- Spotify vol increase
-            VoicemeeterRemote.ChangeStripGain(Strip, 1)
+        VoicemeeterRemote.StandardVolumeControl(Modifiers, Strip, True)
+        If (Modifiers.IsPressed("Control", "Shift", "Alt")) { ; Toggles the strip between outputting on a1 and a2
+            VoicemeeterRemote.ToggleStripOutput("5", "A2")
+            VoicemeeterRemote.ToggleStripOutput("5", "A1")
+        }
+    }
+    R(Modifiers) {
+        ; ---- PLAYBACK Volume Control ----
+            
+        If (Modifiers.IsPressed()) { ; -- Playback vol increase
             VoicemeeterRemote.ChangePlaybackGain(1)
 
-        } Else If (Modifiers.IsPressed("Shift")) { ; -- Spotify vol +5
-            VoicemeeterRemote.ChangeStripGain(Strip, 5)
+        } Else If (Modifiers.IsPressed("Shift")) { ; -- Playback vol -5
             VoicemeeterRemote.ChangePlaybackGain(5)
 
-        } Else If (Modifiers.IsPressed("Control")) { ; -- Spotify loud vol
-            VoicemeeterRemote.FadeStripTo(Strip, -10, Fadetime)
+        } Else If (Modifiers.IsPressed("Control")) { ; -- Playback quiet vol
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
             VoicemeeterRemote.SetPlaybackGain(-10)
 
-        } Else If (Modifiers.IsPressed("Control", "Shift")) {
-            VoicemeeterRemote.FadeStripTo(Strip := Strip, Gain := 0, Fadetime)
+        } Else If (Modifiers.IsPressed("Control", "Shift")) { ; -- Playback quiet 2
+            ; VoicemeeterRemote.SetStripEQ(Strip, -12, -12, 12)
             VoicemeeterRemote.SetPlaybackGain(0)
         }
     }
-    ; R() {
-    ; }
-    ; S(Modifiers) {
-    ; }
+    S(Modifiers) {
+        strip := VoicemeeterRemote.Strips["Discord"]
+        VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 0)
+    }
     ; T(Modifiers) {
     ; }
     ; U() {
@@ -354,25 +393,29 @@ Class Global {
         }
     }
     W(Modifiers) {
-        SpotifyStrip := VoicemeeterRemote.strips["Spotify"]
-        MicStrip := VoicemeeterRemote.strips["Mic"]
-        If (Modifiers.IsPressed("Alt", "Control")) {
-            VoicemeeterRemote.ToggleStripOutput(SpotifyStrip, "B3")
-        } Else If (Modifiers.IsPressed("Alt", "Shift")) {
-            VoicemeeterRemote.SendScript("Strip[" . SpotifyStrip . "].B3 = 0")
-        } Else If (Modifiers.IsPressed("Control", "Shift", "Alt")) {
-            VoicemeeterRemote.ToggleStripOutput("5", "A2")
-            VoicemeeterRemote.ToggleStripOutput("5", "A1")
-        } Else If (Modifiers.IsPressed("Control")) {
-            VoicemeeterRemote.ToggleStripOutput(MicStrip, "A1")
-        } Else If (Modifiers.IsPressed("Alt")) {
-            VoicemeeterRemote.ToggleStripOutput(SpotifyStrip, "A1")
+        strip := VoicemeeterRemote.Strips["Discord"]
+        VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 1)
+
+        If (Modifiers.IsPressed("Control", "Shift", "Alt")) { ; Toggles the strip between outputting on a1 and a2
+            VoicemeeterRemote.ToggleStripOutput(strip, "A2")
+            VoicemeeterRemote.ToggleStripOutput(strip, "A1")
+
         }
     }
-    ; X(Modifiers) {
-    ; }
-    ; Y() {
-    ; }
-    ; Z(Modifiers) {
-    ; }
+    X(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            SendInput, {Media_Next} ; Next Song
+        } Else If (Modifiers.IsPressed("Alt")) {
+            Minecraft.MouseMove(2100, 350)
+        }
+    }
+    ;Y(Modifiers) {
+    ;}
+    Z(Modifiers) {
+        If (Modifiers.IsPressed()) {
+            SendInput, {Media_Prev} ; Prev song
+        ; } Else If (Modifiers.IsPressed("Alt")) {
+        ;     Minecraft.MouseMove(-2100, -350)
+        }
+    }
 }

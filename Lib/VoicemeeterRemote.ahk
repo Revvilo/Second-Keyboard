@@ -6,9 +6,40 @@ class VoicemeeterRemote {
     static mDLLPath := "Program Files (x86)\VB\Voicemeeter"
     static mDLLFilename32 := "VoicemeeterRemote.dll"
     static mDLLFilename64 := "VoicemeeterRemote64.dll"
-    static strips := {"Spotify" : "5", "Mic" : "0"}
+    static strips := {"Mic" : 0, "Spotify" : 5, "Discord": 6, "Browser": 7}
 
     static mDLLFullPath := VoicemeeterRemote.mDLLDrive . "\" . VoicemeeterRemote.mDLLPath . "\"
+
+    StandardVolumeControl(ByRef Modifiers, ByRef Strip, ByRef IncreaseDecrease) {
+        If (Modifiers.IsPressed()) {
+            If (IncreaseDecrease) {
+                VoicemeeterRemote.ChangeStripGain(Strip, 1)
+            } Else {
+                VoicemeeterRemote.ChangeStripGain(Strip, -1)
+            }
+
+        } Else If (Modifiers.IsPressed("Shift")) {
+            If (IncreaseDecrease) {
+                VoicemeeterRemote.ChangeStripGain(Strip, 5)
+            } Else {
+                VoicemeeterRemote.ChangeStripGain(Strip, -5)
+            }
+
+        } Else If (Modifiers.IsPressed("Control", "Shift")) {
+            If (IncreaseDecrease) {
+                VoicemeeterRemote.FadeStripTo(Strip, 0)
+            } Else {
+                VoicemeeterRemote.FadeStripTo(Strip, -35)
+            }
+        
+        } Else If (Modifiers.IsPressed("Control")) {
+            If (IncreaseDecrease) {
+                VoicemeeterRemote.FadeStripTo(Strip, -10)
+            } Else {
+                VoicemeeterRemote.FadeStripTo(Strip, -25)
+            }
+        }
+    }
 
     SetStripGain(ByRef StripIndex, ByRef Gain) {
         This.SendScript(Format("Strip[{}].gain = {}", StripIndex, Gain))
@@ -51,7 +82,7 @@ class VoicemeeterRemote {
         This.SendScript(Format("Strip[{}].gain += {}", StripIndex, Gain))
     }
 
-    FadeStripTo(ByRef StripIndex, ByRef TargetGain, ByRef FadeTime) {
+    FadeStripTo(ByRef StripIndex, ByRef TargetGain, ByRef FadeTime := 100) {
         This.SendScript(Format("Strip[{}].FadeTo = ({}, {})", StripIndex, TargetGain, FadeTime))
     }
 
