@@ -1,3 +1,5 @@
+; TODO: This is a library, so it should not have references to external classes such as "Sounds"
+
 Class Spotify {
 
     ; These two multipliers determine the volume - relative to the current system vol - that will be known as the loud and quiet settings.
@@ -40,12 +42,15 @@ Class Spotify {
         SendInput, {Media_Next} ; Next Song
     }
 
+    Prev() {
+        SendInput, {Media_Prev} ; Previous Song
+    }
+
     PlayPause() {
         DetectHiddenWindows, On
         If (WinExist("ahk_exe Spotify.exe"))
             PostMessage, 0x319,, 0xE0000,, ahk_exe Spotify.exe ; msg: WM_APPCOMMAND - lParam: APPCOMMAND_MEDIA_PLAY_PAUSE
         DetectHiddenWindows, Off
-        ; ControlSend,, {Media_Play_Pause}, Spotify Free
     }
 
     ; -- Toggles visibiliy of Spotify
@@ -63,7 +68,6 @@ Class Spotify {
             SoundPlay, % Sounds.modeChange3
             WinShow, ahk_id %spotifyHandle3%
         }
-
         DetectHiddenWindows, %oldDHW%
     }
 
@@ -101,7 +105,6 @@ Class Spotify {
 
             WinGet, mixerHandle, ID, Volume Mixer
             WinGet, outControlList, ControlList, ahk_id %mixerHandle%
-
             WinGet, spotifyProcesses, List, ahk_exe Spotify.exe
 
             currentSpotifyTitle := ""
@@ -167,8 +170,11 @@ Class Spotify {
                     ; TrayTip, % Spotify.Alert.Title, % "Cannot find Spotify in the audio mixer.`nTry playing a track."
                 }
             } Else {
-                DebugTrayTip("No change in the Mixer was detected.`nSliderClassNN: " . This.volSliderClassNN . "`nCurrentSpotifyTitle: " . currentSpotifyTitle . "`nTitle unchanged?: " . ((wasSpotifysTitle == currentSpotifyTitle) ? "True" : "False"))
+                ; Commented because DebugTryTip is elsewhere in the project.
+                ; DebugTrayTip("No change in the Mixer was detected.`nSliderClassNN: " . This.volSliderClassNN . "`nCurrentSpotifyTitle: " . currentSpotifyTitle . "`nTitle unchanged?: " . ((wasSpotifysTitle == currentSpotifyTitle) ? "True" : "False"))
             }
+
+
             ; ========================================================
 
 
@@ -176,17 +182,18 @@ Class Spotify {
             currentVol := 100 - ErrorLevel
             sliderPos := ErrorLevel
 
-            ; Increases or decreases the volume if the argument is a positive or a negative number.
+            ; Immediately sets the volume to the value in volChange.
             If (volMode == "set") {
                 If (not (volChange > this.systemVol)) {
                     SendMessage TBM_SETPOSNOTIFY:=0x422, 1, % 100 - volChange, % This.volSliderClassNN, Volume Mixer ; Absolute change
                 } Else {
                     SendMessage TBM_SETPOSNOTIFY:=0x422, 1, % this.systemVol, % This.volSliderClassNN, Volume Mixer ; Absolute change
                 }
+            ; Increases or decreases the volume if the argument is a positive or a negative number.
             } Else If (volMode == "change") {
-                ; If the volume change will not exceed the maxVol
+                ; Will the volume change exceed maxVol?
                 If (not currentVol + volChange > this.systemVol) {
-                    ; If the volume change will not preceed minVol (to avoid accidental muting)
+                    ; Will the volume change preceed minVol? (to avoid accidental muting)
                     If (not currentVol + volChange < this.volQuiet) {
                         SendMessage TBM_SETPOSNOTIFY:=0x422, 1, % sliderPos - volChange, % This.volSliderClassNN, Volume Mixer ; Relative change
                     } Else {

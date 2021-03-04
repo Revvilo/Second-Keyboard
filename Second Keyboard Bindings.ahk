@@ -148,6 +148,8 @@ Return
 ; Main Keyboard Binds ;
 ; =================== ;
 
+#If mainKeyboardHotkeys 
+
 #IfWinActive, Voltz
 ~$^w::
     SendInput, {w down}
@@ -158,18 +160,6 @@ Return
     KeyWait, w
     SendInput, {w up}
 Return
-
-
-; ==================== ;
-; ==== Hotstrings ==== ;
-; ==================== ;
-
-#Include Hotstrings\Minecraft-Hotstrings.ahk
-
-#Include Hotstrings\Path-Shortcuts.ahk
-
-#If mainKeyboardHotkeys 
-
 
 #IfWinActive, ahk_exe Resolve.exe
 *XButton1::
@@ -210,22 +200,24 @@ Return
     Sendinput, {r Up}
 Return
 
-
 #If
-~*!x:: ; Alt + x
+~*!x:: ; ALT + x
     Discord.ToggleMute()
 Return
-*!z:: ; Alt + z
+*!z:: ; ALT + z
     Discord.ToggleDeafen()
 Return
-*>!o:: ; Right Alt + O
+*>!o:: ; RIGHT Alt + O
     OBS.ToggleRecording()    ; Toggle Recording
 Return
-*<!F1:: ; Left Alt + F1
+*<!F1:: ; LEFT Alt + F1
     Spotify.PlayPause()
 Return
-*<!<^F2:: ; Left Alt + Control + F2
+*<!<^F2:: ; LEFT Alt + LEFT Control + F2
     Spotify.Next()
+Return
+*<!<^F1:: ; LEFT Alt + LEFT Control + F1
+    VoicemeeterRemote.ToggleDim(VoicemeeterRemote.Strips["Spotify"])
 Return
 *<!F2:: ; Left Alt + F2
     KeyWait, Alt, Up
@@ -250,6 +242,16 @@ Return
 ; ^h::
 ;     Msgbox, % DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
 ; Return
+
+
+; ==================== ;
+; ==== Hotstrings ==== ;
+; ==================== ;
+
+#Include Hotstrings\Minecraft-Hotstrings.ahk
+
+#Include Hotstrings\Path-Shortcuts.ahk
+
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
@@ -427,14 +429,14 @@ Class Soundboard {
             Gui, Show, W%Width% H%Height% X%PosX% Y%PosY% NA
             Gui +LastFound
             WinGet GUI_ID, ID
-            SetTimer, FadeOutSettingsTimer, -1
+            ; SetTimer, FadeOutSettingsTimer, -1
             Return
 
-            FadeOutSettingsTimer:
-                Sleep, 1500
-                DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", 1000, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
-                ; This.FadeOutSettings(1000)
-            Return
+            ; FadeOutSettingsTimer:
+            ;     Sleep, 1500
+            ;     DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", 1000, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
+            ;     ; This.FadeOutSettings(1000)
+            ; Return
         }
     }
 
