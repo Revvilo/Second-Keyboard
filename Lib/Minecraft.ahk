@@ -19,6 +19,49 @@ Class Minecraft {
         MouseClick, Left
     }
 
+    AutoFishing() {
+        FishDetected := False
+        IfWinActive, Minecraft
+        {
+            WinGet, mcInstances, List, Minecraft
+            Loop %mcInstances% {
+                mcInstanceID := mcInstances%A_Index%
+
+                ; WinActivate, ahk_id %mcInstanceID%
+
+                WinGetPos, X, Y, Width, Height, ahk_id %mcInstanceID%
+                X1 := Width / 2 - 50 + X
+                Y1 := Height / 2 - 10 + Y
+                X2 := Width / 2 + 50 + X
+                Y2 := Height / 2 + 60 + Y
+
+                ; ToolTip, ., % X1, % Y1
+                ; Sleep, 50
+                ; ToolTip, ., % X2, % Y2
+                ; ToolTip, % Format("{}`n{}`n{}`n{}`n`n{}`n{}`n{}`n{}", X, Y, Width, Height, X1, Y1, X2, Y2), 500, 500
+
+                ; 50F6FC
+                PixelSearch, OutputVarX, OutputVarY, %X1%, %Y1%, %X2%, %Y2%, FF0000, 1, Fast
+                ; 51F9FF
+                If (ErrorLevel == 1) {
+                    ; SoundPlay, % Sounds.Disconnected, wait
+                    ControlClick,, ahk_id %mcInstanceID%,, Right
+                    ; Random, rand, 50, 150
+                    Sleep, %rand%
+                    ControlClick,, ahk_id %mcInstanceID%,, Right
+                    FishDetected := True
+                } Else If (ErrorLevel == 2) {
+                    SoundPlay, Sounds.Asterisk, wait
+                }
+            }
+            If (FishDetected)
+                Sleep, 100
+            ; Sleep, 50
+        } Else {
+            ToggleTimer("AutoFishing")
+        }
+    }
+
     Vanilla_Autocraft() {
         SendInput, {Shift down}
         ; Sleep, 10

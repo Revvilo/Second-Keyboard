@@ -376,7 +376,11 @@ Class Global {
     }
     S(Modifiers) {
         strip := VoicemeeterRemote.Strips["Discord"]
-        VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 0)
+        If(Modifiers.IsPressed("Alt")) {
+            Misc.SpaceOutLetters()
+        } Else {
+            VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 0)
+        }
     }
     ; T(Modifiers) {
     ; }
