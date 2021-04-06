@@ -21,6 +21,44 @@ Class Misc {
         WinMove, ahk_id %hwnd%,, X, Y
     }
 
+    ResetVolumeMixer(vol := "") {
+        oldDHW := A_DetectHiddenWindows
+        DetectHiddenWindows, On
+        If (!WinExist("ahk_exe SndVol.exe")) {
+            Run, SndVol.exe,, Min
+            WinWait, Volume Mixer
+        }
+        DetectHiddenWindows, %oldDHW%
+
+        WinGet, mixerHandle, ID, Volume Mixer
+        WinGet, mixerControlList, ControlList, ahk_id %mixerHandle%
+        controlsArray := StrSplit(mixerControlList, "`n")
+
+        If (vol == "") {
+            ; Sets every entry in the Audio Mixer to the current system volume
+            SoundGet, systemVolume
+            systemVolume := Floor(systemVolume)
+            MsgBox, 1, Reset Volume Mixer?, This will reset all sliders in the volume mixer to the system volume: %systemVolume%
+            IfMsgBox, Cancel
+                Return
+            TrayTip, Resetting all sliders in the Mixer, No target volume specified.`nDefaulting to system volume: %systemVolume%
+            vol := 100 - systemVolume
+        } Else {
+            TrayTip, Setting all sliders in the Mixer, Volume was specified.`nSetting to volume: %vol%
+            vol := 100 - vol
+        }
+
+        If (mixerControlList != "") {
+            For i, e in controlsArray {
+
+                ; If the line is a static text control
+                If (RegExMatch(e, "msctls_trackbar\d{0,9}")) {
+                    SendMessage TBM_SETPOSNOTIFY:=0x422, 1, %vol%, %e%, Volume Mixer
+                }
+            }
+        }
+    }
+
     SpaceOutLetters() {
         SendInput, ^c
         Sleep, 100

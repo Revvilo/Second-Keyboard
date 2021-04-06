@@ -24,19 +24,12 @@ Process, Priority, %ErrorLevel%, High
 ; AHI Key subscription
 #Include Keybinds\SubscribeKeys.ahk
 
-#Include Lib\Acc.ahk
 #Include Lib\BrowserControl.ahk
 #Include Lib\Discord.ahk
-#Include Lib\FullscreenWindowed.ahk
-#Include Lib\Minecraft.ahk
-#Include Lib\Misc.ahk
-#Include Lib\MixerControl.ahk
 #Include Lib\ModeHandler.ahk
 #Include Lib\OBS.ahk
 #Include Lib\Spotify.ahk
 #Include Lib\TrayMenu.ahk
-#Include Lib\Vegas.ahk
-#Include Lib\VLC.ahk
 #Include Lib\VoicemeeterRemote.ahk
 
 ; Tray menu info
@@ -118,10 +111,6 @@ ModeHandler.Mode := 1
 
 CheckRedundantKeybinds()
 
-If (WinExist("ahk_exe Spotify.exe") && WinExist("Volume Mixer")) {
-    Spotify.VolChange(0, "change") ; Workaround way of automatically locating spotify's volume slider on script-start. Should be improved.
-}
-
 Class KeybindSets {
     ; -- Each class is a set of keybinds assigned to a specific device (keyboard) with their own mode specific and global hotkeys
     Class PrimaryBoard {
@@ -172,34 +161,10 @@ Return
     Sleep, 10
     BrowserControl.PlayPause()
 Return
-!+p:: ; Alt Shift P
-    ; DetectHiddenWindows, On
-    WinGet, OutputVar, List, ahk_exe Spotify.exe
-    Loop %OutputVar% {
-        temp := OutputVar%A_Index%
-        WinGetTitle, temp1, ahk_id %temp%
-        Msgbox, % temp1 . "`nID: " . temp
-        ControlSend,, {space}, ahk_id %temp%
-    }
-    DetectHiddenWindows, Off
-Return
-^!F4::
-    WinKill, A
-Return
-;Testing hotkey
-; ^h::
-;     Msgbox, % DllCall(VoicemeeterRemote.mFunctions["IsParametersDirty"], "Int")
-; Return
-
 
 ; ==================== ;
 ; ==== Hotstrings ==== ;
 ; ==================== ;
-
-#Include Hotstrings\Minecraft-Hotstrings.ahk
-
-#Include Hotstrings\Path-Shortcuts.ahk
-
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
@@ -279,7 +244,6 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     }
 }
 
-; Sneaky little function
 nothing() {
 }
 
@@ -511,43 +475,6 @@ CheckRedundantKeybinds() {
     }
 }
 
-ResetVolumeMixer(vol := "") {
-    oldDHW := A_DetectHiddenWindows
-    DetectHiddenWindows, On
-    If (!WinExist("ahk_exe SndVol.exe")) {
-        Run, SndVol.exe,, Min
-        WinWait, Volume Mixer
-    }
-    DetectHiddenWindows, %oldDHW%
-
-    WinGet, mixerHandle, ID, Volume Mixer
-    WinGet, mixerControlList, ControlList, ahk_id %mixerHandle%
-    controlsArray := StrSplit(mixerControlList, "`n")
-
-    If (vol == "") {
-        ; Sets every entry in the Audio Mixer to the current system volume
-        SoundGet, systemVolume
-        systemVolume := Floor(systemVolume)
-        MsgBox, 1, Reset Volume Mixer?, This will reset all sliders in the volume mixer to the system volume: %systemVolume%
-        IfMsgBox, Cancel
-            Return
-        TrayTip, Resetting all sliders in the Mixer, No target volume specified.`nDefaulting to system volume: %systemVolume%
-        vol := 100 - systemVolume
-    } Else {
-        TrayTip, Setting all sliders in the Mixer, Volume was specified.`nSetting to volume: %vol%
-        vol := 100 - vol
-    }
-
-    If (mixerControlList != "") {
-        For i, e in controlsArray {
-
-            ; If the line is a static text control
-            If (RegExMatch(e, "msctls_trackbar\d{0,9}")) {
-                SendMessage TBM_SETPOSNOTIFY:=0x422, 1, %vol%, %e%, Volume Mixer
-            }
-        }
-    }
-}
 
 ; Msgbox that requires 'debug' to be true in order to show
 DebugMessage(inMsg := "")

@@ -17,8 +17,6 @@ Class General {
     Up(Modifiers) {
         If (Modifiers.IsPressed()) {
             OBS.SceneControlSend("{UP}")
-        } Else If (Modifiers.IsPressed("Control")) {
-            ToggleFakeFullscreen()
         }
     }
     Down() {
@@ -253,8 +251,7 @@ Class General {
         }
     }
 
-    Y() {
-        ResetVolumeMixer()
-    }
+    ; Y() {
+    ; }
 
 }
