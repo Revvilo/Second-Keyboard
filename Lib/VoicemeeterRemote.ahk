@@ -199,7 +199,6 @@ class VoicemeeterRemote {
     Init() {
         If (Not VoicemeeterRemote.IsInitialised)
         {
-            DebugMessage("[VoicemeeterRemote Lib] Attempting to initialise and login...")
             VoicemeeterRemote.IsInitialised := True
 
             if (A_Is64bitOS) {
@@ -226,8 +225,6 @@ class VoicemeeterRemote {
             login_result := VoicemeeterRemote.Login()
             if (ErrorLevel || login_result < 0)
                 VoicemeeterRemote.Die("VoiceMeeter Remote login failed: " . ErrorLevel)
-
-            DebugMessage("`tVoicemeeterRemote successfully initialised and logged in.")
         }
     }
 

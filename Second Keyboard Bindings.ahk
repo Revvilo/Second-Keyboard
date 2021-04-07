@@ -26,14 +26,10 @@ Process, Priority, %ErrorLevel%, High
 
 #Include Lib\BrowserControl.ahk
 #Include Lib\Discord.ahk
-#Include Lib\ModeHandler.ahk
 #Include Lib\OBS.ahk
 #Include Lib\Spotify.ahk
 #Include Lib\TrayMenu.ahk
 #Include Lib\VoicemeeterRemote.ahk
-
-; Tray menu info
-Global tray_mainHotkeysName := "Enable Main Keyboard Binds"
 
 ; ==== Tray Menu assembly ====
 Menu, Tray, Icon, Second Keyboard Icon.ico
@@ -41,11 +37,7 @@ Menu, Tray, Icon, Second Keyboard Icon.ico
 Menu, Tray, NoStandard
 Menu, Tray, Add, % TrayMenu.Names.Open, TrayMenu.ListLines
 Menu, Tray, Add
-Menu, Tray, Add, % TrayMenu.Names.CycleMode, TrayMenu.CycleMode
 ; Menu, Tray, Add, % TrayMenu.Names.EnableListLines, TrayMenu.EnableListLines
-Menu, Tray, Add, % TrayMenu.Names.ToggleDebug, TrayMenu.ToggleDebug
-Menu, Tray, Add, % TrayMenu.Names.MainHotkeys, TrayMenu.ToggleMainHotkeys
-Menu, Tray, Add
 Menu, Tray, Add, % TrayMenu.Names.Reload, TrayMenu.Reload
 Menu, Tray, Add, % TrayMenu.Names.Exit, TrayMenu.Exit
 ; ===========================
@@ -57,18 +49,7 @@ Global AHI := new AutoHotInterception()
 
 ; Add keyboards to this array to register their keys for macros
 ; WARNING - UNTESTED WITH ANYTHING EXCEPT KEYBOARDS.
-Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
-                        , "FootPedal": "HID\VID_03F0&PID_0024&REV_0300"}
-
-
-; General globals
-Global mainKeyboardHotkeys := False
-Global debug := False
-Global timerVars := {}
-Global StopwatchRunning := False
-Global BeginTickCount := ""
-Global EndTickCount := ""
-
+Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"}
 
 ; List of key names that will be overridden to call a correct callback function
 Global keyAliases := {   "/": "ForwardSlash"
@@ -82,113 +63,24 @@ Global keyAliases := {   "/": "ForwardSlash"
                 , "]": "RightBracket"
                 , "[": "LeftBracket"
                 , "\": "Backslash" }
-
-; If shift is held while booting up, turn on debug mode.
-If (GetKeyState("Shift")){
-    ToggleDebug()
-}
-
-; Lists devices if debug mode is on. (Hold shift when the script is starting)
-If (Debug) {
-    tempStr := ""
-    For i, v in AHI.GetDeviceList() {
-        For i2, v2 in v {
-            tempStr := tempStr . "`n" . v2
-        }
-        tempStr := tempStr . "`n"
-    }
-    msgbox % "Device List:`n`n"tempStr
-}
-
-Sounds.PopulateSounds()
-Soundboard.PopulateSounds()
-; Soundboard.LoadSettings() ; Not loading because there is no way of changing the settings from within the script yet
-Sounds.SFX.PopulateSounds()
+                
 SubscribeAllKeys()
-
-ModeHandler.ModeList := ["General", "Browser", "Resolve", "RPG"]
-ModeHandler.Mode := 1
-
-CheckRedundantKeybinds()
 
 Class KeybindSets {
     ; -- Each class is a set of keybinds assigned to a specific device (keyboard) with their own mode specific and global hotkeys
     Class PrimaryBoard {
         ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
         #Include Keybinds\PrimaryBoard\Global.ahk
-        ; -- #Include other callback classes below here with the same name as it's respective mode
-        #Include Keybinds\PrimaryBoard\Browser.ahk
-        #Include Keybinds\PrimaryBoard\General.ahk
-        #Include Keybinds\PrimaryBoard\Resolve.ahk
-        #Include Keybinds\PrimaryBoard\RPG.ahk
-    }
-    Class NumpadBoard {
-        ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
-        #Include Keybinds\NumpadBoard\Global.ahk
-        ; -- #Include other callback classes below here with the same name as it's respective mode
     }
 }
 
-Global DeviceTypes := {"Macroboard" : 0, "Pedal" : 1}
-    
 Return
-
-; =================== ;
-; Main Keyboard Binds ;
-; =================== ;
-
-#If
-~*!x:: ; ALT + x
-    Discord.ToggleMute()
-Return
-*!z:: ; ALT + z
-    Discord.ToggleDeafen()
-Return
-*>!o:: ; RIGHT Alt + O
-    OBS.ToggleRecording()    ; Toggle Recording
-Return
-*<!F1:: ; LEFT Alt + F1
-    Spotify.PlayPause()
-Return
-*<!<^F2:: ; LEFT Alt + LEFT Control + F2
-    Spotify.Next()
-Return
-*<!<^F1:: ; LEFT Alt + LEFT Control + F1
-    VoicemeeterRemote.ToggleDim(VoicemeeterRemote.Strips["Spotify"])
-Return
-*<!F2:: ; Left Alt + F2
-    KeyWait, Alt, Up
-    Sleep, 10
-    BrowserControl.PlayPause()
-Return
-
-; ==================== ;
-; ==== Hotstrings ==== ;
-; ==================== ;
 
 ; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
 ; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
-    DeviceModeClass := KeybindSets[deviceName][ModeHandler.Mode]
-    DebugMessage((Format("========== The key {} was intercepted. ==========`n`n"
-    . "Device name: " . deviceName . "`n"
-    . "Current mode: " . ModeHandler.Mode . "`n`n"
-    . "Callback: `t{}`n"
-    . "Key Code:`t{}`n"
-    . "Global bind:`t{}`n`n"
-    . "Modifiers:`t{}`n`n"
-    . "Using alias:`t{}{}`n"
-    . "Ignore key up:`t{}"
-    , state ? "pressed" : "released"
-    , keyAliases.HasKey(name) ? keyAliases[name] : name
-    , code
-    , KeybindSets[deviceName].Global.HasKey(name) ? "Yes" : "No"
-    , Modifiers.ToString() == "" ? "None" : Modifiers.ToString()
-    , keyAliases.HasKey(name) ? "Yes" : "No"
-    , keyAliases.HasKey(name) ? ("`nOriginal Name:`t" . name) : ""
-    , skipKeyUp ? "Yes" : "No")))
 
     ; Handles modifier keys [always before skipping the up event]
     If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
@@ -221,11 +113,8 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     ; CurrentModifiers := Modifiers.ToString(Delimiter := Modifiers.CallbackFriendlyDelimiter)
     If (DeviceGlobalClass.HasKey(name)) { ; Does this device's global bindset have a callback for this key?
         callback := ObjBindMethod(DeviceGlobalClass, name)
-    } Else If (DeviceModeClass.HasKey(name)) { ; Does this device's current mode bindset have a callback for this key?
-        callback := ObjBindMethod(DeviceModeClass, name)
     } Else {
-        TrayTip,, % Format("Not modifier & no callback available`nKey: {}`t`tMode: {}`nDevice: {}", name, ModeHandler.Mode, deviceName)
-        DebugMessage("No callback available. Have you #included the mode class?")
+        TrayTip,, % Format("Not modifier & no callback available`nKey: {}`nDevice: {}", name, deviceName)
     }
 
     ; And finally calls the callback
@@ -245,135 +134,6 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
 }
 
 nothing() {
-}
-
-Class Soundboard {
-    Static ProfileCount := 8
-    Static SlotCount := 9
-    Static IniName := "SoundboardConfig.ini"
-    Static CurrProfileIndex := 1 ; Starting setting for selected profile on boot
-    ; ^^ Config ^^
-
-    Static Binds := []
-    Static SoundList := {}
-
-    PopulateSounds() {
-        This.SoundList := {}
-        Loop, Files, Soundboard\*, F
-        {
-            fileName := StrSplit(A_LoopFileName, .)[1]
-            This.SoundList[filename] := A_ScriptDir . "\Soundboard\" . A_LoopFileName
-        }
-
-        Loop, Files, Soundboard\Voicemeeter\*, F
-        {
-            fileName := StrSplit(A_LoopFileName, .)[1]
-            This.SoundList[filename] := A_ScriptDir . "\Soundboard\Voicemeeter\" . A_LoopFileName
-        }
-    }
-
-    Stop() {
-        VoicemeeterRemote.StopPlayback()
-    }
-
-    Play() {
-        VoicemeeterRemote.PlayRecorder()
-    }
-
-    SetProfile(ByRef ProfileIndex) {
-        If ((ProfileIndex is Number) && (ProfileIndex <= This.ProfileCount))
-            This.CurrProfileIndex := ProfileIndex
-        This.ShowSettings(Refresh := True)
-    }
-
-    PlaySlot(ByRef Index) {
-        If (Index <= This.SlotCount)
-            IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, %Index%
-            If (OutputVar != "") {
-                If (SubStr(OutputVar, 2, 1) == ":") {
-                    VoicemeeterRemote.PlayFile(OutputVar)
-                } Else {
-                    VoicemeeterRemote.PlayFile(This.SoundList[OutputVar])
-                }
-            } Else {
-                TrayTip, Soundboard, Slot not bound
-            }
-    }
-
-    SaveSettings() {
-        Loop, % This.ProfileCount {
-            ProfileIndex := A_Index
-            Loop, %SlotCount% {
-                IniWrite, % This.Binds[ProfileIndex][A_Index], % This.IniName, % ProfileIndex, %A_Index%
-            }
-        }
-    }
-
-    FadeOutSettings(duration := 100) {
-        DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", duration, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
-        Gui SoundboardDisplay:Destroy
-    }
-
-    ShowSettings(Refresh := False) {
-        ; TODO: Close [fade out] soundboard display after a duration
-        Gui SoundboardDisplay:+LastFoundExist
-        If (WinExist() && !Refresh) {
-            This.FadeOutSettings()
-        } Else If !(!WinExist() && Refresh) {
-            SysGet, OutputVar, MonitorWorkArea
-            Width := 500
-            Height := 180
-            Padding := 2
-            PosX := OutputVarRight - Width - Padding
-            PosY := OutputVarBottom - Height - Padding
-            
-            Gui SoundboardDisplay:New ; TODO: see if there's a way to update all the controls on the window without re-creating it (which makes it flash)
-            Gui -Caption +AlwaysOnTop
-            Gui, Add, Text,, % "Current Profile: " . This.CurrProfileIndex
-            Gui, Add, Text, yp+15,
-
-            Loop % This.SlotCount {
-                IniRead, OutputVar, % This.IniName, % This.CurrProfileIndex, % A_Index
-                OutputVar := Format("{} - {}", A_Index, OutputVar)
-                Gui, Add, Text, yp+15, %OutputVar%
-            }
-
-            Gui, Show, W%Width% H%Height% X%PosX% Y%PosY% NA
-            Gui +LastFound
-            WinGet GUI_ID, ID
-            ; SetTimer, FadeOutSettingsTimer, -1
-            Return
-
-            ; FadeOutSettingsTimer:
-            ;     Sleep, 1500
-            ;     DllCall("AnimateWindow", "Ptr", WinExist(), "UInt", 1000, "UInt", fadeIn ? 0x80000 : 0x80000 | 0x10000)
-            ;     ; This.FadeOutSettings(1000)
-            ; Return
-        }
-    }
-
-    LoadSettings() {
-        Loop, % This.ProfileCount {
-            ProfileIndex := A_Index
-            This.Binds[ProfileIndex] := {}
-            Loop, % This.SlotCount {
-                IniRead, OutputVar, % This.IniName, % ProfileIndex, %A_Index%
-                This.Binds[ProfileIndex][A_Index] := OutputVar
-            }
-        }
-        ; IniRead, OutputVar, Filename, Section, Key [, Default]
-    }
-}
-
-; Sounds provider
-Class Sounds {
-    PopulateSounds() {
-        Loop, Files, Sounds\*.mp3, F
-        {
-            filename := StrSplit(A_LoopFileName, .)[1]
-            this[filename] := "Sounds\" . A_LoopFileName
-        }
-    }
 }
 
 ; Modifier hotkey handling
@@ -411,22 +171,18 @@ Class Modifiers {
     }
 
     IsPressed(Keys*) {
-        DebugMessage(Format("`n[Modifier Handler]`tBeginning {}    Held modifiers: {}", Keys.Count() < 1 ? "check for no modifiers." : "search for following modifiers:    Requested Modifiers: " . Keys.Count(), This.ActiveModifiers.Count()))
 
         If (Keys.Count() > 0) {
             Msg := ""
             For Index, Name in Keys {
                 Msg .= " " . Name . ","
             }
-            DebugMessage("`t-" . SubStr(Msg, 1, -1))
         }
 
         RequestList := Keys
         ActiveList := This.ActiveModifiers
 
         If (ActiveList.Count() != RequestList.Count()) { ; Match impossible if count of entries does not match
-            DebugMessage("`tArray lengths do not match.")
-            DebugMessage(">> Match failure, returning False.")
             Return False
         }
 
@@ -439,110 +195,10 @@ Class Modifiers {
                 }
             }
             If (!Success) {
-                DebugMessage("`tSearch iteration completed without finding match.")
-                DebugMessage(">> Match failure, returning False.")
                 Return False ; Loop has exited without finding match
             }
         }
-        DebugMessage(">>> Match success; returning True.`n`n")
         Return True
-    }
-}
-
-ToggleDebug() {
-    If (debug) {
-        Global debug = False    ; Disable
-        Menu, Tray, Uncheck, % TrayMenu.Names.ToggleDebug
-        SoundPlay, % sounds.disconnected
-    } Else {
-        Global debug = True     ; Enable
-        Menu, Tray, Check, % TrayMenu.Names.ToggleDebug
-        SoundPlay, % Sounds.connected
-    }
-}
-
-CheckRedundantKeybinds() {
-    For i, val in ModeHandler.ModeList {
-        listOfRedundantCallbacks := ""
-        For ii, value in KeybindSets[val] {
-            ; Msgbox, Callback %ii%
-            If (KeybindSets.Global.HasKey(ii) && ii != "__Class") {
-                listOfRedundantCallbacks := listOfRedundantCallbacks . "`n" . ii
-            }
-        }
-        If (listOfRedundantCallbacks != "")
-            Msgbox, % Format("The following list of keys will not ever trigger because they already have a callback inside of Global.`n`n`nMode: {}{}", val, listOfRedundantCallbacks)
-    }
-}
-
-
-; Msgbox that requires 'debug' to be true in order to show
-DebugMessage(inMsg := "")
-{
-    OutputDebug, % inMSG
-    ; If (debug) {
-    ;     Msgbox, % inMsg
-    ; }
-}
-
-; Traytip variation of above
-DebugTrayTip(inMSG := "") {
-    OutputDebug, % inMSG
-    If (debug) {
-        TrayTip, % "Debugging", %inMSG%
-    }
-}
-
-; -- This automatically toggles a timer for the name provided.
-; -- The name must be a function or label NAME. Without the ().
-; -- Returns 1 upon timer started and 0 for timer stopped
-; --- TODO: Could possibly use Func() objects for this instead.
-ToggleTimer(timerName, endExec := "", forceState := "") {
-    if (forceState == true) {
-        timerVars[timerName] := True
-        SoundPlay, % Sounds.Connected
-        SetTimer, %timerName%, 0
-        Return, timerVars[timerName]
-    } else if (forceState == false) {
-        timerVars[timerName] := False
-        SoundPlay, % Sounds.Disconnected
-        SetTimer, %timerName%, Delete
-        Return, timerVars[timerName]
-    } else {
-        if (!timerVars[timerName]) {
-            timerVars[timerName] := True
-            SoundPlay, % Sounds.Connected
-            SetTimer, %timerName%, 0
-            Return, timerVars[timerName]
-        } else {
-            timerVars[timerName] := False
-            SoundPlay, % Sounds.Disconnected
-            SetTimer, %timerName%, Delete
-            Return, timerVars[timerName]
-        }
-    }
-}
-
-; -- Autoclicker macro for use with 'settimer'
-AutoClicker() {
-    Click, Right
-}
-
-; -- Autoclicker macro for use with 'settimer'
-AutoAttack() {
-    Click, Left
-}
-
-Stopwatch() {
-    If (!StopwatchRunning) {
-        StopwatchRunning := True
-        BeginTickCount := A_TickCount
-    } Else {
-        StopwatchRunning := False
-        EndTickCount := A_TickCount
-        ElapsedMS := EndTickCount - BeginTickCount
-        FormatTime, OutputTime, HHMMSS, Format
-        Msgbox, %ElapsedMS%
     }
 }
 

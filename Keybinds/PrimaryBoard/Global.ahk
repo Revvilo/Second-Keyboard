@@ -180,48 +180,86 @@ Class Global {
         ; OBS.SendToOBS("{F22}")    ; Toggle Recording
     }
 
-
     ; --------------------- ;
     ; -- NUMPAD CONTROLS -- ;
 
-    ; NumpadIns(Modifiers) { ; -- Numpad0
-    ; }
-    ; NumpadEnd(Modifiers) { ; -- Numpad1
-    ; }
-    ; NumpadDown(Modifiers) { ; -- Numpad2
-    ; }
-    ; NumpadPgDn(Modifiers) { ; -- Numpad3
-    ; }
-    ; NumpadLeft(Modifiers) { ; -- Numpad4
-    ; }
-    ; NumpadClear(Modifiers) { ; -- Numpad5
-    ; }
-    ; NumpadRight(Modifiers) { ; -- Numpad6
-    ; }
-    ; NumpadHome(Modifiers) { ; -- Numpad7
-    ; }
-    ; NumpadUp(Modifiers) { ; -- Numpad8
-    ; }
-    ; NumpadPgUp(Modifiers) { ; -- Numpad9
-    ; }
+    NumpadIns(Modifiers) { ; -- Numpad0
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.FlipCamera()
+        } Else {
+            OBS.MuteUnmuteSystem()
+        }
+    }
+    NumpadEnd(Modifiers) { ; -- Numpad1
+        OBS.SelectScene("Game")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadDown(Modifiers) { ; -- Numpad2
+        OBS.SelectScene("Stand By")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadPgDn(Modifiers) { ; -- Numpad3
+        OBS.SelectScene("Desktop")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadLeft(Modifiers) { ; -- Numpad4
+        OBS.SelectScene("Fullscreen Cam")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadClear(Modifiers) { ; -- Numpad5
+        OBS.SelectScene("Zoom Cam 1")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadRight(Modifiers) { ; -- Numpad6
+        OBS.SelectScene("Zoom Cam 2")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadHome(Modifiers) { ; -- Numpad7
+        OBS.SelectScene("Big sad")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadUp(Modifiers) { ; -- Numpad8
+        OBS.SelectScene("Zoom Flipped Cam 1")
+        OBS.AutoTransition(Modifiers)
+    }
+    NumpadPgUp(Modifiers) { ; -- Numpad9
+        OBS.SelectScene("Zoom Flipped Cam 2")
+        OBS.AutoTransition(Modifiers)
+    }
 
-    ; NumpadAdd(Modifiers) {
-    ; }
-    ; NumpadDiv() {
-    ; }
-    ; NumpadMult() {
-    ; }
+    NumpadAdd(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.SetProfile("Stream")
+            Return
+        } Else {
+            Discord.ToggleDeafen()
+        }
+    }
+    NumpadDiv() {
+        OBS.Transition(1)
+    }
+    NumpadMult() {
+        OBS.Transition(2)
+    }
     ; NumpadSub() {
     ; }
-    ; NumpadDel(Modifiers) {
-    ; }
-    ; NumpadEnter(Modifiers) {
-    ; }
-    ; Numlock() {
-    ; }
-    ; Pause() { ; This doesn't work - Both numlock and scrolllock have the same keycode(?), god knows why.
-    ; }
-
+    NumpadDel(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub"))
+            OBS.ToggleCamera()
+        Else If (Modifiers.IsPressed())
+            OBS.MuteUnmuteMic()
+    }
+    NumpadEnter(Modifiers) {
+        If (Modifiers.IsPressed("NumpadSub")) {
+            OBS.SetProfile("1080p60 Recording")
+            Return
+        } Else {
+            Discord.ToggleMute()
+        }
+    }
+    Numlock() { 
+        OBS.ToggleStudioMode()
+    }
 
     ; ------------- ;
     ; -- NUMBERS -- ;

@@ -4,7 +4,7 @@
 SubscribeAllKeys() {
     ; outputArray := []
     ; For each keyboard that is wanted to be a macro board
-    For deviceName, deviceHandle in MacroKeyboards {`
+    For deviceName, deviceHandle in MacroKeyboards {
         Try {
             deviceID := AHI.GetKeyboardIdFromHandle(deviceHandle)
         } Catch e {

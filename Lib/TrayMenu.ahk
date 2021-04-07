@@ -1,10 +1,8 @@
 Class TrayMenu {
     Class Names {
-        Static MainHotkeys := "Enable Main Keyboard Binds"
         Static EnableListLines := "Enable List Lines"
         Static ToggleDebug := "Toggle Debug Mode"
         Static Reload := "Reload Script"
-        Static CycleMode := "Cycle Mode"
         Static Open := "Open"
         Static Exit := "Exit"
     }
@@ -44,10 +42,6 @@ Class TrayMenu {
 
     ListLines() {
         ListLines
-    }
-
-    ToggleDebug() {
-        ToggleDebug()
     }
 
     Exit() {
