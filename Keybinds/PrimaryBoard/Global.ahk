@@ -382,8 +382,11 @@ Class Global {
             VoicemeeterRemote.StandardVolumeControl(Modifiers, strip, 0)
         }
     }
-    ; T(Modifiers) {
-    ; }
+    T(Modifiers) {
+        If(Modifiers.IsPressed()) {
+            VoicemeeterRemote.ToggleStripOutput(4, "A1")
+        }
+    }
     ; U() {
     ; }
     V(Modifiers) {

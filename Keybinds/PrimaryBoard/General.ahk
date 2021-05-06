@@ -102,7 +102,7 @@ Class General {
         OBS.AutoTransition(Modifiers)
     }
     NumpadUp(Modifiers) { ; -- Numpad8
-        OBS.SelectScene("Zoom Flipped Cam 1")
+        OBS.SelectScene("Flipped Cam")
         OBS.AutoTransition(Modifiers)
     }
     NumpadPgUp(Modifiers) { ; -- Numpad9

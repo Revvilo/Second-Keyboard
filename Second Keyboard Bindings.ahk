@@ -137,6 +137,16 @@ Return
 ; Main Keyboard Binds ;
 ; =================== ;
 
+#IfWinActive, ahk_exe Resolve.exe
+*XButton1::
+    If(GetKeyState("LShift")) {
+        SendInput, ^+]
+        Return
+    }
+    SendInput, ^+[
+Return
+
+
 #If
 ~*!x:: ; ALT + x
     Discord.ToggleMute()
