@@ -37,13 +37,8 @@ Class Global {
         Reload
     }
     ; Mode change
-    Tab(Modifiers) {
-        If (Modifiers.IsPressed("Control"))  { ; Reset mode - Ctrl Tab
-            ModeHandler.Mode := 1
-        } Else If (Modifiers.IsPressed()) { ; Cycle mode - Tab
-            ModeHandler.Cycle()
-        }
-    }
+    ; Tab(Modifiers) {
+    ; }
 
     ;v ================== v;
     ;v == USER HOTKEYS == v;

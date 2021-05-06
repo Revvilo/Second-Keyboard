@@ -82,6 +82,7 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
 
+    ; MODIFIER HANDLING
     ; Handles modifier keys [always before skipping the up event]
     If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
         ; This key was stated in the <devicename>/Hotkeys/Global.ahk class to be handled as a modifier
@@ -94,10 +95,13 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
     }
     ; After this the key isn't a modifier (yes I know these comments are insanely verbose. Quiet. It's private code.)
 
+    ; SKIP KEYUP
     ; If skipKeyUp is true, and it's the key up event, stop processing.
     If ((!state) && skipKeyUp)
         Return
 
+
+    ; ALIAS
     ; Puts an alias, if applicable, into effect - overriding the key's name with a callback-friendly string.
     If (keyAliases.HasKey(name)) {
         ; Stores the original input
@@ -105,18 +109,15 @@ MacroBroker(deviceName, code, name, skipKeyUp, state) {
         name := keyAliases[name]
     }
 
-    ; Below determines which callback to run respective of the current mode using the following rules in order;
-    ; -If there is a callback for this key in the <devicename>/Hotkeys/Global class, it completely ignores the current mode and runs that callback.
-    ; -Else it runs the callback from the current mode's class instead.
-    ; -Otherwise, if no callback is available, notify the user and return.
 
-    ; CurrentModifiers := Modifiers.ToString(Delimiter := Modifiers.CallbackFriendlyDelimiter)
+    ; REMOVED MODE HANDLING - ADAPTED TO CALLBACK CHECK ONLY
     If (DeviceGlobalClass.HasKey(name)) { ; Does this device's global bindset have a callback for this key?
         callback := ObjBindMethod(DeviceGlobalClass, name)
     } Else {
         TrayTip,, % Format("Not modifier & no callback available`nKey: {}`nDevice: {}", name, deviceName)
     }
 
+    ; CALLBACK
     ; And finally calls the callback
     Try {
         callback.Call(Modifiers.Get())
