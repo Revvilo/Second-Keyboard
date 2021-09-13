@@ -137,6 +137,11 @@ Return
 ; Main Keyboard Binds ;
 ; =================== ;
 
+!+^=::
+    VoicemeeterRemote.ToggleStripOutput("5", "A2")
+    VoicemeeterRemote.ToggleStripOutput("5", "A1")
+Return
+
 #IfWinActive, ahk_exe Resolve.exe
 *XButton1::
     If(GetKeyState("LShift")) {
@@ -144,6 +149,18 @@ Return
         Return
     }
     SendInput, ^+[
+Return
+
+#IfWinActive Valheim
+E::
+    SendInput, e
+    KeyWait, e, t0.25
+    If(ErrorLevel == 0)
+        return
+    While GetKeyState("e", "P") {
+        SendInput, e
+        Sleep, 40
+    }
 Return
 
 
