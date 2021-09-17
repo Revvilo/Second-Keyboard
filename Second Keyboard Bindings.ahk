@@ -22,7 +22,7 @@ Process, Exist
 Process, Priority, %ErrorLevel%, High
 
 ; AHI Key subscription
-#Include Keybinds\SubscribeKeys.ahk
+#Include Lib\SubscribeKeys.ahk
 
 #Include Lib\BrowserControl.ahk
 #Include Lib\Discord.ahk
@@ -47,10 +47,6 @@ Menu, Tray, Default, % TrayMenu.Names.Open
 #Include Lib\AutoHotInterception\AutoHotInterception.ahk
 Global AHI := new AutoHotInterception()
 
-; Add keyboards to this array to register their keys for macros
-; WARNING - UNTESTED WITH ANYTHING EXCEPT KEYBOARDS.
-Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"}
-
 ; List of key names that will be overridden to call a correct callback function
 Global keyAliases := {   "/": "ForwardSlash"
                 , "'": "Apostrophe"
@@ -66,47 +62,54 @@ Global keyAliases := {   "/": "ForwardSlash"
                 
 SubscribeAllKeys()
 
+; Add device 'hardware ids' to this array with a corresponding name to register all keys as macros.
+; -- Format: "NAME":"HardwareID"
+; WARNING - UNTESTED WITH ANYTHING EXCEPT KEYBOARDS.
+Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"}
+
+; ====== Multiline example ======
+; Global MacroKeyboards := {"PrimaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
+;                         , "SecondaryBoard": "HID\VID_03F0&PID_0024&REV_0130"
+;                         , "BoardBanan": "HID\VID_03F0&PID_0024&REV_0130"}
+
 Class KeybindSets {
-    ; -- Each class is a set of keybinds assigned to a specific device (keyboard) with their own mode specific and global hotkeys
+    ; -- Each class name within KeybindSets should correspond to a device using the NAME specified above.
+    ; -- The class within the NAME class shall be a class named Global and can be included from a separate file as seen already.
+    ; --- The location of the file is arbitrary, as you have to specify it yourself in the include statement, but the Keybinds/<devicename>/ folder is recommended.
     Class PrimaryBoard {
-        ; -- ALL BINDS (callbacks) PLACED IN 'GLOBAL' WILL OVERRIDE THE CURRENT MODE --
         #Include Keybinds\PrimaryBoard\Global.ahk
     }
 }
 
 Return
 
-; Predicate to handle any options I want to apply to multiple keys - Mostly just to skip the key up event.
-; - "Broker" is a possibly incorrect name, but it's the best I've come up with at the moment.
+; Processes all inputs before calling the respective key's callback.
 MacroBroker(deviceName, code, name, skipKeyUp, state) {
 
     DeviceGlobalClass := KeybindSets[deviceName]["Global"]
 
     ; MODIFIER HANDLING
-    ; Handles modifier keys [always before skipping the up event]
+    ; Handles modifier keys before checking the up event
     If (DeviceGlobalClass.modifierKeys.HasKey(name)) { ; Is this key a global modifier (irrespective of current mode)?
         ; This key was stated in the <devicename>/Hotkeys/Global.ahk class to be handled as a modifier
         Modifiers.HandleState(state, DeviceGlobalClass.modifierKeys[name])
         Return
-    } Else If (DeviceModeClass.modifierKeys.HasKey(name)) { ; Is this key a modifier key specific to the current mode?
-        ; This key was stated in the <devicename>/Hotkeys/<modename>.ahk class to be handled as a modifier
-        Modifiers.HandleState(state, DeviceModeClass.modifierKeys[name])
-        Return
     }
-    ; After this the key isn't a modifier (yes I know these comments are insanely verbose. Quiet. It's private code.)
+
+    ; Below here the key is NOT a modifier.
 
     ; SKIP KEYUP
-    ; If skipKeyUp is true, and it's the key up event, stop processing.
+    ; If skipKeyUp is true, and it's the key up event, just skip.
     If ((!state) && skipKeyUp)
         Return
 
 
-    ; ALIAS
+    ; APPLY ALIASES
     ; Puts an alias, if applicable, into effect - overriding the key's name with a callback-friendly string.
     If (keyAliases.HasKey(name)) {
         ; Stores the original input
-        input := name
-        name := keyAliases[name]
+        ; input := name ; This is only needed if we use the raw 'input' below. Removed for efficiency.
+        name := keyAliases[input]
     }
 
 
